@@ -1,0 +1,36 @@
+{
+  "name": "hellobookslib",
+  "version": "1.0.0",
+  "description": "Deferral poject",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon --exec babel-node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/emp-daisy/HelloBooksLib.git"
+  },
+  "keywords": [
+    "Library",
+    "Books",
+    "Deferral"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/emp-daisy/HelloBooksLib/issues"
+  },
+  "homepage": "https://github.com/emp-daisy/HelloBooksLib#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.4.4",
+    "@babel/core": "^7.4.5",
+    "@babel/node": "^7.4.5",
+    "@babel/preset-env": "^7.4.5",
+    "@babel/register": "^7.4.4",
+    "nodemon": "^1.19.1"
+  }
+}
