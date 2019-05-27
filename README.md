@@ -10,25 +10,28 @@
 To run this application, you need to have Node.js, and git(to clone the repo) installed. Then follow the instructions to get
 it up and running
 
-- clone the repo using 
+- clone the repo and cd into the directory using
+
 ```shell
 ~> git clone https://github.com/emp-daisy/HelloBooksLib.git
+~> cd HelloBooksLib
 ```
-- run ``` npm install --prod``` to install dependencies
+
+- run `npm install --prod` to install dependencies
 - create a .env file from the .env.sample file and fill in the necessary environment variables
-- run ``` npm run build ``` to build the project and then run ``` npm start ``` to start the server
-- now access the server on the localhost port you specify e.g ``` localhost:5000 or 127.0.0.1:5000 ```
+- run `npm run build` to build the project and then run `npm start` to start the server
+- now access the server on the localhost port you specify e.g `localhost:5000 or 127.0.0.1:5000`
 
 Now the server will go live and listen for requests
 
 ## Developing
 
 To develop the app further, a few handy tools have been put in place such as nodemon and some other dev dependencies.
-Access them by starting the server using ```npm run dev```. But before using the command, make sure to follow the steps below
+Access them by starting the server using `npm run dev`. But before using the command, make sure to follow the steps below
 
 ```shell
 git clone https://github.com/emp-daisy/HelloBooksLib.git
-cd banka/
+cd HelloBooksLib/
 npm install
 npm run dev
 ```
