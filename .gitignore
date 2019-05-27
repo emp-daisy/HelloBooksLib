@@ -61,6 +61,5 @@ typings/
 .next
 
 # idea files from webstorm IDE
-/.idea
 .idea/
 .idea
