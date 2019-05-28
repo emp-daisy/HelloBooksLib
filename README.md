@@ -43,5 +43,5 @@ The app is written in ES6+ and wired to run ES5 transpiled code in production. T
 ```shell
 npm run build
 ```
-
 Babel then transpiles your ES6+ files to ES5 for environment compatibility
+
