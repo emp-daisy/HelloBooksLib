@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon --exec babel-node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --forceExit --verbose",
+    "coverage": "jest --forceExit --coverage && cat ./coverage/lcov.info | coveralls"
   },
   "repository": {
     "type": "git",
@@ -23,7 +24,9 @@
   },
   "homepage": "https://github.com/emp-daisy/HelloBooksLib#readme",
   "dependencies": {
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "jest": "^24.8.0",
+    "supertest": "^4.0.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.4.4",
@@ -31,6 +34,10 @@
     "@babel/node": "^7.4.5",
     "@babel/preset-env": "^7.4.5",
     "@babel/register": "^7.4.4",
+    "chai": "^4.2.0",
+    "chai-http": "^4.3.0",
+    "dotenv": "^8.0.0",
+    "mocha": "^6.1.4",
     "nodemon": "^1.19.1"
   }
 }
