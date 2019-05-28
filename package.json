@@ -4,8 +4,12 @@
   "description": "Deferral poject",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon --exec babel-node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./build/index.js",
+    "dev": "nodemon --exec babel-node server/index.js",
+    "clean": "rm -rf build && mkdir build",
+    "build-server": "babel -d ./build ./server",
+    "build": "npm run clean && npm run build-server"
   },
   "repository": {
     "type": "git",
@@ -23,6 +27,7 @@
   },
   "homepage": "https://github.com/emp-daisy/HelloBooksLib#readme",
   "dependencies": {
+    "dotenv": "^8.0.0",
     "express": "^4.17.1"
   },
   "devDependencies": {
