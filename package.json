@@ -4,8 +4,9 @@
   "description": "Deferral poject",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node ./build/index.js",
+    "start": "nodemon --exec babel-node index.js",
+    "test": "jest --forceExit --verbose",
+    "coverage": "jest --forceExit --coverage && cat ./coverage/lcov.info | coveralls",
     "dev": "nodemon --exec babel-node server/index.js",
     "clean": "rm -rf build && mkdir build",
     "build-server": "babel -d ./build ./server",
@@ -36,7 +37,11 @@
     "@babel/node": "^7.4.5",
     "@babel/preset-env": "^7.4.5",
     "@babel/register": "^7.4.4",
+    "chai": "^4.2.0",
+    "chai-http": "^4.3.0",
+    "dotenv": "^8.0.0",
     "eslint-config-prettier": "^4.3.0",
+    "jest": "^24.8.0",
     "nodemon": "^1.19.1",
     "prettier": "^1.17.1"
   },

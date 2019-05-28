@@ -7,7 +7,9 @@ const app = express();
 
 const port = process.env.PORT || 3000;
 
-app.get('/', (req, res) => res.send('This is Hello Books'));
+app.get('/', (req, res) => {
+    res.status(200).json({ message: 'This is Hello books' });
+});
 
 app.all('*', (req, res) => res.status(404).send('Sorry, the requested endpoint does not exist on our server'));
 
