@@ -7,7 +7,9 @@
 [![Coverage Status](https://coveralls.io/repos/github/emp-daisy/HelloBooksLib/badge.svg?branch=develop)](https://coveralls.io/github/emp-daisy/HelloBooksLib?branch=develop)
 
 ## Getting Started
+
 ---
+
 ### Installing
 
 To run this application, you need to have Node.js, and git(to clone the repo) installed. Then follow the instructions to get
@@ -26,6 +28,25 @@ it up and running
 - now access the server on the localhost port you specify e.g `localhost:5000 or 127.0.0.1:5000`
 
 Now the server will go live and listen for requests
+
+## Run Migrations
+
+- In other to run migrations, run
+`npx sequelize-cli db:migrate` OR `npm run migrate`
+
+- To create a new model/migration, run
+`npx sequelize-cli model:generate --name <model-name> --attributes <attribute-name>:<attribute-type>` OR `npm run generate:model -- --name <model-name> --attributes <attribute-name>:<attribute-type>`
+For Example `npm run generate:model -- --name Todos --attributes title:string`
+Note the necessary `--` used in the second method using `npm`. It is needed to separate the params passed to `npm` command itself and params passed to the script. [ref](https://stackoverflow.com/questions/11580961/sending-command-line-arguments-to-npm-script)
+
+- To undo migrations, run
+`npx sequelize-cli db:migrate:undo` OR `npm run migrate:undo`
+
+- To seed the table with default data, create a seed file as described [here](http://docs.sequelizejs.com/manual/migrations.html) and then run
+`npx sequelize-cli db:seed:all` OR `npm run seed`
+
+- To rollback and delete seed data run
+`npx sequelize-cli db:seed:undo` OR `npm run seed:undo`
 
 ## Developing
 
