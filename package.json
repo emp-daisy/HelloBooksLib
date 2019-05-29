@@ -39,6 +39,7 @@
     "@babel/register": "^7.4.4",
     "chai": "^4.2.0",
     "chai-http": "^4.3.0",
+    "coveralls": "^3.0.3",
     "dotenv": "^8.0.0",
     "eslint-config-prettier": "^4.3.0",
     "jest": "^24.8.0",

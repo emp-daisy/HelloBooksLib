@@ -2,6 +2,8 @@
 
 [comment]: # (HoundCi Badge)
 [![Reviewed by Hound](https://img.shields.io/badge/Reviewed_by-Hound-8E64B0.svg)](https://houndci.com)
+[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
+[![Build Status](https://travis-ci.org/emp-daisy/HelloBooksLib.svg?branch=develop)](https://travis-ci.org/emp-daisy/HelloBooksLib)
 
 ## Getting Started
 ---
@@ -43,5 +45,4 @@ The app is written in ES6+ and wired to run ES5 transpiled code in production. T
 ```shell
 npm run build
 ```
-
 Babel then transpiles your ES6+ files to ES5 for environment compatibility
