@@ -1,5 +1,5 @@
-'use strict';
-module.exports = (sequelize, DataTypes) => {
+/* eslint-disable no-unused-vars */
+export default (sequelize, DataTypes) => {
   const User = sequelize.define('User', {
     firstName: {
       type: DataTypes.STRING,

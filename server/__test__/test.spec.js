@@ -1,5 +1,5 @@
-import app from '../index';
 import supertest from 'supertest';
+import app from '../index';
 
 const server = () => supertest(app);
 const url = '/api/v1'
