@@ -16,7 +16,7 @@
     "seed": "node_modules/.bin/sequelize db:seed:all",
     "seed:undo": "node_modules/.bin/sequelize db:seed:undo",
     "generate:model": "node_modules/.bin/sequelize model:generate",
-    "heroku-postbuild": "npm run migrate && npm run build"
+    "heroku-postbuild": "npm run migrate && npm run build && cp -r server/docs build/docs"
   },
   "repository": {
     "type": "git",
