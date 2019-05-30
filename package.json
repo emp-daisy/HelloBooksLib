@@ -4,7 +4,7 @@
   "description": "Deferral poject",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon --exec babel-node index.js",
+    "start": "node build/index.js",
     "test": "jest --forceExit --verbose",
     "coverage": "jest --forceExit --coverage && cat ./coverage/lcov.info | coveralls",
     "dev": "nodemon --exec babel-node server/index.js",
@@ -15,7 +15,8 @@
     "migrate:undo": "node_modules/.bin/sequelize db:migrate:undo",
     "seed": "node_modules/.bin/sequelize db:seed:all",
     "seed:undo": "node_modules/.bin/sequelize db:seed:undo",
-    "generate:model": "node_modules/.bin/sequelize model:generate"
+    "generate:model": "node_modules/.bin/sequelize model:generate",
+    "heroku-postbuild": "npm run migrate && npm run build"
   },
   "repository": {
     "type": "git",
