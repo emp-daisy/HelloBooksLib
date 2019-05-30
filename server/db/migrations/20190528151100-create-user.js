@@ -10,25 +10,37 @@ export function up(queryInterface, Sequelize) {
     },
     firstName: {
       type: Sequelize.STRING,
-      allowNull: false,
+      allowNull: true
     },
     lastName: {
       type: Sequelize.STRING,
-      allowNull: false,
+      allowNull: true
     },
     email: {
       type: Sequelize.STRING,
-      allowNull: false,
+      allowNull: true
     },
     password: {
       type: Sequelize.STRING,
-      allowNull: false,
+      allowNull: true
     },
     createdAt: {
       type: Sequelize.DATE
     },
     updatedAt: {
       type: Sequelize.DATE
+    },
+    signupMethod: {
+      type: Sequelize.ENUM('local', 'google', 'facebook', 'twitter'),
+      allowNull: false
+    },
+    socialId: {
+      type: Sequelize.STRING,
+      allowNull: true
+    },
+    profilePic: {
+      type: Sequelize.STRING,
+      allowNull: true
     }
   });
 }

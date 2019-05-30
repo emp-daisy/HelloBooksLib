@@ -1,0 +1,72 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`User tests Signin with social media should not signin with facebook without an access_token 1`] = `
+Object {
+  "error": "Unauthorized",
+  "status": 401,
+}
+`;
+
+exports[`User tests Signin with social media should not signin with google without an access_token 1`] = `
+Object {
+  "error": "Unauthorized",
+  "status": 401,
+}
+`;
+
+exports[`User tests Signin with social media should signin a new user from facebook 1`] = `
+Array [
+  "token",
+  "firstName",
+  "lastName",
+  "email",
+  "signupMethod",
+]
+`;
+
+exports[`User tests Signin with social media should signin a new user from google 1`] = `
+Array [
+  "token",
+  "firstName",
+  "lastName",
+  "email",
+  "signupMethod",
+]
+`;
+
+exports[`User tests Signin with social media should signup a new user from facebook 1`] = `
+Array [
+  "token",
+  "firstName",
+  "lastName",
+  "email",
+  "signupMethod",
+]
+`;
+
+exports[`User tests Signin with social media should signup a new user from google 1`] = `
+Array [
+  "token",
+  "firstName",
+  "lastName",
+  "email",
+  "signupMethod",
+]
+`;
+
+exports[`User tests test for user signup Should not register a new user if the user already exists 1`] = `
+Object {
+  "error": "email address exist already",
+  "status": 409,
+}
+`;
+
+exports[`User tests test for user signup Should reigister a user when all required input is supplied 1`] = `
+Array [
+  "token",
+  "id",
+  "firstName",
+  "lastName",
+  "email",
+]
+`;

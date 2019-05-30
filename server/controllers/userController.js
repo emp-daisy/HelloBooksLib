@@ -1,55 +1,87 @@
 /* eslint-disable require-jsdoc */
 /* eslint-disable class-methods-use-this */
+import sequelize from 'sequelize';
 import models from '../db/models';
-import auth from '../helpers/auth'
+import auth from '../helpers/auth';
+import util from '../helpers/utilities';
 
-const UserController = {
-    async signUp(req, res) {
-        models.User.findOne({
-            where: { email: req.body.email }
-          })
-          .then((foundUser) => {
-            if (foundUser) {
-              return res.status(409).send({
-               status: res.statusCode,
-               message: 'email address exist already', 
-              });
-            }
+const { Op } = sequelize;
 
-            const hashPassword = auth.hashPassword(req.body.password);
+class UserController {
+  static async signUp(req, res) {
+    try {
+      const foundUser = await models.Users.findOne({
+        where: { email: req.body.email }
+      });
+      if (foundUser) {
+        return util.errorstatus(res, 409, 'email address exist already');
+      }
 
-            const user = {
-                firstName: req.body.firstName,
-                lastName: req.body.lastName,
-                email: req.body.email,
-                password: hashPassword,
-              };
+      const hashPassword = auth.hashPassword(req.body.password);
 
-            const token = auth.generateToken(user);
+      const user = {
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        email: req.body.email,
+        password: hashPassword,
+        signupMethod: 'local'
+      };
 
-              models.User.create(user).then((createdUser) => {
-                return res.status(201).send({ 
-                  status: res.statusCode,
-                  message: 'User added successfully',
-                  data: {
-                      token,
-                      id: createdUser.id,
-                      firstName: createdUser.firstName,
-                      lastName: createdUser.lastName,
-                      email: createdUser.email,
-                  },
-                }); 
-              })
-              .catch((error) => {
-                return res.status(500).json({
-                    status: res.statusCode,
-                    error: 'Internal error',
-                  });
-              });
-            })
+      const token = auth.generateToken(user);
+
+      const createdUser = await models.Users.create(user);
+      return util.successStatus(res, 201, 'User added successfully', {
+        token,
+        id: createdUser.id,
+        firstName: createdUser.firstName,
+        lastName: createdUser.lastName,
+        email: createdUser.email
+      });
+    } catch (error) {
+      util.errorstatus(res, 500, error);
     }
-    
-}
+  }
 
+  static async socialSignin(req, res) {
+    let user;
+    try {
+      const { userProfile } = req;
+
+      const existingUser = await models.Users.findOne({
+        where: {
+          [Op.or]: [
+            { email: userProfile.emails[0].value },
+            { socialId: userProfile.id }
+          ]
+        }
+      });
+
+      if (existingUser) {
+        user = existingUser.dataValues;
+      } else {
+        const newUser = {
+          signupMethod: userProfile.method,
+          socialId: userProfile.id,
+          email: userProfile.emails[0].value,
+          firstName: userProfile.name.familyName,
+          lastName: userProfile.name.givenName,
+          profilePic: userProfile.photos[0].value
+        };
+        user = await models.Users.create(newUser);
+      }
+    } catch (error) {
+      util.errorstatus(res, 500, 'Internal server Error');
+    }
+    const token = auth.generateToken({ id: user.id });
+
+    return util.successStatus(res, 200, 'Login successful', {
+      token,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      signupMethod: user.signupMethod
+    });
+  }
+}
 
 export default UserController;
