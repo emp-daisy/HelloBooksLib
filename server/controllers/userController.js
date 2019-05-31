@@ -47,6 +47,48 @@ const UserController = {
                   });
               });
             })
+    },
+
+    async signIn(req, res) {
+      try {
+        const { email, password } = req.body;
+        const user = await models.User.findOne({ where: { email } });
+        if (!user) {
+          return res.status(404).json({
+            status: res.statusCode,
+            error: 'User not found!',
+          });
+        }
+
+        const hashPassword = auth.hashPassword(req.body.password);
+        const result = await auth.comparePassword(password, hashPassword)
+        if (!result) {
+          return res.status(401).json({
+            status: res.statusCode,
+            error: 'Incorrect password',
+          });
+        }
+
+        const token = auth.generateToken(user);
+
+        return res.status(201).send({ 
+          status: res.statusCode,
+          message: 'Login successful!',
+          data: {
+            token,
+            id: user.id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+          },
+        });
+
+      } catch (err) {
+        return res.status(500).json({
+          status: res.statusCode,
+          error: err.message
+        });
+      }
     }
     
 }
