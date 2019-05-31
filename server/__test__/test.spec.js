@@ -1,4 +1,5 @@
 import supertest from 'supertest';
+import truncate from "./truncate";
 import app from '../index';
 
 const server = () => supertest(app);
@@ -22,6 +23,34 @@ describe('Welcome to helo books', () => {
       expect(res.body.error).toEqual('Sorry, the requested endpoint does not exist on our server');
       done();
       expect(res.body).toMatchSnapshot()
+    });
+  });
+});
+
+
+describe('test for user signup', () => {
+  beforeEach(async () => {
+       await truncate();
+      });
+  it('Should reigister a user when all required input is supplied', async (done) => {
+    server()
+    .post(`${url}/auth/signup`)
+    .send({
+      firstName: 'Mat',
+      lastName: 'Eniola',
+      email: 'testing1@example.com',
+      password: 'password',
+    })
+    .end((err, res) => {
+      expect(res.statusCode).toEqual(201);
+      expect(res.body.message).toEqual('User added successfully');
+      expect(res.body.status).toEqual(201);
+      expect(res.body.data).toHaveProperty('token');
+      expect(res.body.data).toHaveProperty('id');
+      expect(res.body.data).toHaveProperty('firstName');
+      expect(res.body.data).toHaveProperty('lastName');
+      expect(res.body.data).toHaveProperty('email');
+      done();
     });
   });
 });
