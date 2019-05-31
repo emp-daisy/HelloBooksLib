@@ -70,11 +70,10 @@ describe('test for user signup Validation', () => {
     })
     .end((err, res) => {
       expect(res.statusCode).toEqual(400);
-      expect(res.body.error[0]).toEqual('first Name can only contain letters: Please remove invalid characters');
+      expect(res.body.error[0]).toEqual('First Name should not be left empty: Please input firstName');
       expect(res.body.error[1]).toEqual('Last name should not be left empty: Please input lastName');
-      expect(res.body.error[2]).toEqual('first Name can only contain letters: Please remove invalid characters');
-      expect(res.body.error[3]).toEqual('Email is not valid: Please input a valid email address');
-      expect(res.body.error[4]).toEqual('Password should not be empty: Please input password');
+      expect(res.body.error[2]).toEqual('Email is not valid: Please input a valid email address');
+      expect(res.body.error[3]).toEqual('Password should not be empty: Please input password');
       done();
     });
   });
