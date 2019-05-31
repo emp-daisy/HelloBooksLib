@@ -11,4 +11,5 @@ userRoute.post('/passwordreset', UserController.initiateReset);
 userRoute.get('/passwordreset/:id/:token', UserController.verifyResetLink);
 userRoute.post('/resetpassword', UserController.resetPassword);
 
+
 export default userRoute;
