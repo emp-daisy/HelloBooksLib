@@ -59,7 +59,7 @@ describe('test for user signup Validation', () => {
   beforeEach(async () => {
        await truncate();
       });
-  it('Should reigister a user when all required input is supplied', async (done) => {
+  it('Should throw an error if the input is unsupported', async (done) => {
     server()
     .post(`${url}/auth/signup`)
     .send({
