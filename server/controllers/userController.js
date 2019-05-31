@@ -12,7 +12,7 @@ const UserController = {
             if (foundUser) {
               return res.status(409).send({
                status: res.statusCode,
-               message: 'A user with that email address exist already', 
+               message: 'email address exist already', 
               });
             }
 
