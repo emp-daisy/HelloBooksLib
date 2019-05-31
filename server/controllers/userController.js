@@ -82,6 +82,48 @@ class UserController {
       signupMethod: user.signupMethod
     });
   }
+
+  static async emailSignin(req, res) {
+    try {
+      const { email, password } = req.body;
+      const user = await models.Users.findOne({ where: { email } });
+      if (!user) {
+        return res.status(404).json({
+          status: res.statusCode,
+          error: 'User not found!',
+        });
+      }
+
+      const result = await auth.comparePassword(password, user.password);
+
+      if (!result) {
+        return res.status(403).json({
+          status: res.statusCode,
+          error: 'Incorrect password!',
+        });
+      }
+
+      const token = auth.generateToken(user.dataValues);
+
+      return res.status(201).send({
+        status: res.statusCode,
+        message: 'Login successful!',
+        data: {
+          token,
+          id: user.id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+        },
+      });
+
+    } catch (err) {
+      return res.status(500).json({
+        status: res.statusCode,
+        error: err.message
+      });
+    }
+  }
 }
 
 export default UserController;
