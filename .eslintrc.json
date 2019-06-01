@@ -29,7 +29,10 @@
             "MethodDefinition": true,
             "ClassDeclaration": true
         }
-    }]
+    }],
+    "parserOptions": {
+      "sourceType": "module"
+  }
   }
 }
   

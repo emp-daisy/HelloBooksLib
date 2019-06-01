@@ -42,7 +42,7 @@ class Mailer {
    * @returns {Object} - Mailer response
    */
   static sendWelcomeMail(email, firstName, link) {
-    const senderEmail = 'hellobooks-team@gmail.com'
+    const senderEmail = 'hellobooks-team@hellobooks.com'
     const linkStyle = `
       display:inline-block;
       padding:5px 10px; 
