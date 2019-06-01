@@ -1,7 +1,8 @@
 /* eslint-disable require-jsdoc */
 /* eslint-disable class-methods-use-this */
 import models from '../db/models';
-import auth from '../helpers/auth'
+import auth from '../helpers/auth';
+import Mailer from '../helpers/mailer';
 
 const UserController = {
     async signUp(req, res) {
@@ -28,6 +29,8 @@ const UserController = {
             const token = auth.generateToken(user);
 
               models.User.create(user).then((createdUser) => {
+                const verificationLink = 'https://sampleverification.com';
+                Mailer.sendWelcomeMail(user.email, user.firstName, verificationLink);
                 return res.status(201).send({ 
                   status: res.statusCode,
                   message: 'User added successfully',
@@ -40,7 +43,7 @@ const UserController = {
                   },
                 }); 
               })
-              .catch((error) => {
+              .catch(() => {
                 return res.status(500).json({
                     status: res.statusCode,
                     error: 'Internal error',

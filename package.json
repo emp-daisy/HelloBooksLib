@@ -5,10 +5,10 @@
   "main": "index.js",
   "scripts": {
     "start": "node build/index.js",
-    "pretest": "export NODE_ENV=test && npm run migrate:undo && npm run migrate",
-    "test": "export NODE_ENV=test && jest --forceExit --verbose",
+    "pretest": "cross-env NODE_ENV=test npm run migrate:undo && cross-env NODE_ENV=test npm run migrate",
+    "test": "cross-env NODE_ENV=test jest --forceExit --verbose",
     "coverage": "jest --forceExit --coverage && cat ./coverage/lcov.info | coveralls",
-    "dev": "cross-env DEBUG=dev && nodemon --exec babel-node server/index.js",
+    "dev": "cross-env DEBUG=dev nodemon --exec babel-node server/index.js",
     "clean": "rm -rf build && mkdir build",
     "build-server": "babel -d ./build ./server",
     "build": "npm run clean && npm run build-server",
@@ -35,6 +35,7 @@
   },
   "homepage": "https://github.com/emp-daisy/HelloBooksLib#readme",
   "dependencies": {
+    "@sendgrid/mail": "^6.4.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
