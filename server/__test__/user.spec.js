@@ -207,7 +207,7 @@ describe('User tests', () => {
         .post(`${url}/auth/signin`)
         .send(mockUser.incorrectPassword)
         .end((err, res) => {
-          expect(res.statusCode).toEqual(403);
+          expect(res.statusCode).toEqual(401);
           expect(res.body).toHaveProperty('error');
           expect(res.body.error).toEqual('Incorrect password!');
           done();

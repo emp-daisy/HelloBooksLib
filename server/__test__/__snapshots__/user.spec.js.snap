@@ -57,7 +57,7 @@ Array [
 exports[`User tests test for email signin Should not sign in user with incorrect password 1`] = `
 Object {
   "error": "Incorrect password!",
-  "status": 403,
+  "status": 401,
 }
 `;
 
