@@ -7,13 +7,6 @@ Object {
 }
 `;
 
-exports[`User tests Signin with social media should not signin with facebook without an access_token 2`] = `
-Object {
-  "error": "Unauthorized",
-  "status": 401,
-}
-`;
-
 exports[`User tests Signin with social media should not signin with google without an access_token 1`] = `
 Object {
   "error": "Unauthorized",
@@ -68,13 +61,6 @@ Object {
 }
 `;
 
-exports[`User tests test for email signin Should not sign in user with incorrect password 2`] = `
-Object {
-  "error": "Incorrect password!",
-  "status": 403,
-}
-`;
-
 exports[`User tests test for email signin Should not sign in user with wrong email 1`] = `
 Object {
   "error": "User not found!",
@@ -84,33 +70,15 @@ Object {
 
 exports[`User tests test for email signin Should not sign in with incomplete form data 1`] = `
 Object {
-  "error": "Unauthorized",
-  "status": 401,
+  "error": Array [
+    "Email should not be left empty: Please input email address",
+    "Password should not be empty: Please input password",
+  ],
+  "status": 400,
 }
 `;
 
-exports[`User tests test for email signin Should not sign in with incomplete form data 2`] = `
-Object {
-  "error": "Unauthorized",
-  "status": 401,
-}
-`;
-
-exports[`User tests test for email signin Should not singn in user with incorrect password 1`] = `
-Object {
-  "error": "Incorrect password!",
-  "status": 403,
-}
-`;
-
-exports[`User tests test for email signin Should not singn in user with wrong email 1`] = `
-Object {
-  "error": "User not found!",
-  "status": 404,
-}
-`;
-
-exports[`User tests test for email signin Should reigister a user when all required input is supplied 1`] = `
+exports[`User tests test for email signin Should sign in a user with complete form data 1`] = `
 Array [
   "token",
   "id",
