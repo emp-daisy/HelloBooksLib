@@ -7,14 +7,14 @@ import util from '../helpers/utilities';
 
 const UserController = {
     async signUp(req, res) {
-          const user = await models.Users.findOne({where: {email: req.body.email}});
+          let user = await models.Users.findOne({where: {email: req.body.email}});
             if(user){
-                //make changes to jude's work on naming convention change errorstatut to errorStatus
+                //make changes to jude's work on naming convention change errorstatus to errorStatus
                 return util.errorStatus(res, 409, 'email address exist already');
             }
             const hashPassword = auth.hashPassword(req.body.password);
-
-            const user = {
+            
+            user = {
                 firstName: req.body.firstName,
                 lastName: req.body.lastName,
                 email: req.body.email,
