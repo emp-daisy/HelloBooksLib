@@ -20,18 +20,16 @@ class Mailer {
    * @param {String} html - Email body
    * @returns  {Object} - Mailer response
    */
-  static sendMail(to, from, subject, html) {
+  static async sendMail(to, from, subject, html) {
     const mail = {
       to,
       from,
       subject,
       html,
     };
-    return sendgridMail.send(mail).then(() => {
-      log('email sent successfully');
-    }).catch((error) => {
-      log(error.message);
-    });
+    return sendgridMail.send(mail)
+      .then(() => log('Message Sent!))
+      .catch((err) => log(err.message) )
   }
 
   /**
@@ -41,7 +39,7 @@ class Mailer {
    * @param {String} link - Verification link
    * @returns {Object} - Mailer response
    */
-  static sendWelcomeMail(email, firstName, link) {
+  static async sendWelcomeMail(email, firstName, link) {
     const senderEmail = 'hellobooks-team@hellobooks.com'
     const linkStyle = `
       display:inline-block;
@@ -67,10 +65,14 @@ class Mailer {
             >Verify Email
           </a>
         </div>
-        <p style="text-alig">Thanks, <br>The Hello Books Team</p>
+        <p>Thanks, <br>The Hello Books Team</p>
       </div>
     `;
-    return Mailer.sendMail(email, senderEmail, 'Welcome to Hello Books', html);
+    try {
+      await Mailer.sendMail(email, senderEmail, 'Welcome to Hello Books', html);
+    }catch(err){
+      log(err.message)
+    }
   }
 
 }
