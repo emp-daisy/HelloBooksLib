@@ -118,7 +118,8 @@ class UserController {
     } catch (error) {
       util.errorstatus(res, 500, 'Internal server Error');;
     }
-
+  }
+  
   static async verifyEmailLink(req, res) {
      try {
     const { mailToken } = req.query;
