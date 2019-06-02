@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 export default (sequelize, DataTypes) => {
-  const User = sequelize.define(
+  const Users = sequelize.define(
     'Users',
     {
       signupMethod: {
@@ -27,6 +27,10 @@ export default (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: true
       },
+      email_confirm_code: {
+        type: DataTypes.STRING,
+        allowNull: true 
+      },
       profilePic: {
         type: DataTypes.STRING,
         allowNull: true
@@ -35,8 +39,8 @@ export default (sequelize, DataTypes) => {
     {}
   );
   // eslint-disable-next-line no-unused-vars
-  User.associate = models => {
+  Users.associate = models => {
     // associations can be defined here
   };
-  return User;
+  return Users;
 };

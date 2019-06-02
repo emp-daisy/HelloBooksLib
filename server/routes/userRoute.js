@@ -1,8 +1,12 @@
 import express from 'express';
-import userController from '../controllers/userController';
+import UserController from '../controllers/userController';
 
 const userRoute = express.Router();
 
-userRoute.post('/signup', userController.signUp, userController.socialSignin);
+userRoute.post('/signup', UserController.signUp);
+
+userRoute.get('/verifyEmail', 
+				UserController.verifyEmailLink);
+
 
 export default userRoute;

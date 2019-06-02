@@ -37,7 +37,7 @@ describe('User tests', () => {
         .send(users[0])
         .end((err, res) => {
           expect(res.statusCode).toEqual(201);
-          expect(res.body.message).toEqual('User added successfully');
+          expect(res.body.message).toEqual('User Created successfully');
           expect(res.body.status).toEqual(201);
           expect(res.body.data).toHaveProperty('token');
           expect(res.body.data).toHaveProperty('id');

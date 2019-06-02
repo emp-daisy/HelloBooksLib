@@ -11,7 +11,7 @@ class Utilities {
   * @memberof Utilities
   */
 
-  static errorstatus(res, statusCode, errorMessage) {
+  static errorStatus(res, statusCode, errorMessage) {
     return res.status(statusCode).json({
       status: statusCode,
       error: errorMessage,

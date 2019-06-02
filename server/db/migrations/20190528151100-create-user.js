@@ -41,6 +41,10 @@ export function up(queryInterface, Sequelize) {
     profilePic: {
       type: Sequelize.STRING,
       allowNull: true
+    },
+    email_confirm_code: {
+      type: Sequelize.STRING,
+      allowNull: true
     }
   });
 }
