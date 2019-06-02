@@ -111,5 +111,6 @@ Array [
   "firstName",
   "lastName",
   "email",
+  "signupMethod",
 ]
 `;
