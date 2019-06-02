@@ -24,19 +24,19 @@ const UserController = {
             const token = auth.generateToken(user);
             
             try {
-                const USER = await models.Users.create(user);
+                const User = await models.Users.create(user);
                 const verificationLink = 'https://sampleverification.com';
-                Mailer.sendWelcomeMail(user.email, user.firstName, verificationLink);
+                Mailer.sendWelcomeMail(User.email, User.firstName, verificationLink);
                 const data = {
                     token,
-                    id: USER.id,
-                    firstName: USER.firstName,
-                    lastName: USER.lastName,
-                    email: USER.email
+                    id: User.id,
+                    firstName: User.firstName,
+                    lastName: User.lastName,
+                    email: User.email
                 }
                 return util.successStatus(res, 201, 'User added successfully', data)
             } catch(err){
-                return util.errorStatus(res, 500, 'Intername error');
+                return util.errorStatus(res, 500, 'Internal error');
             }
     }
     
