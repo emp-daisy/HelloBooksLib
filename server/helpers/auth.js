@@ -17,18 +17,9 @@ const Helper = {
   },
 
   generateToken(payload) {
-    const token = jwt.sign(
-      payload, secret, { expiresIn: 86400 },
-    );
+    const token = jwt.sign(payload, secret, { expiresIn: 86400 });
     return token;
-  },
-
-  verifyToken(token) {
-    const decodeToken = jwt.verify(token, secret);
-    return decodeToken;
-  },
-
+  }
 };
-
 
 export default Helper;

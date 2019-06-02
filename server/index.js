@@ -10,6 +10,7 @@ config();
 
 const app = express();
 const log = debug('dev');
+
 const port = process.env.PORT || 3000;
 
 app.use(cors());
@@ -19,9 +20,13 @@ app.use(morgan('dev'));
 
 app.use('/api/v1/', routes);
 
-app.all('*', (req, res) => res.status(404).json({ error: 'Sorry, the requested endpoint does not exist on our server' }));
+app.all('*', (req, res) =>
+  res.status(404).json({
+    error: 'Sorry, the requested endpoint does not exist on our server'
+  })
+);
 
-app.listen(port, () => log(`Server is running on PORT ${port}`));
-
-
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(port, () => log(`Server is running on PORT ${port}`));
+}
 export default app;
