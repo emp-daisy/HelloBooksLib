@@ -54,17 +54,26 @@ Array [
 ]
 `;
 
+exports[`User tests test for email signin Should not sign in an unkown user 1`] = `
+Object {
+  "error": "Incorrect Login information",
+  "status": 401,
+}
+`;
+
 exports[`User tests test for email signin Should not sign in user with incorrect password 1`] = `
 Object {
-  "error": "Incorrect password!",
+  "error": "Incorrect Login information",
   "status": 401,
 }
 `;
 
 exports[`User tests test for email signin Should not sign in user with wrong email 1`] = `
 Object {
-  "error": "User not found!",
-  "status": 404,
+  "error": Array [
+    "Email is not valid: Please input a valid email address",
+  ],
+  "status": 400,
 }
 `;
 

@@ -10,7 +10,12 @@ const mockUser = {
   },
 
   wrongEmail: {
-    email: 'wrongEmail@wrong.com',
+    email: 'wrongEmail@com',
+    password: 'password'
+  },
+
+  unknownUser: {
+    email: 'unknown_person@gmail.com',
     password: 'password'
   },
 

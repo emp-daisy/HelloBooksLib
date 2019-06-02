@@ -194,9 +194,22 @@ describe('User tests', () => {
         .post(`${url}/auth/signin`)
         .send(mockUser.wrongEmail)
         .end((err, res) => {
-          expect(res.statusCode).toEqual(404);
+          expect(res.statusCode).toEqual(400);
           expect(res.body).toHaveProperty('error');
-          expect(res.body.error).toEqual('User not found!');
+          expect(res.body.error[0]).toEqual('Email is not valid: Please input a valid email address');          
+          done();
+          expect(res.body).toMatchSnapshot();
+        });
+    });
+
+    it('Should not sign in an unkown user', async done => {
+      server()
+        .post(`${url}/auth/signin`)
+        .send(mockUser.unknownUser)
+        .end((err, res) => {
+          expect(res.statusCode).toEqual(401);
+          expect(res.body).toHaveProperty('error');
+          expect(res.body.error).toEqual('Incorrect Login information');          
           done();
           expect(res.body).toMatchSnapshot();
         });
@@ -209,7 +222,7 @@ describe('User tests', () => {
         .end((err, res) => {
           expect(res.statusCode).toEqual(401);
           expect(res.body).toHaveProperty('error');
-          expect(res.body.error).toEqual('Incorrect password!');
+          expect(res.body.error).toEqual('Incorrect Login information');
           done();
           expect(res.body).toMatchSnapshot();
         });
