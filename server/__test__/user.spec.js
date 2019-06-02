@@ -157,7 +157,7 @@ describe('User tests', () => {
   });
 
   describe('test for email signin', () => {
-    it('Should reigister a user when all required input is supplied', async done => {
+    it('Should sign in a user with complete form data', async done => {
       server()
         .post(`${url}/auth/signin`)
         .send(mockUsers.completeLoginData)
@@ -180,7 +180,7 @@ describe('User tests', () => {
         .post(`${url}/auth/signin`)
         .send(mockUsers.incompleteLoginData)
         .end((err, res) => {
-          expect(res.statusCode).toEqual(409);
+          expect(res.statusCode).toEqual(400);
           expect(res.body).toHaveProperty('error');
           expect(res.body.error[0]).toEqual('Email should not be left empty: Please input email address');
           expect(res.body.error[1]).toEqual('Password should not be empty: Please input password');
