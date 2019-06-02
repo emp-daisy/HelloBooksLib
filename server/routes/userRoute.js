@@ -8,7 +8,6 @@ userRoute.post('/signup', userController.signUp);
 
 userRoute.post('/signin', Validate.signin, userController.emailSignin);
 
-userRoute.get('/verifyEmail', 
-				UserController.verifyEmailLink);
+userRoute.get('/verifyEmail', userController.verifyEmailLink);
 
 export default userRoute;
