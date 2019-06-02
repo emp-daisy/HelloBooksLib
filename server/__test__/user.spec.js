@@ -4,7 +4,7 @@ import sinon from 'sinon';
 import passport from 'passport';
 import app from '../index';
 import users from './mock_data/user';
-import mockUsers from './mock_data/mock_users';
+import mockUser from './mock_data/mock_users';
 import { migrateModels, migrateSeeders } from '../db/migrate';
 
 const log = debug('dev');
@@ -157,14 +157,14 @@ describe('User tests', () => {
   });
 
   describe('test for email signin', () => {
-    it('Should reigister a user when all required input is supplied', async done => {
+    it('Should sign in a user with complete form data', async done => {
       server()
         .post(`${url}/auth/signin`)
-        .send(mockUsers.completeLoginData)
+        .send(mockUser.completeLoginData)
         .end((err, res) => {
-          expect(res.statusCode).toEqual(201);
-          expect(res.body.message).toEqual('Login successful!');
-          expect(res.body.status).toEqual(201);
+          expect(res.statusCode).toEqual(200);
+          expect(res.body.message).toEqual('Login successful');
+          expect(res.body.status).toEqual(200);
           expect(res.body.data).toHaveProperty('token');
           expect(res.body.data).toHaveProperty('id');
           expect(res.body.data).toHaveProperty('firstName');
@@ -178,9 +178,9 @@ describe('User tests', () => {
     it('Should not sign in with incomplete form data', async done => {
       server()
         .post(`${url}/auth/signin`)
-        .send(mockUsers.incompleteLoginData)
+        .send(mockUser.incompleteLoginData)
         .end((err, res) => {
-          expect(res.statusCode).toEqual(409);
+          expect(res.statusCode).toEqual(400);
           expect(res.body).toHaveProperty('error');
           expect(res.body.error[0]).toEqual('Email should not be left empty: Please input email address');
           expect(res.body.error[1]).toEqual('Password should not be empty: Please input password');
@@ -192,11 +192,24 @@ describe('User tests', () => {
     it('Should not sign in user with wrong email', async done => {
       server()
         .post(`${url}/auth/signin`)
-        .send(mockUsers.wrongEmail)
+        .send(mockUser.wrongEmail)
         .end((err, res) => {
-          expect(res.statusCode).toEqual(404);
+          expect(res.statusCode).toEqual(400);
           expect(res.body).toHaveProperty('error');
-          expect(res.body.error).toEqual('User not found!');
+          expect(res.body.error[0]).toEqual('Email is not valid: Please input a valid email address');          
+          done();
+          expect(res.body).toMatchSnapshot();
+        });
+    });
+
+    it('Should not sign in an unkown user', async done => {
+      server()
+        .post(`${url}/auth/signin`)
+        .send(mockUser.unknownUser)
+        .end((err, res) => {
+          expect(res.statusCode).toEqual(401);
+          expect(res.body).toHaveProperty('error');
+          expect(res.body.error).toEqual('Incorrect Login information');          
           done();
           expect(res.body).toMatchSnapshot();
         });
@@ -205,11 +218,11 @@ describe('User tests', () => {
     it('Should not sign in user with incorrect password', async done => {
       server()
         .post(`${url}/auth/signin`)
-        .send(mockUsers.incorrectPassword)
+        .send(mockUser.incorrectPassword)
         .end((err, res) => {
-          expect(res.statusCode).toEqual(403);
+          expect(res.statusCode).toEqual(401);
           expect(res.body).toHaveProperty('error');
-          expect(res.body.error).toEqual('Incorrect password!');
+          expect(res.body.error).toEqual('Incorrect Login information');
           done();
           expect(res.body).toMatchSnapshot();
         });

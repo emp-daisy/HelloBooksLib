@@ -1,4 +1,4 @@
-const mockUsers = {
+const mockUser = {
   completeLoginData: {
     email: 'testing1@example.com',
     password: 'password'
@@ -10,7 +10,12 @@ const mockUsers = {
   },
 
   wrongEmail: {
-    email: 'wrongEmail@wrong.com',
+    email: 'wrongEmail@com',
+    password: 'password'
+  },
+
+  unknownUser: {
+    email: 'unknown_person@gmail.com',
     password: 'password'
   },
 
@@ -20,4 +25,4 @@ const mockUsers = {
   },
 }
 
-export default mockUsers;
+export default mockUser;

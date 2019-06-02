@@ -87,41 +87,24 @@ class UserController {
     try {
       const { email, password } = req.body;
       const user = await models.Users.findOne({ where: { email } });
-      if (!user) {
-        return res.status(404).json({
-          status: res.statusCode,
-          error: 'User not found!',
-        });
-      }
-
+      if (!user) return util.errorstatus(res, 401, 'Incorrect Login information');
+     
       const result = await auth.comparePassword(password, user.password);
 
-      if (!result) {
-        return res.status(403).json({
-          status: res.statusCode,
-          error: 'Incorrect password!',
-        });
-      }
-
+      if (!result) return util.errorstatus(res, 401, 'Incorrect Login information');
+ 
       const token = auth.generateToken(user.dataValues);
 
-      return res.status(201).send({
-        status: res.statusCode,
-        message: 'Login successful!',
-        data: {
-          token,
-          id: user.id,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          email: user.email,
-        },
+      return util.successStatus(res, 200, 'Login successful', {
+        token,
+        id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
       });
 
-    } catch (err) {
-      return res.status(500).json({
-        status: res.statusCode,
-        error: err.message
-      });
+    } catch (error) {
+      util.errorstatus(res, 500, 'Internal server Error');;
     }
   }
 }
