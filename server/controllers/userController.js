@@ -4,6 +4,8 @@ import sequelize from 'sequelize';
 import models from '../db/models';
 import auth from '../helpers/auth';
 import util from '../helpers/utilities';
+import mailer from '../helpers/mailer';
+import Auth from '../app/helpers/auth';
 
 const { Op } = sequelize;
 
@@ -14,31 +16,41 @@ class UserController {
         where: { email: req.body.email }
       });
       if (foundUser) {
-        return util.errorstatus(res, 409, 'email address exist already');
+        return util.errorStatus(res, 409, 'email address exist already');
       }
 
       const hashPassword = auth.hashPassword(req.body.password);
+      const mailToken = Auth.generateMailToken({
+        firstName: req.body.firstName, 
+        email: req.body.email,
+        password: req.body.hashPassword
+      });
 
       const user = {
         firstName: req.body.firstName,
         lastName: req.body.lastName,
         email: req.body.email,
         password: hashPassword,
+        email_confirm_code: mailToken,
         signupMethod: 'local'
       };
-
       const token = auth.generateToken(user);
-
+    
       const createdUser = await models.Users.create(user);
-      return util.successStatus(res, 201, 'User added successfully', {
+      const link = `https://helobooks-staging.herokuapp.com/api/v1/auth/verifyEmail?token=${mailToken}`
+
+      mailer.sendWelcomeMail(user.email, user.firstName, link);
+
+      return util.successStatus(res, 201, 'User Created successfully', {
         token,
         id: createdUser.id,
         firstName: createdUser.firstName,
         lastName: createdUser.lastName,
-        email: createdUser.email
+        email: createdUser.email,
+        signupMethod: 'local'
       });
     } catch (error) {
-      util.errorstatus(res, 500, error);
+      util.errorStatus(res, 500, error);
     }
   }
 
@@ -81,6 +93,30 @@ class UserController {
       email: user.email,
       signupMethod: user.signupMethod
     });
+  }
+
+
+  static async verifyEmailLink(req, res) {
+     try {
+    const { mailToken } = req.query;
+    const payload = Auth.verifyMailToken(mailToken);
+
+    if(!payload) {
+      return util.errorStatus(res, 400, 'Invalid Verification Link');
+
+    }
+      const { email } = payload;
+   
+      const updatedUserEmail = await models.Users.update(
+      {email_confirm_code: null}, {where : {email}});
+
+      //this should redirect the user to a page. but for test sakes, I will return a response.
+      return util.successStatus(res, 200, 'Email verified successfully', updatedUserEmail)
+
+    } catch(err) {
+      return util.errorStatus(res, 500, err.message)
+    }
+
   }
 }
 

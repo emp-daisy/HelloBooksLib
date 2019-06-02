@@ -27,6 +27,7 @@ app.all('*', (req, res) =>
 );
 
 if (process.env.NODE_ENV !== 'test') {
-  app.listen(port, () => log(`Server is running on PORT ${port}`));
+  //app.listen(port, () => log(`Server is running on PORT ${port}`));
+  app.listen(port, console.log(`App running on PORT ${port}`))
 }
 export default app;

@@ -1,5 +1,5 @@
-import jwt from 'jsonwebtoken'
-import { config } from 'dotenv'
+import jwt from 'jsonwebtoken';
+import { config } from 'dotenv';
 
 config();
 
@@ -11,9 +11,10 @@ class Auth {
 	}
 	static verifyMailToken(token) {
 		try {
-			return jwt.verify(token, secretKey)
+			const payload = jwt.verify(token, secretKey);
+			return payload;
 		} catch(err) {
-			return {Error: `${err}`}
+			throw err
 		}
 	}
 }

@@ -40,7 +40,7 @@ class Mailer {
    * @returns {Object} - Mailer response
    */
   static async sendWelcomeMail(email, firstName, link) {
-    const senderEmail = 'hellobooks-team@hellobooks.com'
+    const senderEmail = process.env.SERVER_MAIL;
     const linkStyle = `
       display:inline-block;
       padding:5px 10px; 
@@ -65,7 +65,7 @@ class Mailer {
             >Verify Email
           </a>
         </div>
-        <p>Thanks, <br>The Hello Books Team</p>
+        <p>Thanks, <br />The Hello Books Team</p>
       </div>
     `;
     try {

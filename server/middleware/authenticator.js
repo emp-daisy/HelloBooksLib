@@ -8,7 +8,7 @@ class Authenticate {
   static authToken(req, res, next) {
     passport.authenticate('jwt', (err, user, info) => {
       if (info || err || !user) {
-        return util.errorstatus(res, 401, 'Unauthorized');
+        return util.errorStatus(res, 401, 'Unauthorized');
       }
       req.user = user.dataValues;
       next();
@@ -18,7 +18,7 @@ class Authenticate {
   static googleLogin(req, res, next) {
     passport.authenticate('googleLogin', (err, user, info) => {
       if (info || err || !user) {
-        return util.errorstatus(res, 401, 'Unauthorized');
+        return util.errorStatus(res, 401, 'Unauthorized');
       }
       req.userProfile = user;
       next();
@@ -28,7 +28,7 @@ class Authenticate {
   static facebookLogin(req, res, next) {
     passport.authenticate('facebookLogin', (err, user, info) => {
       if (info || err || !user) {
-        return util.errorstatus(res, 401, 'Unauthorized');
+        return util.errorStatus(res, 401, 'Unauthorized');
       }
       req.userProfile = user;
       next();
