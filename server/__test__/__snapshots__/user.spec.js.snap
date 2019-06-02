@@ -24,6 +24,16 @@ Array [
 ]
 `;
 
+exports[`User tests Signin with social media should signin a new user from facebook 2`] = `
+Array [
+  "token",
+  "firstName",
+  "lastName",
+  "email",
+  "signupMethod",
+]
+`;
+
 exports[`User tests Signin with social media should signin a new user from google 1`] = `
 Array [
   "token",
@@ -76,6 +86,16 @@ Object {
   ],
   "status": 400,
 }
+`;
+
+exports[`User tests test for email signin Should sign in a user with complete form data 1`] = `
+Array [
+  "token",
+  "id",
+  "firstName",
+  "lastName",
+  "email",
+]
 `;
 
 exports[`User tests test for email signin Should sign in a user with complete form data 1`] = `
