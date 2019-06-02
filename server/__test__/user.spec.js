@@ -162,9 +162,9 @@ describe('User tests', () => {
         .post(`${url}/auth/signin`)
         .send(mockUsers.completeLoginData)
         .end((err, res) => {
-          expect(res.statusCode).toEqual(201);
+          expect(res.statusCode).toEqual(200);
           expect(res.body.message).toEqual('Login successful!');
-          expect(res.body.status).toEqual(201);
+          expect(res.body.status).toEqual(200);
           expect(res.body.data).toHaveProperty('token');
           expect(res.body.data).toHaveProperty('id');
           expect(res.body.data).toHaveProperty('firstName');

@@ -105,7 +105,7 @@ class UserController {
 
       const token = auth.generateToken(user.dataValues);
 
-      return res.status(201).send({
+      return res.status(200).send({
         status: res.statusCode,
         message: 'Login successful!',
         data: {
