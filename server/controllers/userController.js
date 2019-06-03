@@ -43,6 +43,7 @@ class UserController {
         mailToken
       });
     } catch (error) {
+      console.log(error);
       util.errorStatus(res, 500, error.name);
     }
   }

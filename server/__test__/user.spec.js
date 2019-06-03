@@ -33,6 +33,25 @@ describe('User tests', () => {
         });
     });
 
+    it('Should throw an error if the input is unsupported', async (done) => {
+      server()
+      .post(`${url}/auth/signup`)
+      .send({
+        firstName: '',
+        lastName: '',
+        email: 'testin.com',
+        password: '',
+      })
+      .end((err, res) => {
+        expect(res.statusCode).toEqual(400);
+        expect(res.body.error[0]).toEqual('First Name should not be left empty: Please input firstName');
+        expect(res.body.error[1]).toEqual('Last name should not be left empty: Please input lastName');
+        expect(res.body.error[2]).toEqual('Email is not valid: Please input a valid email address');
+        expect(res.body.error[3]).toEqual('Password should not be empty: Please input password');
+        done();
+      });
+    });
+
     it('Should not register a new user if the user already exists', async done => {
       server()
         .post(`${url}/auth/signup`)
