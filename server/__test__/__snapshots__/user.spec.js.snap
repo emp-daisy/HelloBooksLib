@@ -1,5 +1,12 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`User tests Password reset tests Should not initiate password reset process if email does not exist on our platform 1`] = `
+Object {
+  "error": "The email you entered did not match our records. Please double-check and try again.",
+  "status": 401,
+}
+`;
+
 exports[`User tests Signin with social media should not signin with facebook without an access_token 1`] = `
 Object {
   "error": "Unauthorized",
@@ -56,7 +63,7 @@ Array [
 
 exports[`User tests test for user signup Should not register a new user if the user already exists 1`] = `
 Object {
-  "error": "email address exist already",
+  "error": "email address exists already",
   "status": 409,
 }
 `;

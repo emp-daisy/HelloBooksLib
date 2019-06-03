@@ -7,7 +7,7 @@
     "start": "node build/index.js",
     "test": "cross-env DEBUG=dev jest --forceExit --verbose --maxWorkers=1 --coverage",
     "coverage": "jest --forceExit --coverage && cat ./coverage/lcov.info | coveralls",
-    "dev": "cross-env DEBUG=dev && nodemon --exec babel-node server/index.js",
+    "dev": "cross-env DEBUG=dev nodemon --exec babel-node server/index.js",
     "clean": "rm -rf build && mkdir build",
     "build-server": "babel -d ./build ./server",
     "Migrate": "babel-node server/db/migrate.js",
