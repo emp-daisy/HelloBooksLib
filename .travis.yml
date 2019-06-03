@@ -9,6 +9,8 @@ addons:
   postgresql: "9.6"
 before_script:
   - psql -c 'create database travis_ci_test;' -U postgres
+  - npm run migrate
+  - npm run seed
 after_script:
   - after-build --exit-code $TRAVIS_TEST_RESULT
 after_success:
