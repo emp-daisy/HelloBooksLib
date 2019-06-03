@@ -63,9 +63,9 @@ typings/
 # build  folder
 build
 
-# idea files from webstorm IDE
-.idea/
+# idea folder from IDE
 .idea
+.vscode
 
-## snapshots
-/_snapshots_
+## snapshots folder
+__snapshots__
