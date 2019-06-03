@@ -1,10 +1,11 @@
-language: node_js
+language: 
+  node_js
 node_js:
   - '10.13.0'
 cache:
   directories:
     - 'node_modules'
-after_script:
-  - after-build --exit-code $TRAVIS_TEST_RESULT
+before_script:
+  - npm run migrate:undo && npm run migrate
 after_success:
-  - 'npm run coverage'
+  - npm run coverage
