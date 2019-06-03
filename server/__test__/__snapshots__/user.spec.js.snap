@@ -111,7 +111,7 @@ Object {
 }
 `;
 
-exports[`User tests test for user signup Should reigister a user when all required input is supplied 1`] = `
+exports[`User tests test for user signup Should register a user when all required input is supplied 1`] = `
 Array [
   "token",
   "id",

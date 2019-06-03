@@ -13,7 +13,7 @@ const url = '/api/v1';
 
 describe('User tests', () => {
   describe('test for user signup', () => {
-    it('Should reigister a user when all required input is supplied', async done => {
+    it('Should register a user when all required input is supplied', async done => {
       server()
         .post(`${url}/auth/signup`)
         .send(users[0])
