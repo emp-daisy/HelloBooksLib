@@ -56,7 +56,7 @@ describe('User tests', () => {
         .end((err, res) => {
           expect(res.statusCode).toEqual(409);
           expect(res.body).toHaveProperty('error');
-          expect(res.body.error).toEqual('email address exist already');
+          expect(res.body.error).toEqual('email address exists already');
           done();
           expect(res.body).toMatchSnapshot();
         });
@@ -154,4 +154,32 @@ describe('User tests', () => {
         });
     });
   });
+
+  describe('Password reset tests', () => {
+    it('Should successfully initiate password reset process if the email exists on our platform', async done => {
+      server()
+        .post(`${url}/auth/passwordreset`)
+        .send({ email: 'john.doe@test.com' })
+        .end((err, res) => {
+          expect(res.statusCode).toEqual(200);
+          expect(res.body.message).toEqual('A password reset link has been sent to your email');
+          expect(res.body.status).toEqual(200);
+          done();
+        });
+    });
+
+    it('Should not initiate password reset process if email does not exist on our platform', async done => {
+      server()
+        .post(`${url}/auth/passwordreset`)
+        .send({ email: 'jane.doe@test.com' })
+        .end((err, res) => {
+          expect(res.statusCode).toEqual(401);
+          expect(res.body).toHaveProperty('error');
+          expect(res.body.error).toEqual('The email you entered did not match our records. Please double-check and try again.');
+          done();
+          expect(res.body).toMatchSnapshot();
+        });
+    });
+  });
 });
+

@@ -1,43 +1,35 @@
 /* eslint-disable require-jsdoc */
-/* eslint-disable class-methods-use-this */
 import sequelize from 'sequelize';
+import jwt from 'jsonwebtoken';
 import models from '../db/models';
 import auth from '../helpers/auth';
 import util from '../helpers/utilities';
 import mailer from '../helpers/mailer';
-import Auth from '../app/helpers/auth';
 
 const { Op } = sequelize;
 
 class UserController {
   static async signUp(req, res) {
+    const { firstName, lastName, email, password } = req.body;
     try {
-      const foundUser = await models.Users.findOne({
-        where: { email: req.body.email }
-      });
-      if (foundUser) {
-        return util.errorStatus(res, 409, 'email address exist already');
-      }
+      const foundUser = await models.Users.findOne({ where: { email } });
 
-      const hashPassword = auth.hashPassword(req.body.password);
-      const mailToken = Auth.generateMailToken({
-        firstName: req.body.firstName, 
-        email: req.body.email,
-        password: req.body.hashPassword
-      });
+      if (foundUser) return util.errorStatus(res, 409, 'email address exists already');
 
+      const hashPassword = auth.hashPassword(password);
+      const mailToken = auth.generateMailToken({ firstName, email });
       const user = {
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
-        email: req.body.email,
+        firstName,
+        lastName,
+        email,
         password: hashPassword,
         email_confirm_code: mailToken,
         signupMethod: 'local'
       };
-      const token = auth.generateToken(user);
-    
+
       const createdUser = await models.Users.create(user);
-      const link = `https://helobooks.herokuapp.com/api/v1/auth/verifyEmail?token=${mailToken}`
+      const token = auth.generateToken({ id: createdUser.id, firstName, lastName, email });
+      const link = `https://helobooks.herokuapp.com/api/v1/auth/verifyEmail?token=${mailToken}`;
 
       mailer.sendWelcomeMail(user.email, user.firstName, link);
 
@@ -50,7 +42,7 @@ class UserController {
         signupMethod: 'local'
       });
     } catch (error) {
-      util.errorStatus(res, 500, error);
+      util.errorStatus(res, 500, error.name);
     }
   }
 
@@ -82,7 +74,7 @@ class UserController {
         user = await models.Users.create(newUser);
       }
     } catch (error) {
-      util.errorstatus(res, 500, 'Internal server Error');
+      util.errorStatus(res, 500, 'Internal server Error');
     }
     const token = auth.generateToken({ id: user.id });
 
@@ -95,28 +87,77 @@ class UserController {
     });
   }
 
-
   static async verifyEmailLink(req, res) {
-     try {
-    const { mailToken } = req.query;
-    const payload = Auth.verifyMailToken(mailToken);
+    try {
+      const { token } = req.query;
+      const payload = auth.verifyMailToken(token);
 
-    if(!payload) {
-      return util.errorStatus(res, 400, 'Invalid Verification Link');
+      if (!payload) return util.errorStatus(res, 400, 'Invalid Verification Link');
 
-    }
       const { email } = payload;
-   
-      const updatedUserEmail = await models.Users.update(
-      {email_confirm_code: null}, {where : {email}});
 
-      //this should redirect the user to a page. but for test sakes, I will return a response.
-      return util.successStatus(res, 200, 'Email verified successfully', updatedUserEmail)
+      models.Users.update({ email_confirm_code: null },{ where: { email } });
 
-    } catch(err) {
-      return util.errorStatus(res, 500, err.message)
+      // this should redirect the user to a page. but for test sakes, I will return a response.
+      return util.successStatus(res, 200, 'Email verified successfully');
+    } catch (err) {
+      return util.errorStatus(res, 500, err.message);
     }
+  }
 
+  static async initiateReset(req, res) {
+    const { email } = req.body;
+    const user = await models.Users.findOne({ where: { email } });
+    if (!user) {
+      return util.errorStatus(
+        res,
+        401,
+        'The email you entered did not match our records. Please double-check and try again.'
+      );
+    }
+    const payload = { id: user.id, email };
+    const secret = user.password;
+    const token = auth.getOneTimeToken(payload, secret);
+    const link = `https://helobooks.herokuapp.com/api/v1/auth/passwordreset/${payload.id}/${token}`;
+
+    mailer.initiateResetMail(user.email, user.firstName, link);
+    return util.successStatus(
+      res,
+      200,
+      'A password reset link has been sent to your email'
+    );
+  }
+
+  static async verifyResetLink(req, res) {
+    const { id, token } = req.params;
+    const user = await models.Users.findByPk(id);
+    if (!user) return util.errorStatus(res, 401, 'Invalid password reset link');
+    jwt.verify(token, user.password, err => {
+      if (err) return util.errorStatus(res, 401, 'Invalid password reset link');
+    });
+
+    mailer.sendResetMail(user.email, id, token);
+    return util.successStatus(
+      res,
+      200,
+      'Kindly check your email to complete the reset process'
+    );
+  }
+
+  static async resetPassword(req, res) {
+    const { id, token, password } = req.body;
+    const user = await models.Users.findByPk(id);
+    if (!user) return util.errorStatus(res, 401, 'Invalid password reset link');
+
+    jwt.verify(token, user.password, err => {
+      if (err) return util.errorStatus(res, 401, 'Invalid password reset link');
+    });
+
+    models.Users.update(
+      { password: auth.hashPassword(password) },
+      { where: { id } }
+    );
+    return util.successStatus(res, 200, 'Password reset successfully');
   }
 }
 
