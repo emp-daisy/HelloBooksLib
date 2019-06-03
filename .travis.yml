@@ -11,7 +11,7 @@ env:
 services:
   - postgresql
 before_script:
-  - psql -c 'create database hello_books_test;' -U postgres
+  - psql -c 'create database travis_ci_test;' -U postgres
   - npm run migrate
   - npm run seed
 after_script:
