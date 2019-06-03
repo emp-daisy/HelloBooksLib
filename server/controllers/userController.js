@@ -42,6 +42,7 @@ class UserController {
         signupMethod: 'local'
       });
     } catch (error) {
+      console.log(error);
       util.errorStatus(res, 500, error.name);
     }
   }
