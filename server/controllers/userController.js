@@ -46,6 +46,31 @@ class UserController {
     }
   }
 
+  static async emailSignin(req, res) {
+    try {
+      const { email, password } = req.body;
+      const user = await models.Users.findOne({ where: { email } });
+      if (!user) return util.errorStatus(res, 401, 'Incorrect Login information');
+     
+      const result = await auth.comparePassword(password, user.password);
+
+      if (!result) return util.errorStatus(res, 401, 'Incorrect Login information');
+ 
+      const token = auth.generateToken(user.dataValues);
+
+      return util.successStatus(res, 200, 'Login successful', {
+        token,
+        id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+      });
+
+    } catch (error) {
+      util.errorStatus(res, 500, 'Internal server Error');;
+    }
+  }
+  
   static async socialSignin(req, res) {
     let user;
     try {
