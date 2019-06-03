@@ -1,11 +1,15 @@
 language: 
   node_js
 node_js:
-  - '10.13.0'
+  - "10.13.0"
 cache:
   directories:
-    - 'node_modules'
+    - "node_modules"
+addons:
+  postgresql: "9.6"
 before_script:
-  - npm run migrate:undo && npm run migrate
+  - psql -c 'create database travis_ci_test;' -U postgres
+after_script:
+  - after-build --exit-code $TRAVIS_TEST_RESULT
 after_success:
   - npm run coverage
