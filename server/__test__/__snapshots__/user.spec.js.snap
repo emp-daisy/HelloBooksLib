@@ -119,5 +119,20 @@ Array [
   "lastName",
   "email",
   "signupMethod",
+  "mailToken",
 ]
+`;
+
+exports[`test for verifying email Should fail if token is invalid 1`] = `
+Object {
+  "error": "jwt malformed",
+  "status": 500,
+}
+`;
+
+exports[`test for verifying email Should send a 200 response if user email is valid 1`] = `
+Object {
+  "message": "Email verified successfully",
+  "status": 200,
+}
 `;
