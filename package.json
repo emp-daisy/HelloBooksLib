@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node build/index.js",
+    "pretest": "npm run migrate:undo && npm run migrate && npm run seed",
     "test": "cross-env DEBUG=dev jest --forceExit --verbose --maxWorkers=1 --coverage",
     "coverage": "jest --forceExit --coverage && cat ./coverage/lcov.info | coveralls",
     "dev": "cross-env DEBUG=dev nodemon --exec babel-node server/index.js",

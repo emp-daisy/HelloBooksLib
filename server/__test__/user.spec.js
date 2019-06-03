@@ -12,25 +12,6 @@ const server = () => supertest(app);
 const url = '/api/v1';
 
 describe('User tests', () => {
-  beforeAll(async () => {
-    try {
-      await migrateModels.up();
-      await migrateSeeders.up();
-      log('data successfully seeded');
-    } catch (error) {
-      log(error);
-    }
-  });
-
-  afterAll(async () => {
-    try {
-      await migrateSeeders.down();
-      log('data successfully deleted');
-    } catch (error) {
-      log(error);
-    }
-  });
-
   describe('test for user signup', () => {
     it('Should reigister a user when all required input is supplied', async done => {
       server()
