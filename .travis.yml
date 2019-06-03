@@ -5,10 +5,13 @@ node_js:
 cache:
   directories:
     - "node_modules"
-addons:
-  postgresql: "9.6"
+env:
+ global:
+   - export NODE_ENV=test
+services:
+  - postgresql
 before_script:
-  - psql -c 'create database travis_ci_test;' -U postgres
+  - psql -c 'create database hello_books_test;' -U postgres
   - npm run migrate
   - npm run seed
 after_script:
