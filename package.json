@@ -5,13 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node build/index.js",
-<<<<<<< HEAD
     "pretest": "cross-env NODE_ENV=test npm run migrate:undo && cross-env NODE_ENV=test npm run migrate && cross-env NODE_ENV=test npm run seed",
-    "test": "cross-env DEBUG=dev jest --forceExit --verbose --maxWorkers=1 --coverage",
-=======
-    "pretest": "npm run migrate:undo && npm run migrate && npm run seed",
     "test": "cross-env DEBUG=dev jest --updateSnapshot --forceExit --verbose --maxWorkers=1 --coverage",
->>>>>>> 3395de6e5a306be417fd8b3be2bbf028d39d27ec
     "coverage": "npm run pretest && jest --forceExit --coverage && cat ./coverage/lcov.info | coveralls",
     "dev": "cross-env DEBUG=dev nodemon --exec babel-node server/index.js",
     "clean": "rm -rf build && mkdir build",

@@ -68,5 +68,5 @@ build
 .vscode
 
 ## snapshots folder
-_snapshots_
+__snapshots__
 
