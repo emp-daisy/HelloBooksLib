@@ -5,16 +5,6 @@ import util from '../helpers/utilities';
 import passportconfig from '../helpers/passport';
 
 class Authenticate {
-  static authToken(req, res, next) {
-    passport.authenticate('jwt', (err, user, info) => {
-      if (info || err || !user) {
-        return util.errorStatus(res, 401, 'Unauthorized');
-      }
-      req.user = user.dataValues;
-      next();
-    })(req, res, next);
-  }
-
   static googleLogin(req, res, next) {
     passport.authenticate('googleLogin', (err, user, info) => {
       if (info || err || !user) {
