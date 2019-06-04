@@ -11,6 +11,9 @@ const log = debug('dev');
 const server = () => supertest(app);
 const url = '/api/v1';
 let token;
+const passwordToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJqb2huLmRvZUB0ZXN0LmNvbSIsImlhdCI6MTU1OTY2MTgwMn0.d_2-msW7YeZ0RtzHhe_7-b3QBmy0IuCJUAeey6SwPhY';
+const wrongPasswordToken = 'eyJhbGciOi.eyJpZCI6MSwiZW1haWwiOiJ.rAb7aZJip36siJGnU';
+
 
 describe('User tests', () => {
   describe('test for user signup', () => {
@@ -183,6 +186,81 @@ describe('User tests', () => {
           expect(res.body).toMatchSnapshot();
         });
     });
+
+    it('Should verify valid user with a valid password token',  async done => {
+      server()
+      .get(`${url}/auth/passwordreset/1/${passwordToken}`)
+      .end((err, res) => {
+        expect(res.statusCode).toEqual(200);
+        expect(res.body).toHaveProperty('message');
+        expect(res.body.message).toEqual('Kindly check your email to complete the reset process');
+        done();
+        expect(res.body).toMatchSnapshot();
+      });
+    });
+
+    it('Should not verify for an invalid user id',  async done => {
+      server()
+      .get(`${url}/auth/passwordreset/5676671/${passwordToken}`)
+      .end((err, res) => {
+        expect(res.statusCode).toEqual(401);
+        expect(res.body).toHaveProperty('error');
+        expect(res.body.error).toEqual('Invalid password reset link'); 
+        done();
+        expect(res.body).toMatchSnapshot();
+      });
+    });
+
+    it('Should not verify for an invalid password token',  async done => {
+      server()
+      .get(`${url}/auth/passwordreset/1/${wrongPasswordToken}`)
+      .end((err, res) => {
+        expect(res.statusCode).toEqual(401);
+        expect(res.body).toHaveProperty('error');
+        expect(res.body.error).toEqual('Invalid password reset link'); 
+        done();
+        expect(res.body).toMatchSnapshot();
+      });
+    });
+
+    it('Should reset the password for valid user with valid password token',  async done => {
+      server()
+      .post(`${url}/auth/resetpassword`)
+      .send({id: 1, token: passwordToken, password: 'password'})
+      .end((err, res) => {
+        expect(res.statusCode).toEqual(200);
+        expect(res.body).toHaveProperty('message');
+        expect(res.body.message).toEqual('Password reset successfully');
+        done();
+        expect(res.body).toMatchSnapshot();
+      });
+    });
+
+    it('Should not reset password for invalid user',  async done => {
+      server()
+      .post(`${url}/auth/resetpassword`)
+      .send({id: 5000484, token: passwordToken, password: 'password'})
+      .end((err, res) => {
+        expect(res.statusCode).toEqual(401);
+        expect(res.body).toHaveProperty('error');
+        expect(res.body.error).toEqual('Invalid password reset link');
+        done();
+        expect(res.body).toMatchSnapshot();
+      });
+    });
+
+    it('Should not reset password for user with invalid token',  async done => {
+      server()
+      .post(`${url}/auth/resetpassword`)
+      .send({id: 1, token: wrongPasswordToken, password: 'password'})
+      .end((err, res) => {
+        expect(res.statusCode).toEqual(401);
+        expect(res.body).toHaveProperty('error');
+        expect(res.body.error).toEqual('Invalid password reset link');
+        done();
+        expect(res.body).toMatchSnapshot();
+      });
+    });
   });
 
   describe('test for email signin', () => {
@@ -282,4 +360,3 @@ describe('test for verifying email', () => {
     })
   });
 })
-

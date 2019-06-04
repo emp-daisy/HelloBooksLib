@@ -158,9 +158,12 @@ class UserController {
     const { id, token } = req.params;
     const user = await models.Users.findByPk(id);
     if (!user) return util.errorStatus(res, 401, 'Invalid password reset link');
-    jwt.verify(token, user.password, err => {
-      if (err) return util.errorStatus(res, 401, 'Invalid password reset link');
+    
+    const errorChecker = jwt.verify(token, user.password, err => {
+      if (err) return true;
+      return false;
     });
+    if (errorChecker) return util.errorStatus(res, 401, 'Invalid password reset link');
 
     mailer.sendResetMail(user.email, id, token);
     return util.successStatus(
@@ -175,9 +178,11 @@ class UserController {
     const user = await models.Users.findByPk(id);
     if (!user) return util.errorStatus(res, 401, 'Invalid password reset link');
 
-    jwt.verify(token, user.password, err => {
-      if (err) return util.errorStatus(res, 401, 'Invalid password reset link');
+    const errorChecker = jwt.verify(token, user.password, err => {
+      if (err) return true;
+      return false;
     });
+    if (errorChecker) return util.errorStatus(res, 401, 'Invalid password reset link');
 
     models.Users.update(
       { password: auth.hashPassword(password) },

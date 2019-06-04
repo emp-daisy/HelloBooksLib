@@ -29,4 +29,14 @@ describe('Welcome to helo books', () => {
         expect(res.body).toMatchSnapshot();
       });
   });
+
+  it('Should redirect to /api/v1', done => {
+    server()
+      .get(`/`)
+      .end((err, res) => {
+        expect(res.statusCode).toEqual(302);
+        done();
+        expect(res.body).toMatchSnapshot();
+      });
+  });
 });
