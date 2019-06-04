@@ -10,33 +10,16 @@ import { migrateModels, migrateSeeders } from '../db/migrate';
 const log = debug('dev');
 const server = () => supertest(app);
 const url = '/api/v1';
+let token;
 
 describe('User tests', () => {
-  beforeAll(async () => {
-    try {
-      await migrateModels.up();
-      await migrateSeeders.up();
-      log('data successfully seeded');
-    } catch (error) {
-      log(error);
-    }
-  });
-
-  afterAll(async () => {
-    try {
-      await migrateSeeders.down();
-      log('data successfully deleted');
-    } catch (error) {
-      log(error);
-    }
-  });
-
   describe('test for user signup', () => {
-    it('Should reigister a user when all required input is supplied', async done => {
+    it('Should register a user when all required input is supplied', async done => {
       server()
         .post(`${url}/auth/signup`)
         .send(users[0])
         .end((err, res) => {
+          token = res.body.data.mailToken;
           expect(res.statusCode).toEqual(201);
           expect(res.body.message).toEqual('User Created successfully');
           expect(res.body.status).toEqual(201);
@@ -256,4 +239,28 @@ describe('User tests', () => {
     });
   });
 });
+
+describe('test for verifying email', () => {
+  it('Should send a 200 response if user email is valid',  async done => {
+    server()
+    .get(`${url}/auth/verifyEmail?token=${token}`)
+    .end((err, res) => {
+      expect(res.statusCode).toEqual(200);
+      expect(res.body).toHaveProperty('message');
+      expect(res.body.message).toEqual('Email verified successfully');
+      done();
+      expect(res.body).toMatchSnapshot();
+    })
+  });
+  it('Should fail if token is invalid', async done => {
+     server()
+    .get(`${url}/auth/verifyEmail?token=jkjidsjijesnjnudsufjfjewjisdjijsdfnjsifjisdfjsidjfisdjfi`)
+    .end((err, res) => {
+      expect(res.statusCode).toEqual(500);
+      expect(res.body).toHaveProperty('error');
+      done();
+      expect(res.body).toMatchSnapshot();
+    })
+  });
+})
 
