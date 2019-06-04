@@ -1,7 +1,7 @@
 const mockUser = {
   completeLoginData: {
     email: 'testing1@example.com',
-    password: 'password'
+    password: 'PassWord123..'
   },
 
   incompleteLoginData: {
@@ -11,12 +11,12 @@ const mockUser = {
 
   wrongEmail: {
     email: 'wrongEmail@com',
-    password: 'password'
+    password: 'PassWord123..'
   },
 
   unknownUser: {
     email: 'unknown_person@gmail.com',
-    password: 'password'
+    password: 'PassWord123..'
   },
 
   incorrectPassword: {

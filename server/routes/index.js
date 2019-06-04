@@ -7,7 +7,6 @@ import socialRouter from './socialRoute';
 const router = express();
 
 const swaggerApiDoc = yaml.load(`${__dirname}/../docs/hellobooks_api_doc.yaml`);
-
 router.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerApiDoc));
 
 router.get('/', (req, res) => {
