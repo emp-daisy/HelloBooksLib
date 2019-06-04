@@ -8,6 +8,8 @@ const log = debug('dev');
 
 sendgridMail.setApiKey(process.env.SENDGRID_API_KEY);
 
+const url = process.env.APP_URL;
+
 /**
  * Mailer Class
  */
@@ -153,7 +155,7 @@ class Mailer {
       <div style="width: 480px; margin: auto;">
         <h1>Password Reset Form</h1>
         <p>Enter a new password</p>
-        <form action='https://helobooks.herokuapp.com/api/v1/auth/resetpassword' method='POST'>
+        <form action='${url}/auth/resetpassword' method='POST'>
           <input type='hidden' name='id' value='${id}' />
           <input type='hidden' name='token' value='${token}' />
           <input style='${inputStyle}' type='password' name='password' value='' placeholder='Enter your new password...'/>
