@@ -39,7 +39,8 @@ class UserController {
         firstName: createdUser.firstName,
         lastName: createdUser.lastName,
         email: createdUser.email,
-        signupMethod: 'local'
+        signupMethod: 'local',
+        mailToken
       });
     } catch (error) {
       util.errorStatus(res, 500, error.name);
