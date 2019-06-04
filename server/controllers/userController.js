@@ -1,12 +1,16 @@
 /* eslint-disable require-jsdoc */
 import sequelize from 'sequelize';
 import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
 import models from '../db/models';
 import auth from '../helpers/auth';
 import util from '../helpers/utilities';
 import mailer from '../helpers/mailer';
 
 const { Op } = sequelize;
+
+dotenv.config();
+const url = process.env.APP_URL;
 
 class UserController {
   static async signUp(req, res) {
@@ -29,7 +33,7 @@ class UserController {
 
       const createdUser = await models.Users.create(user);
       const token = auth.generateToken({ id: createdUser.id, firstName, lastName, email });
-      const link = `https://helobooks.herokuapp.com/api/v1/auth/verifyEmail?token=${mailToken}`;
+      const link = `${url}/auth/verifyEmail?token=${mailToken}`;
 
       mailer.sendWelcomeMail(user.email, user.firstName, link);
 
@@ -145,7 +149,7 @@ class UserController {
     const payload = { id: user.id, email };
     const secret = user.password;
     const token = auth.getOneTimeToken(payload, secret);
-    const link = `https://helobooks.herokuapp.com/api/v1/auth/passwordreset/${payload.id}/${token}`;
+    const link = `${url}/auth/passwordreset/${payload.id}/${token}`;
 
     mailer.initiateResetMail(user.email, user.firstName, link);
     return util.successStatus(
