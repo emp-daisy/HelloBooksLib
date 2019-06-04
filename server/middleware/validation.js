@@ -54,7 +54,7 @@ const validate = {
       .isEmpty({ ignore_whitespace: true })
       .withMessage('Password should not be empty: Please input password') 
       .matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]/, "i")
-      .withMessage('Password must contain at least one uppercase letter and one lowercase letter')
+      .withMessage('Password must contain at least one uppercase letter, one lowercase letter and one numeric digit')
       .trim()
       .isLength({ min: 8 })
       .withMessage('Password Length should be at least 8 Characters'),

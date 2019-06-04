@@ -52,12 +52,13 @@ class UserController {
       const { email, password } = req.body;
       const user = await models.Users.findOne({ where: { email } });
       if (!user) return util.errorStatus(res, 401, 'Incorrect Login information');
-     
+
       const result = await auth.comparePassword(password, user.password);
 
       if (!result) return util.errorStatus(res, 401, 'Incorrect Login information');
- 
-      const token = auth.generateToken(user.dataValues);
+
+      const {id, firstName, lastName, email: emailAddress} = user.dataValues;
+      const token = auth.generateToken({ id, firstName, lastName, email: emailAddress });
 
       return util.successStatus(res, 200, 'Login successful', {
         token,
@@ -71,7 +72,7 @@ class UserController {
       util.errorStatus(res, 500, 'Internal server Error');;
     }
   }
-  
+
   static async socialSignin(req, res) {
     let user;
     try {
@@ -158,7 +159,7 @@ class UserController {
     const { id, token } = req.params;
     const user = await models.Users.findByPk(id);
     if (!user) return util.errorStatus(res, 401, 'Invalid password reset link');
-    
+
     const errorChecker = jwt.verify(token, user.password, err => {
       if (err) return true;
       return false;
