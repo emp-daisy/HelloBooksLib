@@ -4,7 +4,7 @@ import Validate from '../middleware/validation';
 
 const userRoute = express.Router();
 
-userRoute.post('/signup', Validate.signup, UserController.signUp);
+userRoute.post('/signup', Validate.signup, UserController.signUp); 
 userRoute.post('/signin', Validate.signin, UserController.emailSignin);
 userRoute.get('/verifyEmail', UserController.verifyEmailLink);
 userRoute.post('/passwordreset', UserController.initiateReset);
