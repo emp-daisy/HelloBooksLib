@@ -33,7 +33,7 @@ class UserController {
 
       const createdUser = await models.Users.create(user);
       const token = auth.generateToken({ id: createdUser.id, firstName, lastName, email });
-      const link = `https://helobooks.herokuapp.com/api/v1/auth/verifyEmail?token=${mailToken}`;
+      const link = `${url}/auth/verifyEmail?token=${mailToken}`;
 
       mailer.sendWelcomeMail(user.email, user.firstName, link);
 
