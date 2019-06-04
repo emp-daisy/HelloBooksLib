@@ -13,10 +13,7 @@ const validate = {
     check('password')
       .not()
       .isEmpty({ ignore_whitespace: true })
-      .withMessage('Password should not be empty: Please input password')
-      .trim()
-      .isLength({ min: 7 })
-      .withMessage('Password Length should be at least 8 Characters'),
+      .withMessage('Password should not be empty: Please input password'),
       
     (req, res, next) => {
       const errors = validationResult(req);
