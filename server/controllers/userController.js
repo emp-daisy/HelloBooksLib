@@ -33,8 +33,7 @@ class UserController {
 
       const createdUser = await models.Users.create(user);
       const token = auth.generateToken({ id: createdUser.id, firstName, lastName, email });
-      const link = `${url}/auth/verifyEmail?token=${mailToken}`;
-
+      const link = `${url}/auth/verifyemail?token=${mailToken}&id=${createdUser.id}`;
       mailer.sendWelcomeMail(user.email, user.firstName, link);
 
       return util.successStatus(res, 201, 'User Created successfully', {
@@ -120,15 +119,15 @@ class UserController {
 
   static async verifyEmailLink(req, res) {
     try {
-      const { token } = req.query;
-      const payload = auth.verifyMailToken(token);
-
-      if (!payload) return util.errorStatus(res, 400, 'Invalid Verification Link');
-
-      const { email } = payload;
-
+      const { token, id } = req.query;
+      const user = await models.Users.findByPk(id);
+      if(!user) return util.errorStatus(res, 401, 'Not authorized');
+      const { email_confirm_code, email } = user;
+      
+      if(email_confirm_code !== token) {
+          return util.errorStatus(res, 401, 'Invalid verification link');
+      }
       models.Users.update({ email_confirm_code: null },{ where: { email } });
-
       // this should redirect the user to a page. but for test sakes, I will return a response.
       return util.successStatus(res, 200, 'Email verified successfully');
     } catch (err) {

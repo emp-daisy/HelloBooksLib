@@ -11,6 +11,7 @@ const log = debug('dev');
 const server = () => supertest(app);
 const url = '/api/v1';
 let token;
+let id;
 const passwordToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJqb2huLmRvZUB0ZXN0LmNvbSIsImlhdCI6MTU1OTY2MTgwMn0.d_2-msW7YeZ0RtzHhe_7-b3QBmy0IuCJUAeey6SwPhY';
 const wrongPasswordToken = 'eyJhbGciOi.eyJpZCI6MSwiZW1haWwiOiJ.rAb7aZJip36siJGnU';
 
@@ -23,6 +24,7 @@ describe('User tests', () => {
         .send(users[0])
         .end((err, res) => {
           token = res.body.data.mailToken;
+          id = res.body.data.id;
           expect(res.statusCode).toEqual(201);
           expect(res.body.message).toEqual('User Created successfully');
           expect(res.body.status).toEqual(201);
@@ -338,9 +340,9 @@ describe('User tests', () => {
 });
 
 describe('test for verifying email', () => {
-  it('Should send a 200 response if user email is valid',  async done => {
+  it('Should send a 200 response if user token and id is valid',  async done => {
     server()
-    .get(`${url}/auth/verifyEmail?token=${token}`)
+    .get(`${url}/auth/verifyemail?token=${token}&id=${id}`)
     .end((err, res) => {
       expect(res.statusCode).toEqual(200);
       expect(res.body).toHaveProperty('message');
@@ -349,12 +351,24 @@ describe('test for verifying email', () => {
       expect(res.body).toMatchSnapshot();
     })
   });
-  it('Should fail if token is invalid', async done => {
+  it('Should fail if token doesn\'t match the user email_confirm_code token', async done => {
      server()
-    .get(`${url}/auth/verifyEmail?token=jkjidsjijesnjnudsufjfjewjisdjijsdfnjsifjisdfjsidjfisdjfi`)
+    .get(`${url}/auth/verifyemail?token=${token.substring(2, 30)}&id=${id}`)
     .end((err, res) => {
-      expect(res.statusCode).toEqual(500);
+      expect(res.statusCode).toEqual(401);
       expect(res.body).toHaveProperty('error');
+      expect(res.body.error).toEqual('Invalid verification link');
+      done();
+      expect(res.body).toMatchSnapshot();
+    })
+  });
+   it('Should fail if user id is invalid', async done => {
+     server()
+    .get(`${url}/auth/verifyemail?token=${token}&id=${994444}`)
+    .end((err, res) => {
+      expect(res.statusCode).toEqual(401);
+      expect(res.body).toHaveProperty('error');
+      expect(res.body.error).toEqual('Not authorized');
       done();
       expect(res.body).toMatchSnapshot();
     })
