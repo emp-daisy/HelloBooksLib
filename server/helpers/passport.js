@@ -10,11 +10,12 @@ dotenv.config();
 const jwtStrategy = passportjwt.Strategy;
 const { ExtractJwt } = passportjwt;
 
-const JWT_SECRET = process.env.SECRET_KEY;
-const GOOGLE_CLIENT = process.env.google_client;
-const GOOGLE_SECRET = process.env.google_secret;
-const FACEBOOK_CLIENT = process.env.facebook_client;
-const FACEBOOK_SECRET = process.env.facebook_secret;
+const {
+  SECRET_KEY: JWT_SECRET,
+  GOOGLE_CLIENT,
+  GOOGLE_SECRET,
+  FACEBOOK_CLIENT,
+  FACEBOOK_SECRET } = process.env;
 
 const usestrategy = async (method, profile, done) => {
   try {
