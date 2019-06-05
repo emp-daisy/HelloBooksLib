@@ -1,5 +1,5 @@
-module.exports = {
-  up: (queryInterface, Sequelize) => {
+/* eslint-disable require-jsdoc */
+export function up(queryInterface, Sequelize) {
     return queryInterface.createTable('Authors', {
       id: {
         allowNull: false,
@@ -8,6 +8,10 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       firstName: {
+        type: Sequelize.STRING
+      },
+      middleName: {
+        allowNull: true,
         type: Sequelize.STRING
       },
       lastName: {
@@ -22,8 +26,8 @@ module.exports = {
         type: Sequelize.DATE
       }
     });
-  },
-  down: (queryInterface) => {
+  }
+
+  export function down(queryInterface) {
     return queryInterface.dropTable('Authors');
   }
-};

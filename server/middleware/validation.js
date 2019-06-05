@@ -80,6 +80,15 @@ const validate = {
       .isAlpha()
       .trim()
       .withMessage('first Name can only contain letters: Please remove invalid characters'),
+    check('middleName')
+      .custom((param) => {
+        if(param){
+          if(!param.match(/^[A-Za-z]+$/)) {
+            throw new Error('Middle Name name can ony contain letters: remove invalid characters');
+          }
+        }
+        return true;
+      }),
     check('lastName')
       .not()
       .isEmpty({ ignore_whitespace: true })

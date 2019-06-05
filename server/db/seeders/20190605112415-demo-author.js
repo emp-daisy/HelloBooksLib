@@ -1,19 +1,21 @@
+/* eslint-disable require-jsdoc */
 const date = new Date();
-module.exports = {
-  up: (queryInterface) => {
-    return queryInterface.bulkInsert(
-      'Authors', 
-      [
-        {
-          firstName: 'Robert',
-          lastName: 'Kiyosaki',
-          createdAt: date,
-          updatedAt: date
-        }
-      ], {});
-  },
-
-  down: (queryInterface) => {
-    return queryInterface.bulkDelete('Authors', null, {});
-  }
+export function up(queryInterface) {
+  return queryInterface.bulkInsert(
+    'Authors', 
+    [
+      {
+        firstName: 'Robert',
+        middleName: 'Toru',
+        lastName: 'Kiyosaki',
+        createdAt: date,
+        updatedAt: date
+      }
+    ], {});
 };
+
+export function down(queryInterface) {
+  return queryInterface.bulkDelete('Authors', null, {});
+}
+
+
