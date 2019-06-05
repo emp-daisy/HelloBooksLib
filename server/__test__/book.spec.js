@@ -12,7 +12,7 @@ describe('Books tests', () => {
   describe('test for add books', () => {
     it('Should add a new book when all required input is supplied', async (done) => {
       server()
-        .post(`${url}/book`)
+        .post(`${url}/books`)
         .send(mockBook.completeBookData)
         .end((err, res) => {
           expect(res.statusCode).toEqual(201);
@@ -29,7 +29,7 @@ describe('Books tests', () => {
     });
     it('Should throw an error when inputs are not supplied', async (done) => {
       server()
-        .post(`${url}/book`)
+        .post(`${url}/books`)
         .send(mockBook.emptyBookData)
         .end((err, res) => {
           expect(res.statusCode).toEqual(400);
@@ -43,7 +43,7 @@ describe('Books tests', () => {
     });
     it('Should throw an error when inputs are not supported', async (done) => {
       server()
-        .post(`${url}/book`)
+        .post(`${url}/books`)
         .send(mockBook.unsupportedBookData)
         .end((err, res) => {
           expect(res.statusCode).toEqual(400);
