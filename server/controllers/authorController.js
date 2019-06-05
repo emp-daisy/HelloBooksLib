@@ -20,18 +20,6 @@ class AuthorController {
       util.errorStatus(res, 500, error.name);
     }
   }
-  
-  static async fetchAllAuthors(req, res) {
-    try {
-      const authors = await models.Authors.findAll();
-      return util.successStatus(res, 200, 'data fetched', {
-        authors,
-      });
-
-    } catch (error) {
-      util.errorStatus(res, 500, error.name);
-    }
-  }
 }
 
 
