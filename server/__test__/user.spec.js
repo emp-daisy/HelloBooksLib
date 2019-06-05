@@ -415,4 +415,80 @@ describe('test for verifying email', () => {
       expect(res.body).toMatchSnapshot();
     })
   });
+
+  describe('test super admin role assigning', () => {
+    it('Should pass and return 200 response if role was successfully assigned', async done => {
+      server()
+      .post(`${url}/auth/assignrole?id=${2}`)
+      .send({email: 'john.doe@test.com', role: 'admin'})
+      .end((err, res) => {
+        expect(res.statusCode).toEqual(200);
+        expect(res.body).toHaveProperty('message');
+        expect(res.body.message).toEqual('Role Assigned successfully');
+        done();
+        expect(res.body).toMatchSnapshot();
+      })
+    });
+    it('Should fail and return 401 response if user id is not found in db', async done => {
+      server()
+      .post(`${url}/auth/assignrole?id=${678}`)
+      .send({email: 'john.doe@test.com', role: 'admin'})
+      .end((err, res) => {
+        expect(res.statusCode).toEqual(401);
+        expect(res.body).toHaveProperty('error');
+         expect(res.body.error).toEqual('Not Authorized');
+        done();
+        expect(res.body).toMatchSnapshot();
+      })
+    });
+    it('Should fail and return 404 response if user email is not found', async done => {
+      server()
+      .post(`${url}/auth/assignrole?id=${2}`)
+      .send({email: 'jane.doe@test.com', role: 'admin'})
+      .end((err, res) => {
+        expect(res.statusCode).toEqual(404);
+        expect(res.body).toHaveProperty('error');
+         expect(res.body.error).toEqual('User does not exists');
+        done();
+        expect(res.body).toMatchSnapshot();
+      })
+    });
+     it('Should fail and return 401 response if there is no id in the query', async done => {
+      server()
+      .post(`${url}/auth/assignrole`)
+      .send({email: 'john.doe@test.com', role: 'admin'})
+      .end((err, res) => {
+        console.log(res.body)
+        expect(res.statusCode).toEqual(401);
+        expect(res.body).toHaveProperty('error');
+        expect(res.body.error).toEqual('Not Authorized');
+        done();
+        expect(res.body).toMatchSnapshot();
+      })
+    });
+    it('Should fail and return 400 response if email is missing from request body ', async done => {
+      server()
+      .post(`${url}/auth/assignrole?id=${2}`)
+      .send({email: '', role: 'admin'})
+      .end((err, res) => {
+        expect(res.statusCode).toEqual(400);
+        expect(res.body).toHaveProperty('error');
+        done();
+        expect(res.body).toMatchSnapshot();
+      })
+    });
+    it('Should fail and return 400 response if role is missing from request body ', async done => {
+      server()
+      .post(`${url}/auth/assignrole?id=${2}`)
+      .send({email: 'john.doe@test.com', role: ''})
+      .end((err, res) => {
+        console.log(res.body)
+        console.log(res.body)
+        expect(res.statusCode).toEqual(400);
+        expect(res.body).toHaveProperty('error');
+        done();
+        expect(res.body).toMatchSnapshot();
+      })
+    });
+  })
 })

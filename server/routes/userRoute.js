@@ -10,5 +10,6 @@ userRoute.get('/verifyemail', UserController.verifyEmailLink);
 userRoute.post('/passwordreset', UserController.initiateReset);
 userRoute.get('/passwordreset/:id/:token', UserController.verifyResetLink);
 userRoute.post('/resetpassword', Validate.resetPassword, UserController.resetPassword);
+userRoute.post('/assignrole', Validate.assignrole, UserController.assignUserRole);
 
 export default userRoute;

@@ -28,6 +28,7 @@ class UserController {
         email,
         password: hashPassword,
         email_confirm_code: mailToken,
+        role: 'user',
         signupMethod: 'local'
       };
 
@@ -99,6 +100,7 @@ class UserController {
           email: userProfile.emails[0].value,
           firstName: userProfile.name.familyName,
           lastName: userProfile.name.givenName,
+          role: 'user',
           profilePic: userProfile.photos[0].value
         };
         user = await models.Users.create(newUser);
@@ -205,6 +207,39 @@ class UserController {
       { where: { id } }
     );
     return util.successStatus(res, 200, 'Password reset successfully');
+  }
+  static async assignUserRole(req, res) {
+    const { id } = req.user ? req.user : req.query;
+    const { email, role } = req.body;
+    if( !id ) { return util.errorStatus(res, 401, 'Not Authorized'); }
+    try {
+        const superAdmin = await models.Users.findByPk(id);
+        if(!superAdmin) { return util.errorStatus(res, 401, 'Not Authorized'); }
+        const user = await models.Users.findOne({where: {email}});
+        if(!user) { return util.errorStatus(res, 404, 'User does not exists'); }
+        models.Users.update({ role }, {where: { email } });
+        return util.successStatus(res, 200, 'Role Assigned successfully', {
+          assignedBy: superAdmin.firstName,
+          id: user.id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email:  user.email
+        })
+    } catch(err) {
+        return util.errorStatus(res, 500, err.message);
+    }
+  }
+
+  static async checkUserRole(req, res, next) {
+    const { id } = req.user ? req.user : req.query;
+    if(!id) return util.errorStatus(res, 401, 'Not Authorized');
+      const user = await models.Users.findByPk(id);
+    if(!user) return util.errorStatus(res, 401, 'Not authorized');
+    if(user['role'] !== 'admin'){
+      return util.errorStatus(res, 401, 'Not authorized');
+    } else {
+        next();
+     }
   }
 }
 
