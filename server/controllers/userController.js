@@ -214,7 +214,7 @@ class UserController {
     if( !id ) { return util.errorStatus(res, 401, 'Not Authorized'); }
     try {
         const superAdmin = await models.Users.findByPk(id);
-        if(!superAdmin) { return util.errorStatus(res, 401, 'Not Authorized'); }
+        if(!superAdmin || superAdmin.role !== 'super_admin') { return util.errorStatus(res, 401, 'Not Authorized'); }
         const user = await models.Users.findOne({where: {email}});
         if(!user) { return util.errorStatus(res, 404, 'User does not exists'); }
         models.Users.update({ role }, {where: { email } });
