@@ -17,8 +17,7 @@ externalDocs:
 
 servers:
 - url: /api/v1
-- url: localhost:6000/api/v1/ # Heroku deployment (staging)
-
+- url: https://hello-books-lib-staging.herokuapp.com/api/v1/ # Heroku deployment (staging)
 tags:
 - name: Users
   description: Operations available for user endpoints
