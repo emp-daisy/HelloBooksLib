@@ -7,7 +7,9 @@ import auth from '../helpers/auth';
 import util from '../helpers/utilities';
 import mailer from '../helpers/mailer';
 
+
 const { Op } = sequelize;
+const url = process.env.APP_URL;
 
 dotenv.config();
 const url = process.env.APP_URL;
@@ -117,11 +119,29 @@ class UserController {
     });
   }
 
-  static async verifyEmailLink(req, res) {
+  static async verifyEmailLink(req, res, next) {
     try {
       const { token, id } = req.query;
+      const errArr = [];
+      let errMessage;
+        if(!token) {
+            errArr.push('token');
+           }
+        if(!id){
+            errArr.push('id');
+           }
+        if(errArr.length > 0) {
+            if(errArr.length < 2) {
+              errMessage = errArr.join('');
+              return util.errorStatus(res, 401, `${errMessage} must be defined`);
+             } else {
+              errMessage = errArr.join(' and ');
+              return util.errorStatus(res, 401, `${errMessage} must be defined`);
+             }
+          }
+
       const user = await models.Users.findByPk(id);
-      if(!user) return util.errorStatus(res, 401, 'Not authorized');
+      if(!user) return util.errorStatus(res, 401, 'Invalid verification link');
       const { email_confirm_code, email } = user;
       
       if(email_confirm_code !== token) {
