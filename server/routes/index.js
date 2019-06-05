@@ -5,6 +5,7 @@ import path from 'path';
 import userRouter from './userRoute';
 import socialRouter from './socialRoute';
 import authorRouter from './authorRoute';
+import bookRouter from './bookRoute';
 
 const router = express();
 const swaggerApiDoc = yaml.load(`${__dirname}/../docs/hellobooks_api_doc.yaml`);
@@ -20,5 +21,6 @@ router.get('/', (req, res) => {
 router.use('/auth', userRouter);
 router.use('/oauth', socialRouter);
 router.use('/authors', authorRouter);
+router.use('/books', bookRouter);
 
 export default router;

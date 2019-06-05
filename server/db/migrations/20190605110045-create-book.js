@@ -21,7 +21,11 @@ export function up(queryInterface, Sequelize) {
       type: Sequelize.NUMERIC
     },
     authorID: {
+<<<<<<< HEAD
       allowNull: true,
+=======
+      allowNull: false,
+>>>>>>> feat(addBook): user can add books
       type: Sequelize.INTEGER
     },
     reviewID: {

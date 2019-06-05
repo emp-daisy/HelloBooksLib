@@ -72,7 +72,7 @@ class UserController {
       });
 
     } catch (error) {
-      util.errorStatus(res, 500, 'Internal server Error');;
+      util.errorStatus(res, 500, 'Internal server Error');
     }
   }
 
