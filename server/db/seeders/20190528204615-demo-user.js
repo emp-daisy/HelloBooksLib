@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable require-jsdoc */
 import { config } from 'dotenv';
+
 config();
 export function up(queryInterface, Sequelize) {
   return queryInterface.bulkInsert(
