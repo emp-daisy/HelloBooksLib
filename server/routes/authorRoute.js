@@ -6,4 +6,6 @@ const authorRoute = express.Router();
 
 authorRoute.post('/', Validate.newAuthor, AuthorController.addAuthor); 
 
+authorRoute.get('/', AuthorController.fetchAllAuthors); 
+
 export default authorRoute;

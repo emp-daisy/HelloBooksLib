@@ -21,7 +21,7 @@ describe('Authors tests', () => {
         });
     });
 
-    it('Should add an author with incomplete form data', async done => {
+    it('Should not add an author with incomplete form data', async done => {
       server()
         .post(`${url}/authors`)
         .send(author.incompleteData)
@@ -35,7 +35,7 @@ describe('Authors tests', () => {
         });
     });
 
-    it('Should add an author with incomplete form data', async done => {
+    it('Should not post form with wrong inputs', async done => {
       server()
         .post(`${url}/authors`)
         .send(author.wrongInputType)
