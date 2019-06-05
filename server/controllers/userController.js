@@ -10,9 +10,7 @@ import mailer from '../helpers/mailer';
 
 const { Op } = sequelize;
 const url = process.env.APP_URL;
-
 dotenv.config();
-const url = process.env.APP_URL;
 
 class UserController {
   static async signUp(req, res) {
