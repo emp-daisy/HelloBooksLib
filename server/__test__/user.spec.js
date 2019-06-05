@@ -458,7 +458,6 @@ describe('test for verifying email', () => {
       .post(`${url}/auth/assignrole`)
       .send({email: 'john.doe@test.com', role: 'admin'})
       .end((err, res) => {
-        console.log(res.body)
         expect(res.statusCode).toEqual(401);
         expect(res.body).toHaveProperty('error');
         expect(res.body.error).toEqual('Not Authorized');
@@ -482,8 +481,6 @@ describe('test for verifying email', () => {
       .post(`${url}/auth/assignrole?id=${2}`)
       .send({email: 'john.doe@test.com', role: ''})
       .end((err, res) => {
-        console.log(res.body)
-        console.log(res.body)
         expect(res.statusCode).toEqual(400);
         expect(res.body).toHaveProperty('error');
         done();

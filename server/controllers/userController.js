@@ -230,17 +230,14 @@ class UserController {
     }
   }
 
-  static async checkUserRole(req, res, next) {
-    const { id } = req.user ? req.user : req.query;
-    if(!id) return util.errorStatus(res, 401, 'Not Authorized');
-      const user = await models.Users.findByPk(id);
-    if(!user) return util.errorStatus(res, 401, 'Not authorized');
-    if(user['role'] !== 'admin'){
-      return util.errorStatus(res, 401, 'Not authorized');
-    } else {
-        next();
-     }
-  }
+  // static async checkUserRole(req, res, next) {
+  //   const { id } = req.user ? req.user : req.query;
+  //   if(!id) return util.errorStatus(res, 401, 'Not Authorized');
+  //     const user = await models.Users.findByPk(id);
+  //   if(!user) return util.errorStatus(res, 401, 'Not authorized');
+  //   if(user.role !== 'admin') return util.errorStatus(res, 401, 'Not authorized');
+  //    next();
+  // }
 }
 
 export default UserController;
