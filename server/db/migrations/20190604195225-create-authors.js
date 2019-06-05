@@ -1,4 +1,4 @@
-'use strict';
+/* eslint-disable no-unused-vars */
 module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.createTable('Authors', {

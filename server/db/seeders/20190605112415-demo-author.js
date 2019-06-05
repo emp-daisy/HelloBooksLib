@@ -1,5 +1,4 @@
-'use strict';
-
+/* eslint-disable no-unused-vars */
 const date = new Date();
 module.exports = {
   up: (queryInterface, Sequelize) => {

@@ -1,4 +1,4 @@
-'use strict';
+/* eslint-disable no-unused-vars */
 module.exports = (sequelize, DataTypes) => {
   const Authors = sequelize.define('Authors', {
     firstName: DataTypes.STRING,
