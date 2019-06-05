@@ -1,9 +1,7 @@
-import debug from 'debug';
 import supertest from 'supertest';
 import app from '../index';
 import mockBook from './mock_data/mock_books';
 
-const log = debug('dev');
 const server = () => supertest(app);
 const url = '/api/v1';
 
