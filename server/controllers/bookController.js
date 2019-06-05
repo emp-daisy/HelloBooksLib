@@ -23,15 +23,7 @@ class BookController {
         year,
       });
 
-      return Utils.successStatus(res, 201, 'Book added successfully', {
-        id: book.id,
-        title: book.title,
-        description: book.description,
-        amount: book.amount,
-        year: book.year,
-        authorID: book.authorID,
-        status: book.status,
-      });
+      return Utils.successStatus(res, 201, 'Book added successfully', book);
     } catch (error) {
       Utils.errorStatus(res, 500, error.message);
     }

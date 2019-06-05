@@ -50,7 +50,6 @@ export function up(queryInterface, Sequelize) {
     }
   });
 }
-
 export function down(queryInterface) {
   return queryInterface.dropTable('Books');
 }
