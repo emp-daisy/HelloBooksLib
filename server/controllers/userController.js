@@ -117,7 +117,7 @@ class UserController {
     });
   }
 
-  static async verifyEmailLink(req, res, next) {
+  static async verifyEmailLink(req, res) {
     try {
       const { token, id } = req.query;
       const errArr = [];
@@ -132,10 +132,9 @@ class UserController {
             if(errArr.length < 2) {
               errMessage = errArr.join('');
               return util.errorStatus(res, 401, `${errMessage} must be defined`);
-             } else {
+             }
               errMessage = errArr.join(' and ');
               return util.errorStatus(res, 401, `${errMessage} must be defined`);
-             }
           }
 
       const user = await models.Users.findByPk(id);
