@@ -22,6 +22,4 @@ class AuthorController {
   }
 }
 
-
-
 export default AuthorController;
