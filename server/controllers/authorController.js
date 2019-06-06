@@ -12,14 +12,12 @@ class AuthorController {
         lastName
       });
 
-      const authorObj = {};
-      authorObj.authorId = author.id;
-      authorObj.firstName = author.firstName;
-      // Get middleName only when author has one
-      if(author.middleName.length >= 1) {
-        authorObj.middleName = author.middleName;
-      }      
-      authorObj.lastName = author.lastName;
+      const authorObj = {
+        authorId: author.id,
+        firstName: author.firstName,
+        middleName: author.middleName ? author.middleName : undefined,
+        lastName: author.lastName,
+      };
 
       return util.successStatus(res, 201, 'Author added successfully', authorObj);
     } catch (error) {
