@@ -91,7 +91,14 @@ const validate = {
       .isEmpty({ ignore_whitespace: true })
       .withMessage('AuthorID can not be left empty: Please input amount')
       .isInt()
-      .withMessage('AuthorID is not valid integer: Please input a valid authorID'),
+      .withMessage('AuthorID is not valid integer: Please input a valid authorID')
+      .custom( async (id) => {
+        const isExist = await util.checkAuthorID(id);
+        if (!isExist) {
+          throw new Error('No author with the specified ID was found')
+        }
+        return true;
+      }),
     check('year')
       .not()
       .isEmpty({ ignore_whitespace: true })
