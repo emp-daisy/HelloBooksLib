@@ -8,8 +8,6 @@ const log = debug('dev');
 
 sendgridMail.setApiKey(process.env.SENDGRID_API_KEY);
 
-const url = process.env.APP_URL;
-
 /**
  * Mailer Class
  */
@@ -115,53 +113,6 @@ class Mailer {
         Thanks,<br>
         The Hello Books Team
       </p>
-    `;
-    try {
-      await Mailer.sendMail(email, senderEmail, 'Password Reset', html);
-    }catch(err){
-      log(err.message)
-    }
-  }
-
-    /**
-   * Sends messages to recievers
-   * @param {String} email - Reciever email
-   * @param {String} id - Reciever firstname
-   * @param {String} token - Verification link
-   * @returns {Object} - Mailer response
-   */
-  static async sendResetMail(email, id, token) {
-    const senderEmail = process.env.SERVER_MAIL;
-    const buttonStyle = `
-      display:inline-block;
-      padding:5px 10px; 
-      border:1px solid #5d45e3; 
-      text-decoration: none; 
-      text-transform: uppercase; 
-      font-size: medium; 
-      color: white; 
-      background: #5d45e3; 
-      border-radius: 3px;
-    `;
-
-    const inputStyle = `
-      display:inline-block;
-      padding:5px 10px; 
-      border:1px solid #5d45e3; 
-      font-size: medium; 
-      border-radius: 3px;
-    `;
-    const html = `
-      <div style="width: 480px; margin: auto;">
-        <h1>Password Reset Form</h1>
-        <p>Enter a new password</p>
-        <form action='${url}/auth/resetpassword' method='POST'>
-          <input type='hidden' name='id' value='${id}' />
-          <input type='hidden' name='token' value='${token}' />
-          <input style='${inputStyle}' type='password' name='password' value='' placeholder='Enter your new password...'/>
-          <input style='${buttonStyle}' type='submit' value='Reset Password'/>
-        </form>
-      </div>
     `;
     try {
       await Mailer.sendMail(email, senderEmail, 'Password Reset', html);

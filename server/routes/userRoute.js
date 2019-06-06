@@ -8,6 +8,7 @@ userRoute.post('/signup', Validate.signup, UserController.signUp);
 userRoute.post('/signin', Validate.signin, UserController.emailSignin);
 userRoute.get('/verifyemail', UserController.verifyEmailLink);
 userRoute.post('/passwordreset', UserController.initiateReset);
+// userRoute.get('/passwordreset', (req, res) => res.render('initiateReset'));
 userRoute.get('/passwordreset/:id/:token', UserController.verifyResetLink);
 userRoute.post('/resetpassword', UserController.resetPassword);
 

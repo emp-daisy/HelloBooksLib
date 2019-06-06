@@ -1,12 +1,10 @@
 import supertest from 'supertest';
-import debug from 'debug';
 import sinon from 'sinon';
 import passport from 'passport';
 import app from '../index';
 import users from './mock_data/user';
 import mockUser from './mock_data/mock_users';
 
-const log = debug('dev');
 const server = () => supertest(app);
 const url = '/api/v1';
 let token;
@@ -193,8 +191,6 @@ describe('User tests', () => {
       .get(`${url}/auth/passwordreset/1/${passwordToken}`)
       .end((err, res) => {
         expect(res.statusCode).toEqual(200);
-        expect(res.body).toHaveProperty('message');
-        expect(res.body.message).toEqual('Kindly check your email to complete the reset process');
         done();
         expect(res.body).toMatchSnapshot();
       });

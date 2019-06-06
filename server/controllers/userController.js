@@ -185,13 +185,8 @@ class UserController {
       return false;
     });
     if (errorChecker) return util.errorStatus(res, 401, 'Invalid password reset link');
-
-    mailer.sendResetMail(user.email, id, token);
-    return util.successStatus(
-      res,
-      200,
-      'Kindly check your email to complete the reset process'
-    );
+    const link = `${url}/auth/resetpassword`
+    return res.render('reset_form', {id, token, link, name: user.firstName});
   }
 
   static async resetPassword(req, res) {
