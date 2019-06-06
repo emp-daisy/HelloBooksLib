@@ -70,7 +70,45 @@ const validate = {
         }
         return next();
     },
-]
+  ],
+
+  newAuthor : [
+    check('firstName')
+      .not()
+      .isEmpty({ ignore_whitespace: true })
+      .withMessage('First Name should not be left empty: Please input firstName')
+      .isAlpha()
+      .trim()
+      .withMessage('first Name can only contain letters: Please remove invalid characters'),
+    check('middleName')
+      .custom((param) => {
+        if(param){
+          if(!param.match(/^[A-Za-z]+$/)) {
+            throw new Error('Middle Name name can ony contain letters: remove invalid characters');
+          }
+        }
+        return true;
+      }),
+    check('lastName')
+      .not()
+      .isEmpty({ ignore_whitespace: true })
+      .withMessage('Last name should not be left empty: Please input lastName')
+      .isAlpha()
+      .trim()
+      .withMessage('Last name can ony contain letters: remove invalid characters'),
+      
+    (req, res, next) => {
+      const errors = validationResult(req);
+      const errMessages = [];
+      if (!errors.isEmpty()) {
+        errors.array({ onlyFirstError: true }).forEach((err) => {
+          errMessages.push(err.msg);
+        });
+        return util.errorStatus(res, 400, errMessages);
+      }
+      return next();
+    },
+  ],
 }
 
 export default validate;
