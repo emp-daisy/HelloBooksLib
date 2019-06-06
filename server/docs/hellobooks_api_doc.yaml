@@ -331,6 +331,32 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/errorResponse"
+    get:
+      tags:
+        - Authors
+      summary: List all the available Authors
+      description: A logged in user can get a list of the available Authors
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/successResponse"
+        403:
+          description: Authentication is required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        500:
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
 
 components:
   securitySchemes:
@@ -362,6 +388,8 @@ components:
           type: integer
           format: int64
         firstName:
+          type: string
+        middleName:
           type: string
         lastName:
           type: string
@@ -427,3 +455,5 @@ components:
           type: number
         message:
           type: string
+        data:
+          type: array
