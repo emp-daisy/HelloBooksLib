@@ -59,7 +59,7 @@ describe('Test list authors functionality', () => {
     server()
     .post(`${url}/auth/signin`)
     .send(mockUser.completeLoginData)
-    .end((loginErr, loginRes) => {       
+    .end((loginErr, loginRes) => {             
           token = `Bearer ${loginRes.body.data.token}`;
 
           server()
