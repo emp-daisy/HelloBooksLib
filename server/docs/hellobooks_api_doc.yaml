@@ -205,7 +205,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/errorResponse"
   
-  /book:
+  /books:
     post:
       tags:
         - Books
@@ -255,6 +255,37 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/errorResponse"
+    get:
+      tags:
+       - Books
+      summary: Query books in the library
+      description: Get book listing the the library with query page and limits
+      parameters:
+        - in: query
+          name: page
+          description: Page number for book listing
+          schema:
+            type: string
+        - in: query
+          name: limit
+          description: Set the number of result to get per page
+          schema:
+            type: string
+          # required: false
+      responses:
+        200:
+          description: Added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BookList"
+        500:
+          description: Added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+
 
   /authors:
     post:
@@ -334,22 +365,6 @@ components:
           type: string
         lastName:
           type: string
-
-    errorResponse:
-      type: object
-      properties:
-        status:
-          type: number
-        error:
-          type: string
-
-    successResponse:
-      type: object
-      properties:
-        status:
-          type: number
-        message:
-          type: string
     
     Book:
       type: object
@@ -369,6 +384,33 @@ components:
           type: integer
         status:
           type: boolean
+    
+    BookList:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: integer
+            format: int64
+          title:
+            type: string
+          description:
+            type: string
+          amount:
+            type: integer
+          year:
+            type: integer
+          authorID:
+            type: integer
+          status:
+            type: boolean
+          createdAt:
+            type: string
+            format: date
+          updatedAt:
+            type: string
+            format: date
 
     errorResponse:
       type: object

@@ -65,28 +65,38 @@ describe('Books tests', () => {
           done();
         });
     });
+    it('Should throw an error when authorID does not exist in the database', async (done) => {
+      server()
+        .post(`${url}/books`)
+        .send(mockBook.wrongAuthorIDBookData)
+        .end((err, res) => {
+          expect(res.statusCode).toEqual(400);
+          expect(res.body.status).toEqual(400);
+          expect(res.body.error[0]).toEqual('No author with the specified ID was found');
+          done();
+        });
+    });
   });
 });
 
 describe('GET Books tests', () => {
-  describe('Tests for listing all books', () => {
-    it('should get all books in the database', done => {
-      server()
-        .get(`${url}/books`)
-        .end((err, res) => {
-          const { data } = res.body;
-          const response = data[0];
-          expect(res.statusCode).toEqual(200);
-          expect(res.body.message).toEqual('success');
-          expect(res.body.status).toEqual(200);
-          expect(response).toHaveProperty('year');
-          expect(response).toHaveProperty('title');
-          expect(response).toHaveProperty('amount');
-          expect(response).toHaveProperty('status');
-          expect(response).toHaveProperty('description');
-          done();
-        });
-    });
+  it('should get all books in the database', done => {
+    server()
+      .get(`${url}/books`)
+      .end((err, res) => {
+        const { data } = res.body;
+        const response = data[0];
+        expect(res.statusCode).toEqual(200);
+        expect(res.body.message).toEqual('success');
+        expect(res.body.status).toEqual(200);
+        expect(response).toHaveProperty('year');
+        expect(response).toHaveProperty('title');
+        expect(response).toHaveProperty('amount');
+        expect(response).toHaveProperty('status');
+        expect(response).toHaveProperty('description');
+        done();
+      });
+  });
 
     it('should paginate book listing', done => {
       const page = 1;
@@ -125,16 +135,4 @@ describe('GET Books tests', () => {
           done();
         });
     });
-    it('Should throw an error when authorID does not exist in the database', async (done) => {
-      server()
-        .post(`${url}/books`)
-        .send(mockBook.wrongAuthorIDBookData)
-        .end((err, res) => {
-          expect(res.statusCode).toEqual(400);
-          expect(res.body.status).toEqual(400);
-          expect(res.body.error[0]).toEqual('No author with the specified ID was found');
-          done();
-        });
-    });
-  });
 });
