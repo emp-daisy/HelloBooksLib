@@ -208,16 +208,28 @@ class UserController {
     );
     return util.successStatus(res, 200, 'Password reset successfully');
   }
+
   static async assignUserRole(req, res) {
-    const { id } = req.user ? req.user : req.query;
+    let token  = req.headers.authorization ? req.headers.authorization : req.query.token;
     const { email, role } = req.body;
-    if( !id ) { return util.errorStatus(res, 401, 'Not Authorized'); }
+
+    if( !token ) return util.errorStatus(res, 401, 'Not Authorized');
+
+    token = token.startsWith('bearer ') ? token.slice(7, token.length) : token;
+
+    const payload = auth.verifyToken(token);
+    if(!payload) return util.errorStatus(res, 401, 'Not Authorized');
     try {
-        const superAdmin = await models.Users.findByPk(id);
-        if(!superAdmin || superAdmin.role !== 'super_admin') { return util.errorStatus(res, 401, 'Not Authorized'); }
+        const superAdmin = await models.Users.findOne({where: {email: payload.email}})
+
+        if(!superAdmin) return util.errorStatus(res, 401, 'Not Authorized');
+
         const user = await models.Users.findOne({where: {email}});
-        if(!user) { return util.errorStatus(res, 404, 'User does not exists'); }
+
+        if(!user) return util.errorStatus(res, 404, 'User does not exists');
+
         models.Users.update({ role }, {where: { email } });
+
         return util.successStatus(res, 200, 'Role Assigned successfully', {
           assignedBy: superAdmin.firstName,
           id: user.id,
@@ -229,15 +241,6 @@ class UserController {
         return util.errorStatus(res, 500, err.message);
     }
   }
-
-  // static async checkUserRole(req, res, next) {
-  //   const { id } = req.user ? req.user : req.query;
-  //   if(!id) return util.errorStatus(res, 401, 'Not Authorized');
-  //     const user = await models.Users.findByPk(id);
-  //   if(!user) return util.errorStatus(res, 401, 'Not authorized');
-  //   if(user.role !== 'admin') return util.errorStatus(res, 401, 'Not authorized');
-  //    next();
-  // }
 }
 
 export default UserController;

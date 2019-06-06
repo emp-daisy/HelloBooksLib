@@ -1,8 +1,10 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable require-jsdoc */
-import { config } from 'dotenv';
+import auth from '../.././helpers/auth';
 
-config();
+
+const password = auth.hashPassword('PassWord123..');
+
 export function up(queryInterface, Sequelize) {
   return queryInterface.bulkInsert(
     'Users',
@@ -18,10 +20,10 @@ export function up(queryInterface, Sequelize) {
         profilePic: null
       },
       {
-          firstName: process.env.SUPER_ADMIN_FIRSTNAME,
-          lastName: process.env.SUPER_ADMIN_LASTNAME,
-          email: process.env.SUPER_ADMIN_EMAIL,
-          password: process.env.SUPER_ADMIN_PASSWORD,
+          firstName: 'super',
+          lastName: 'admin',
+          email: 'super_admin@test.com',
+          password,
           signupMethod: 'local',
           role: 'super_admin',
           socialId: null,

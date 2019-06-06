@@ -8,6 +8,7 @@ import mockUser from './mock_data/mock_users';
 const server = () => supertest(app);
 const url = '/api/v1';
 let token;
+let superAdminToken;
 let userId;
 const passwordToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJqb2huLmRvZUB0ZXN0LmNvbSIsImlhdCI6MTU1OTY2MTgwMn0.d_2-msW7YeZ0RtzHhe_7-b3QBmy0IuCJUAeey6SwPhY';
 const wrongPasswordToken = 'eyJhbGciOi.eyJpZCI6MSwiZW1haWwiOiJ.rAb7aZJip36siJGnU';
@@ -417,11 +418,22 @@ describe('test for verifying email', () => {
   });
 
   describe('test super admin role assigning', () => {
+    beforeAll((done) => {
+      server()
+      .post(`${url}/auth/signin`)
+      .send({email: 'super_admin@test.com', password: 'PassWord123..'})
+      .end((err, res) => {
+        superAdminToken = res.body.data.token;
+        done();
+      })
+    });
     it('Should pass and return 200 response if role was successfully assigned', async done => {
       server()
-      .post(`${url}/auth/assignrole?id=${2}`)
+      .post(`${url}/auth/assignrole`)
+      .set('Authorization', `bearer ${superAdminToken}`)
       .send({email: 'john.doe@test.com', role: 'admin'})
       .end((err, res) => {
+        console.log(res.body)
         expect(res.statusCode).toEqual(200);
         expect(res.body).toHaveProperty('message');
         expect(res.body.message).toEqual('Role Assigned successfully');
@@ -429,11 +441,13 @@ describe('test for verifying email', () => {
         expect(res.body).toMatchSnapshot();
       })
     });
-    it('Should fail and return 401 response if user id is not found in db', async done => {
+    it('Should fail and return 401 response if user is not found in db', async done => {
       server()
-      .post(`${url}/auth/assignrole?id=${678}`)
+      .post(`${url}/auth/assignrole`)
+      .set('Authorization', 'bearer kjjodndsfj94mkfdsif0dfdsfmosj')
       .send({email: 'john.doe@test.com', role: 'admin'})
       .end((err, res) => {
+        console.log(res.body)
         expect(res.statusCode).toEqual(401);
         expect(res.body).toHaveProperty('error');
          expect(res.body.error).toEqual('Not Authorized');
@@ -443,7 +457,8 @@ describe('test for verifying email', () => {
     });
     it('Should fail and return 404 response if user email is not found', async done => {
       server()
-      .post(`${url}/auth/assignrole?id=${2}`)
+      .post(`${url}/auth/assignrole`)
+      .set('Authorization', `bearer ${superAdminToken}`)
       .send({email: 'jane.doe@test.com', role: 'admin'})
       .end((err, res) => {
         expect(res.statusCode).toEqual(404);
@@ -453,7 +468,7 @@ describe('test for verifying email', () => {
         expect(res.body).toMatchSnapshot();
       })
     });
-     it('Should fail and return 401 response if there is no id in the query', async done => {
+     it('Should fail and return 401 response if there is no authorization is set', async done => {
       server()
       .post(`${url}/auth/assignrole`)
       .send({email: 'john.doe@test.com', role: 'admin'})

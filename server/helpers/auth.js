@@ -41,7 +41,7 @@ class  Helper {
 			const payload = jwt.verify(token, secret);
 			return payload;
 		} catch(err) {
-			throw err
+			return false;
 		}
 	}
 };
