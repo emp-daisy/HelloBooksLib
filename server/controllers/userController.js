@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 /* eslint-disable require-jsdoc */
 import sequelize from 'sequelize';
 import jwt from 'jsonwebtoken';
@@ -6,7 +7,6 @@ import models from '../db/models';
 import auth from '../helpers/auth';
 import util from '../helpers/utilities';
 import mailer from '../helpers/mailer';
-
 
 const { Op } = sequelize;
 const url = process.env.APP_URL;
@@ -18,7 +18,9 @@ class UserController {
     try {
       const foundUser = await models.Users.findOne({ where: { email } });
 
-      if (foundUser) return util.errorStatus(res, 409, 'email address exists already');
+      if (foundUser) {
+        return util.errorStatus(res, 409, 'email address exists already');
+      }
 
       const hashPassword = auth.hashPassword(password);
       const mailToken = auth.generateMailToken({ firstName, email });
@@ -33,8 +35,15 @@ class UserController {
       };
 
       const createdUser = await models.Users.create(user);
-      const token = auth.generateToken({ id: createdUser.id, firstName, lastName, email });
-      const link = `${url}/auth/verifyemail?token=${mailToken}&id=${createdUser.id}`;
+      const token = auth.generateToken({
+        id: createdUser.id,
+        firstName,
+        lastName,
+        email
+      });
+      const link = `${url}/auth/verifyemail?token=${mailToken}&id=${
+        createdUser.id
+      }`;
       mailer.sendWelcomeMail(user.email, user.firstName, link);
 
       return util.successStatus(res, 201, 'User Created successfully', {
@@ -57,23 +66,31 @@ class UserController {
 
       const user = await models.Users.findOne({ where: { email } });
 
-      if (!user) return util.errorStatus(res, 401, 'Incorrect Login information');
+      if (!user) {
+        return util.errorStatus(res, 401, 'Incorrect Login information');
+      }
 
       const result = await auth.comparePassword(password, user.password);
 
-      if (!result) return util.errorStatus(res, 401, 'Incorrect Login information');
+      if (!result) {
+        return util.errorStatus(res, 401, 'Incorrect Login information');
+      }
 
-      const {id, firstName, lastName, email: emailAddress, role} = user.dataValues;
-      const token = auth.generateToken({ id, firstName, lastName, email: emailAddress, role });
+      const { id, firstName, lastName, email: emailAddress } = user.dataValues;
+      const token = auth.generateToken({
+        id,
+        firstName,
+        lastName,
+        email: emailAddress
+      });
 
       return util.successStatus(res, 200, 'Login successful', {
         token,
         id: user.id,
         firstName: user.firstName,
         lastName: user.lastName,
-        email: user.email,
+        email: user.email
       });
-
     } catch (error) {
       util.errorStatus(res, 500, 'Internal server Error');
     }
@@ -102,8 +119,8 @@ class UserController {
           email: userProfile.emails[0].value,
           firstName: userProfile.name.familyName,
           lastName: userProfile.name.givenName,
-          role: 'user',
-          profilePic: userProfile.photos[0].value
+          profilePic: userProfile.photos[0].value,
+          role: 'user'
         };
         user = await models.Users.create(newUser);
       }
@@ -126,31 +143,29 @@ class UserController {
       const { token, id } = req.query;
       const errArr = [];
       let errMessage;
-        if(!token) {
-            errArr.push('token');
-           }
-        if(!id){
-            errArr.push('id');
-           }
-        if(errArr.length > 0) {
-            if(errArr.length < 2) {
-              errMessage = errArr.join('');
-              return util.errorStatus(res, 401, `${errMessage} must be defined`);
-             }
-              errMessage = errArr.join(' and ');
-              return util.errorStatus(res, 401, `${errMessage} must be defined`);
-          }
+      if (!token) {
+        errArr.push('token');
+      }
+      if (!id) {
+        errArr.push('id');
+      }
+      if (errArr.length > 0) {
+        if (errArr.length < 2) {
+          errMessage = errArr.join('');
+          return util.errorStatus(res, 401, `${errMessage} must be defined`);
+        }
+        errMessage = errArr.join(' and ');
+        return util.errorStatus(res, 401, `${errMessage} must be defined`);
+      }
 
       const user = await models.Users.findByPk(id);
-      if(!user) return util.errorStatus(res, 401, 'Invalid verification link');
+      if (!user) return util.errorStatus(res, 401, 'Invalid verification link');
       const { email_confirm_code, email } = user;
 
-      if (email_confirm_code === null) return util.errorStatus(res, 403, 'Email already verified');
-
-      if(email_confirm_code !== token) {
-          return util.errorStatus(res, 401, 'Invalid verification link');
+      if (email_confirm_code !== token) {
+        return util.errorStatus(res, 401, 'Invalid verification link');
       }
-      await models.Users.update({ email_confirm_code: null },{ where: { email } });
+      models.Users.update({ email_confirm_code: null }, { where: { email } });
       // this should redirect the user to a page. but for test sakes, I will return a response.
       return util.successStatus(res, 200, 'Email verified successfully');
     } catch (err) {
@@ -185,14 +200,16 @@ class UserController {
     const { id, token } = req.params;
     const user = await models.Users.findByPk(id);
     if (!user) return util.errorStatus(res, 401, 'Invalid password reset link');
-
     const errorChecker = jwt.verify(token, user.password, err => {
       if (err) return true;
       return false;
     });
-    if (errorChecker) return util.errorStatus(res, 401, 'Invalid password reset link');
-    const link = `${url}/auth/resetpassword`
-    return res.render('reset_form', {id, token, link, name: user.firstName});
+    if (errorChecker) {
+      return util.errorStatus(res, 401, 'Invalid password reset link');
+    }
+
+    const link = `${url}/auth/resetpassword`;
+    return res.render('reset_form', { id, token, link, name: user.firstName });
   }
 
   static async resetPassword(req, res) {
@@ -204,7 +221,9 @@ class UserController {
       if (err) return true;
       return false;
     });
-    if (errorChecker) return util.errorStatus(res, 401, 'Invalid password reset link');
+    if (errorChecker) {
+      return util.errorStatus(res, 401, 'Invalid password reset link');
+    }
 
     models.Users.update(
       { password: auth.hashPassword(password) },
@@ -216,27 +235,126 @@ class UserController {
   static async assignUserRole(req, res) {
     const { email, role } = req.body;
     try {
-        const user = await models.Users.findOne({where: {email}});
+      const user = await models.Users.findOne({ where: { email } });
 
-        if(!user) return util.errorStatus(res, 404, 'User does not exists');
+      if (!user) return util.errorStatus(res, 404, 'User does not exists');
 
-        const roleSpec = ["admin", "user", "super_admin"];
+      const roleSpec = ['admin', 'user', 'super_admin'];
 
-        if(!roleSpec.includes(role)) return util.errorStatus(res, 404, 'Role type not found')
+      if (!roleSpec.includes(role)) {
+        return util.errorStatus(res, 404, 'Role type not found');
+      }
 
-        await models.Users.update({ role }, {where: { email } });
-        const updatedUser = await models.Users.findOne({where: { email }})
+      await models.Users.update({ role }, { where: { email } });
+      const updatedUser = await models.Users.findOne({ where: { email } });
 
-        return util.successStatus(res, 200, 'Role Assigned successfully', {
-          assignedBy: req.user.firstName,
-          id: user.id,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          email:  user.email,
-          role: updatedUser.role
-        })
-    } catch(err) {
-        return util.errorStatus(res, 500, err.message);
+      return util.successStatus(res, 200, 'Role Assigned successfully', {
+        assignedBy: req.loggedinUser.firstName,
+        id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        role: updatedUser.role
+      });
+    } catch (err) {
+      return util.errorStatus(res, 500, err.message);
+    }
+  }
+
+  static async getUserDetails(req, res) {
+    const { userId } = req.query;
+    let data;
+
+    try {
+      if (userId) {
+        const theUser = await models.Users.findByPk(userId);
+
+        if (!theUser) {
+          return util.errorStatus(res, 404, 'User not found');
+        }
+        const { id, firstName, lastName, email, signupMethod } = theUser;
+        data = {
+          id,
+          firstName,
+          lastName,
+          email,
+          signupMethod
+        };
+      } else {
+        const theUser = await models.Users.findAll();
+
+        data = theUser.map(user => {
+          const { id, firstName, lastName, email, signupMethod } = user;
+          return {
+            id,
+            firstName,
+            lastName,
+            email,
+            signupMethod
+          };
+        });
+      }
+    } catch (error) {
+      return util.errorStatus(res, 500, 'Internal Server Error');
+    }
+
+    return util.successStatus(res, 200, 'data', data);
+  }
+
+  static async deleteUser(req, res) {
+    const { id } = req.params;
+
+    try {
+      const theUser = await models.Users.findByPk(id);
+      if (!theUser) {
+        return util.errorStatus(res, 404, 'User not found');
+      }
+      await models.Users.destroy({ where: { id } });
+    } catch (error) {
+      return util.errorStatus(res, 500, 'Internal Server Error');
+    }
+
+    return util.successStatus(res, 200, 'User deleted Successfully');
+  }
+
+  static async createUser(req, res) {
+    const { firstName, lastName, email } = req.body;
+    const { role } = req.params;
+    const password = await util.generatePassword();
+    try {
+      const foundUser = await models.Users.findOne({ where: { email } });
+
+      if (foundUser) {
+        return util.errorStatus(res, 409, 'email address exists already');
+      }
+
+      const hashPassword = auth.hashPassword(password);
+      const user = {
+        firstName,
+        lastName,
+        email,
+        password: hashPassword,
+        signupMethod: 'local',
+        role
+      };
+
+      const createdUser = await models.Users.create(user);
+      const token = auth.generateToken({
+        id: createdUser.id
+      });
+
+      mailer.sendAdminMail(user.email, user.firstName, password);
+
+      return util.successStatus(res, 201, 'User Created successfully', {
+        token,
+        id: createdUser.id,
+        firstName: createdUser.firstName,
+        lastName: createdUser.lastName,
+        email: createdUser.email,
+        role
+      });
+    } catch (error) {
+      util.errorStatus(res, 500, error.name);
     }
   }
 }

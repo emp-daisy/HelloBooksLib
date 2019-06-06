@@ -25,12 +25,13 @@ class Mailer {
       to,
       from,
       subject,
-      html,
+      html
     };
     log(mail.to);
-    return sendgridMail.send(mail)
+    return sendgridMail
+      .send(mail)
       .then(() => log('Message Sent!'))
-      .catch((err) => log(err.message))
+      .catch(err => log(err.message));
   }
 
   /**
@@ -71,8 +72,36 @@ class Mailer {
     `;
     try {
       await Mailer.sendMail(email, senderEmail, 'Welcome to Hello Books', html);
-    }catch(err){
-      log(err.message)
+    } catch (err) {
+      log(err.message);
+    }
+  }
+
+  /**
+   * Sends messages to recievers
+   * @param {String} email - Reciever email
+   * @param {String} firstName - Reciever firstname
+   * @param {String} password - Users password
+   * @returns {Object} - Mailer response
+   */
+  static async sendAdminMail(email, firstName, password) {
+    const senderEmail = process.env.SERVER_MAIL;
+    const html = `
+      <div style="width: 480px; margin: auto;">
+        <h2> Welcome to Hello-Books! </h2>
+        <p style="font-size: 1.1em">
+          Hey ${firstName}, congrats you have been successfully signed up! 
+        </p>
+        <div style="text-align: center;">
+          <p>Here is your password ${password}</p>
+        </div>
+        <p>Thanks, <br />The Hello Books Team</p>
+      </div>
+    `;
+    try {
+      await Mailer.sendMail(email, senderEmail, 'Welcome to Hello Books', html);
+    } catch (err) {
+      log(err.message);
     }
   }
 
@@ -116,8 +145,8 @@ class Mailer {
     `;
     try {
       await Mailer.sendMail(email, senderEmail, 'Password Reset', html);
-    }catch(err){
-      log(err.message)
+    } catch (err) {
+      log(err.message);
     }
   }
 }

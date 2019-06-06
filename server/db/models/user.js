@@ -28,7 +28,7 @@ export default (sequelize, DataTypes) => {
       },
       email_confirm_code: {
         type: DataTypes.STRING,
-        allowNull: true 
+        allowNull: true
       },
       profilePic: {
         type: DataTypes.STRING,
@@ -36,7 +36,7 @@ export default (sequelize, DataTypes) => {
       },
       role: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
       }
     },
     {}

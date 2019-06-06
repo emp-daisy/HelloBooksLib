@@ -6,9 +6,9 @@ import { config } from 'dotenv';
 config();
 
 const secret = process.env.SECRET_KEY;
-const salt = 10;
+const salt = 6;
 
-class  Helper {
+class Helper {
   static hashPassword(password) {
     return bcrypt.hashSync(password, salt);
   }
@@ -23,9 +23,9 @@ class  Helper {
   }
 
   static verifyToken(token) {
-    try{
+    try {
       return jwt.verify(token, secret);
-    } catch(err) {
+    } catch (err) {
       return false;
     }
   }
@@ -36,17 +36,17 @@ class  Helper {
   }
 
   static generateMailToken(payload) {
-		return jwt.sign(payload, secret, {expiresIn: '1hour'})
-	}
+    return jwt.sign(payload, secret, { expiresIn: '1hour' });
+  }
 
   static verifyMailToken(token) {
-		try {
-			const payload = jwt.verify(token, secret);
-			return payload;
-		} catch(err) {
-			return false;
-		}
-	}
-};
+    try {
+      const payload = jwt.verify(token, secret);
+      return payload;
+    } catch (err) {
+      return false;
+    }
+  }
+}
 
 export default Helper;

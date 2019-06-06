@@ -28,6 +28,11 @@ const user = [
       }
     ],
     method: 'facebook'
+  },
+  {
+    firstName: 'James',
+    lastName: 'Saint',
+    email: 'jamesaint@gmail.com'
   }
 ];
 

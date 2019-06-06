@@ -1,4 +1,4 @@
-import { check, validationResult, param } from 'express-validator/check';
+import { check, validationResult, param, query } from 'express-validator/check';
 import util from '../helpers/utilities';
 
 const validate = {
@@ -14,61 +14,69 @@ const validate = {
       .not()
       .isEmpty({ ignore_whitespace: true })
       .withMessage('Password should not be empty: Please input password'),
-      
+
     (req, res, next) => {
       const errors = validationResult(req);
       const errMessages = [];
       if (!errors.isEmpty()) {
-        errors.array({ onlyFirstError: true }).forEach((err) => {
+        errors.array({ onlyFirstError: true }).forEach(err => {
           errMessages.push(err.msg);
         });
         return util.errorStatus(res, 400, errMessages);
       }
       return next();
-    },
+    }
   ],
-  assignrole : [
+  assignrole: [
     check('email')
       .not()
-      .isEmpty({ ignore_whitespace: true})
-      .withMessage('Email should not be empty: Please input a valid email address')
+      .isEmpty({ ignore_whitespace: true })
+      .withMessage(
+        'Email should not be empty: Please input a valid email address'
+      )
       .isEmail()
       .trim()
       .withMessage('Email is not valid: Please input a valid email address'),
     check('role')
-     .not()
-     .isEmpty({ ignore_whitespace: true})
-     .withMessage('Role should not be empty: Please input a valid user role')
-     .isAlpha()
-     .trim()
-     .withMessage('Role is not valid: please use a valid user role'),
-      (req, res, next) => {
-        const errors = validationResult(req);
-        const errMessages = [];
-        if (!errors.isEmpty()) {
-          errors.array({ onlyFirstError: true }).forEach((err) => {
-            errMessages.push(err.msg);
-          });
-          return util.errorStatus(res, 400, errMessages);
-        }
-        return next();
-    },
+      .not()
+      .isEmpty({ ignore_whitespace: true })
+      .withMessage('Role should not be empty: Please input a valid user role')
+      .isAlpha()
+      .trim()
+      .withMessage('Role is not valid: please use a valid user role'),
+    (req, res, next) => {
+      const errors = validationResult(req);
+      const errMessages = [];
+      if (!errors.isEmpty()) {
+        errors.array({ onlyFirstError: true }).forEach(err => {
+          errMessages.push(err.msg);
+        });
+        return util.errorStatus(res, 400, errMessages);
+      }
+      return next();
+    }
   ],
-  signup : [
+  signup: [
     check('firstName')
       .not()
       .isEmpty({ ignore_whitespace: true })
-      .withMessage('First Name should not be left empty: Please input firstName')
+      .withMessage(
+        'First Name should not be left empty: Please input firstName'
+      )
       .isAlpha()
       .trim()
-      .withMessage('first Name can only contain letters: Please remove invalid characters'),
+      .withMessage(
+        'first Name can only contain letters: Please remove invalid characters'
+      ),
     check('lastName')
       .not()
       .isEmpty({ ignore_whitespace: true })
       .withMessage('Last name should not be left empty: Please input lastName')
       .isAlpha()
       .trim()
-      .withMessage('Last name can ony contain letters: remove invalid characters'),
+      .withMessage(
+        'Last name can ony contain letters: remove invalid characters'
+      ),
     check('email')
       .not()
       .isEmpty({ ignore_whitespace: true })
@@ -76,12 +84,29 @@ const validate = {
       .isEmail()
       .trim()
       .withMessage('Email is not valid: Please input a valid email address'),
+
+    (req, res, next) => {
+      const errors = validationResult(req);
+      const errMessages = [];
+      if (!errors.isEmpty()) {
+        errors.array({ onlyFirstError: true }).forEach(err => {
+          errMessages.push(err.msg);
+        });
+        return util.errorStatus(res, 400, errMessages);
+      }
+      return next();
+    }
+  ],
+
+  password: [
     check('password')
       .not()
       .isEmpty({ ignore_whitespace: true })
       .withMessage('Password should not be empty: Please input password')
-      .matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]/, "i")
-      .withMessage('Password must contain at least one uppercase letter, one lowercase letter and one numeric digit')
+      .matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]/, 'i')
+      .withMessage(
+        'Password must contain at least one uppercase letter, one lowercase letter and one numeric digit'
+      )
       .trim()
       .isLength({ min: 8 })
       .withMessage('Password Length should be at least 8 Characters'),
@@ -90,14 +115,15 @@ const validate = {
       const errors = validationResult(req);
       const errMessages = [];
       if (!errors.isEmpty()) {
-        errors.array({ onlyFirstError: true }).forEach((err) => {
+        errors.array({ onlyFirstError: true }).forEach(err => {
           errMessages.push(err.msg);
         });
         return util.errorStatus(res, 400, errMessages);
       }
       return next();
-    },
+    }
   ],
+
   addBook: [
     check('title')
       .not()
@@ -106,7 +132,9 @@ const validate = {
     check('description')
       .not()
       .isEmpty({ ignore_whitespace: true })
-      .withMessage('Description can not be left empty: Please input description'),
+      .withMessage(
+        'Description can not be left empty: Please input description'
+      ),
     check('amount')
       .not()
       .isEmpty({ ignore_whitespace: true })
@@ -124,11 +152,13 @@ const validate = {
       .isEmpty({ ignore_whitespace: true })
       .withMessage('AuthorID can not be left empty: Please input authorID')
       .isInt()
-      .withMessage('AuthorID is not valid integer: Please input a valid authorID')
-      .custom( async (id) => {
+      .withMessage(
+        'AuthorID is not valid integer: Please input a valid authorID'
+      )
+      .custom(async id => {
         const isExist = await util.exits(id, 'Authors');
         if (!isExist) {
-          throw new Error('No author with the specified ID was found')
+          throw new Error('No author with the specified ID was found');
         }
 
         return true;
@@ -138,11 +168,13 @@ const validate = {
       .isEmpty({ ignore_whitespace: true })
       .withMessage('CategoryID can not be left empty: Please input categoryID')
       .isInt()
-      .withMessage('categoryID is not valid integer: Please input a valid categoryID')
-      .custom( async (id) => {
+      .withMessage(
+        'categoryID is not valid integer: Please input a valid categoryID'
+      )
+      .custom(async id => {
         const isExist = await util.exits(id, 'Categories');
         if (!isExist) {
-          throw new Error('No Category with the specified ID was found')
+          throw new Error('No Category with the specified ID was found');
         }
         return true;
       }),
@@ -165,59 +197,71 @@ const validate = {
       const errors = validationResult(req);
       const errMessages = [];
       if (!errors.isEmpty()) {
-        errors.array({ onlyFirstError: true }).forEach((err) => {
+        errors.array({ onlyFirstError: true }).forEach(err => {
           errMessages.push(err.msg);
         });
         return util.errorStatus(res, 400, errMessages);
       }
       return next();
-    },
+    }
   ],
-  author : [
+
+  author: [
     check('firstName')
       .not()
       .isEmpty({ ignore_whitespace: true })
-      .withMessage('First Name should not be left empty: Please input firstName')
+      .withMessage(
+        'First Name should not be left empty: Please input firstName'
+      )
       .isAlpha()
       .trim()
-      .withMessage('first Name can only contain letters: Please remove invalid characters'),
+      .withMessage(
+        'first Name can only contain letters: Please remove invalid characters'
+      ),
     check('middleName')
-      .custom((item) => {
-        if(item){
-          if(!item.match(/^[A-Za-z]+$/)) {
-            throw new Error('Middle Name name can ony contain letters: remove invalid characters');
+      .custom(item => {
+        if (item) {
+          if (!item.match(/^[A-Za-z]+$/)) {
+            throw new Error(
+              'Middle Name name can ony contain letters: remove invalid characters'
+            );
           }
+          return true;
         }
-        return true;
-      }),
+      })
+      .optional(),
     check('lastName')
       .not()
       .isEmpty({ ignore_whitespace: true })
       .withMessage('Last name should not be left empty: Please input lastName')
       .isAlpha()
       .trim()
-      .withMessage('Last name can ony contain letters: remove invalid characters'),
-      
+      .withMessage(
+        'Last name can ony contain letters: remove invalid characters'
+      ),
+
     (req, res, next) => {
       const errors = validationResult(req);
       const errMessages = [];
       if (!errors.isEmpty()) {
-        errors.array({ onlyFirstError: true }).forEach((err) => {
+        errors.array({ onlyFirstError: true }).forEach(err => {
           errMessages.push(err.msg);
         });
         return util.errorStatus(res, 400, errMessages);
       }
       return next();
-    },
+    }
   ],
 
-  resetPassword : [
+  resetPassword: [
     check('password')
       .not()
       .isEmpty({ ignore_whitespace: true })
       .withMessage('Password should not be empty: Please input password')
-      .matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]/, "i")
-      .withMessage('Password must contain at least one uppercase letter, one lowercase letter and one numeric digit')
+      .matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]/, 'i')
+      .withMessage(
+        'Password must contain at least one uppercase letter, one lowercase letter and one numeric digit'
+      )
       .trim()
       .isLength({ min: 8 })
       .withMessage('Password Length should be at least 8 Characters'),
@@ -226,16 +270,39 @@ const validate = {
       const errors = validationResult(req);
       const errMessages = [];
       if (!errors.isEmpty()) {
-        errors.array().forEach((err) => {
+        errors.array().forEach(err => {
           errMessages.push(err.msg);
         });
         return util.errorStatus(res, 400, errMessages);
       }
       return next();
-    },
+    }
   ],
 
-  id : [
+  role: [
+    param('role')
+      .not()
+      .isEmpty({ ignore_whitespace: true })
+      .withMessage('role should not be left empty')
+      .isIn(['user', 'admin'])
+      .withMessage('Should be admin or user')
+      .isAlpha()
+      .trim(),
+
+    (req, res, next) => {
+      const errors = validationResult(req);
+      const errMessages = [];
+      if (!errors.isEmpty()) {
+        errors.array().forEach(err => {
+          errMessages.push(err.msg);
+        });
+        return util.errorStatus(res, 400, errMessages);
+      }
+      return next();
+    }
+  ],
+
+  id: [
     param('id')
       .matches(/^[1-9][0-9]*$/)
       .withMessage('ID must be a number greater than 1'),
@@ -244,13 +311,13 @@ const validate = {
       const errors = validationResult(req);
       const errMessages = [];
       if (!errors.isEmpty()) {
-        errors.array({ onlyFirstError: true }).forEach((err) => {
+        errors.array({ onlyFirstError: true }).forEach(err => {
           errMessages.push(err.msg);
         });
         return util.errorStatus(res, 400, errMessages);
       }
       return next();
-    },
+    }
   ],
 
   requestBook : [
@@ -311,7 +378,26 @@ const validate = {
       return util.errorStatus(res, 400, errMessages);
     }
     return next();
-  },  ]
-}
+  },  ],
+
+  userId: [
+    query('userId')
+      .optional()
+      .isInt()
+      .withMessage('ID must be a number greater than 1'),
+
+    (req, res, next) => {
+      const errors = validationResult(req);
+      const errMessages = [];
+      if (!errors.isEmpty()) {
+        errors.array({ onlyFirstError: true }).forEach(err => {
+          errMessages.push(err.msg);
+        });
+        return util.errorStatus(res, 400, errMessages);
+      }
+      return next();
+    }
+  ]
+};
 
 export default validate;

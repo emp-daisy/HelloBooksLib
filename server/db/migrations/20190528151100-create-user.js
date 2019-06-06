@@ -42,13 +42,13 @@ export function up(queryInterface, Sequelize) {
       type: Sequelize.STRING,
       allowNull: true
     },
-    email_confirm_code: {
-      type: Sequelize.STRING,
-      allowNull: true
-    },
     role: {
       type: Sequelize.STRING,
       allowNull: false
+    },
+    email_confirm_code: {
+      type: Sequelize.STRING,
+      allowNull: true
     }
   });
 }
