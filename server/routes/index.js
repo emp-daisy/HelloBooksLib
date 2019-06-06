@@ -3,6 +3,7 @@ import swaggerUI from 'swagger-ui-express';
 import yaml from 'yamljs';
 import userRouter from './userRoute';
 import socialRouter from './socialRoute';
+import authorRouter from './authorRoute';
 
 const router = express();
 
@@ -15,5 +16,6 @@ router.get('/', (req, res) => {
 
 router.use('/auth', userRouter);
 router.use('/oauth', socialRouter);
+router.use('/authors', authorRouter);
 
 export default router;
