@@ -1,5 +1,6 @@
 /* eslint-disable require-jsdoc */
 /* eslint-disable linebreak-style */
+import models from '../db/models';
 
 class Utilities {
   /**
@@ -30,6 +31,19 @@ class Utilities {
 
   static successStatus(res, statusCode, message, data) {
     return res.status(statusCode).json({ status: statusCode, message, data});
+  }
+
+   /**
+  * @static
+  * @description Check if author exist in database
+  * @param {integer} authorID - the author's id to be checked in database
+  * @returns {boolean} returns true or false
+  * @memberof Utilities
+  */
+
+  static async checkAuthorID(authorID) {
+    const author = await models.Authors.findOne( { where: { id : authorID} });
+    return author;
   }
 }
 
