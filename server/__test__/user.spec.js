@@ -482,7 +482,7 @@ describe('test for verifying email', () => {
     });
     it('Should fail and return 400 response if email is missing from request body ', async done => {
       server()
-      .post(`${url}/auth/assignrole?id=${2}`)
+      .post(`${url}/auth/assignrole`)
       .send({email: '', role: 'admin'})
       .end((err, res) => {
         expect(res.statusCode).toEqual(400);
@@ -493,7 +493,7 @@ describe('test for verifying email', () => {
     });
     it('Should fail and return 400 response if role is missing from request body ', async done => {
       server()
-      .post(`${url}/auth/assignrole?id=${2}`)
+      .post(`${url}/auth/assignrole`)
       .send({email: 'john.doe@test.com', role: ''})
       .end((err, res) => {
         expect(res.statusCode).toEqual(400);
