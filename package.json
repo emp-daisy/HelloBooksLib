@@ -18,7 +18,7 @@
     "seed": "node_modules/.bin/sequelize db:seed:all",
     "seed:undo": "node_modules/.bin/sequelize db:seed:undo",
     "generate:model": "node_modules/.bin/sequelize model:generate",
-    "heroku-postbuild": "npm run migrate && npm run build && cp -r server/docs build/docs"
+    "heroku-postbuild": "npm run migrate && npm run build && cp -r server/docs build/docs && cp -r server/views build/views"
   },
   "repository": {
     "type": "git",
@@ -44,6 +44,7 @@
     "dotenv": "^8.0.0",
     "express": "^4.17.1",
     "express-validator": "^5.3.1",
+    "hbs": "^4.0.4",
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.11",
     "morgan": "^1.9.1",
