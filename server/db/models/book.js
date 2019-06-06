@@ -14,7 +14,7 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.NUMERIC
     },
     authorID: {
-      allowNull: false,
+      allowNull: true,
       type: DataTypes.INTEGER
     },
     reviewID: {
