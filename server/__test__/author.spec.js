@@ -77,15 +77,4 @@ describe('Test list authors functionality', () => {
       done();
     });
   });
-
-  // it('Should list all authors for an unauthorised user', async done => {
-  //   server()
-  //   .get(`${url}/authors`)
-  //   .end((err, res) => {
-  //     expect(res.statusCode).toEqual(403);
-  //     expect(res.body).toHaveProperty('error');
-  //     expect(res.body.error).toEqual('Authentication is required');
-  //     done();
-  //   });
-  // });
 });
