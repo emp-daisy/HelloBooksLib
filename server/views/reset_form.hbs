@@ -1,0 +1,41 @@
+<div style="width: 480px; margin: auto;">
+  <h1 style='color: #5d45e3'>Password Reset</h1>
+  <p style='font-family:Arial, Helvetica, sans-serif; color: #5d45e3'>
+    Hey {{name}}, enter your new password and click the button to reset it
+  </p>
+  <form action='{{link}}' method='POST'>
+    <div style='display: flex; flex-direction: column;'>
+      <input type='hidden' name='id' value='{{id}}'/>
+      <input type='hidden' name='token' value='{{token}}'/>
+      <input 
+        style='display:inline-block;
+          padding:5px 10px; 
+          border:1px solid #5d45e3; 
+          font-size: medium; 
+          border-radius: 3px;
+          height: 50px;
+          ';
+        type='password' 
+        name='password' 
+        value='' 
+        placeholder='Enter your new password...'
+      />
+      <br>
+      <input 
+        style='display:inline-block;
+          padding:5px 10px; 
+          border:1px solid #5d45e3; 
+          text-decoration: none; 
+          text-transform: uppercase; 
+          font-size: medium; 
+          color: white; 
+          background: #5d45e3; 
+          border-radius: 3px;
+          height: 50px;
+          ' 
+        type='submit' 
+        value='Reset Password'
+      />
+    </div>
+  </form>
+</div>
