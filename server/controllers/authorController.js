@@ -24,6 +24,18 @@ class AuthorController {
       util.errorStatus(res, 500, error.name);
     }
   }
+
+  static async getAuthor(req, res) {
+    try {
+      const authorId = req.params.id;
+      const author = await models.Authors.findByPk(authorId);
+      if (!author) return util.errorStatus(res, 404, 'Author not found');
+
+      return util.successStatus(res, 200, 'Author found', author);
+    }catch(error) {
+      util.errorStatus(res, 500, error.name);
+    }
+  }
 }
 
 export default AuthorController;
