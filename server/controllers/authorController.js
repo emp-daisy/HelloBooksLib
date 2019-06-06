@@ -35,7 +35,7 @@ class AuthorController {
 
       return util.successStatus(res, 200, 'Authors retrieved successfully', result)
     } catch (error) {
-      util.errorStatus(res, 500, error.name)
+      return util.errorStatus(res, 500, error.name)
     }
   }
 
