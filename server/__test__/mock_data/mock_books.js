@@ -5,7 +5,15 @@ const mockBook = {
     amount: 3451,
     status: true,
     year: 2019,
-    authorID: 2
+    authorID: 1
+  },
+  wrongAuthorIDBookData: {
+    title: 'Coding with one eye',
+    description: 'This book teaches you how to code without really knowing what you are doing',
+    amount: 3451,
+    status: true,
+    year: 2019,
+    authorID: 98
   },
   emptyBookData: {
     title: '',

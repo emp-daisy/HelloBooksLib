@@ -52,5 +52,16 @@ describe('Books tests', () => {
           done();
         });
     });
+    it('Should throw an error when authorID does not exist in the database', async (done) => {
+      server()
+        .post(`${url}/books`)
+        .send(mockBook.wrongAuthorIDBookData)
+        .end((err, res) => {
+          expect(res.statusCode).toEqual(400);
+          expect(res.body.status).toEqual(400);
+          expect(res.body.error[0]).toEqual('No author with the specified ID was found');
+          done();
+        });
+    });
   });
 });
