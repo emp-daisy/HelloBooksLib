@@ -1,8 +1,8 @@
-import {check, validationResult} from 'express-validator/check';
+import { check, validationResult } from 'express-validator/check';
 import util from '../helpers/utilities';
 
 const validate = {
-  signin : [
+  signin: [
     check('email')
       .not()
       .isEmpty({ ignore_whitespace: true })
@@ -25,9 +25,9 @@ const validate = {
         return util.errorStatus(res, 400, errMessages);
       }
       return next();
-  },
+    },
   ],
-  signup : [
+  signup: [
     check('firstName')
       .not()
       .isEmpty({ ignore_whitespace: true })
@@ -52,23 +52,71 @@ const validate = {
     check('password')
       .not()
       .isEmpty({ ignore_whitespace: true })
-      .withMessage('Password should not be empty: Please input password') 
+      .withMessage('Password should not be empty: Please input password')
       .matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]/, "i")
       .withMessage('Password must contain at least one uppercase letter, one lowercase letter and one numeric digit')
       .trim()
       .isLength({ min: 8 })
       .withMessage('Password Length should be at least 8 Characters'),
 
-      (req, res, next) => {
-        const errors = validationResult(req);
-        const errMessages = [];
-        if (!errors.isEmpty()) {
-          errors.array({ onlyFirstError: true }).forEach((err) => {
-            errMessages.push(err.msg);
-          });
-          return util.errorStatus(res, 400, errMessages);
-        }
-        return next();
+    (req, res, next) => {
+      const errors = validationResult(req);
+      const errMessages = [];
+      if (!errors.isEmpty()) {
+        errors.array({ onlyFirstError: true }).forEach((err) => {
+          errMessages.push(err.msg);
+        });
+        return util.errorStatus(res, 400, errMessages);
+      }
+      return next();
+    },
+  ],
+  addBook: [
+    check('title')
+      .not()
+      .isEmpty({ ignore_whitespace: true })
+      .withMessage('Title can not be left empty: Please input title'),
+    check('description')
+      .not()
+      .isEmpty({ ignore_whitespace: true })
+      .withMessage('Description can not be left empty: Please input description'),
+    check('amount')
+      .not()
+      .isEmpty({ ignore_whitespace: true })
+      .withMessage('Amount can not be left empty: Please input amount')
+      .isCurrency()
+      .withMessage('Amount is not valid currency: Please input a valid amount'),
+    check('authorID')
+      .not()
+      .isEmpty({ ignore_whitespace: true })
+      .withMessage('AuthorID can not be left empty: Please input amount')
+      .isInt()
+      .withMessage('AuthorID is not valid integer: Please input a valid authorID'),
+    check('year')
+      .not()
+      .isEmpty({ ignore_whitespace: true })
+      .withMessage('Year can not be left empty: Please input amount')
+      .isNumeric({ min: 1000, max: 2019 })
+      .withMessage('Year is not valid year: Please input a valid year')
+      .isLength({ min: 4, max: 4 })
+      .withMessage('Year is not valid year: Please input a valid year'),
+    check('status')
+      .not()
+      .isEmpty({ ignore_whitespace: true })
+      .withMessage('Status can not be left empty: Please input status')
+      .isBoolean()
+      .withMessage('Status is not valid boolean: Please input a valid status'),
+
+    (req, res, next) => {
+      const errors = validationResult(req);
+      const errMessages = [];
+      if (!errors.isEmpty()) {
+        errors.array({ onlyFirstError: true }).forEach((err) => {
+          errMessages.push(err.msg);
+        });
+        return util.errorStatus(res, 400, errMessages);
+      }
+      return next();
     },
   ],
 

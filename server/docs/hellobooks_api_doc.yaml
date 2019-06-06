@@ -18,13 +18,13 @@ externalDocs:
 servers:
 - url: /api/v1
 - url: https://hello-books-lib-staging.herokuapp.com/api/v1/ # Heroku deployment (staging)
-
 tags:
 - name: Users
   description: Operations available for user endpoints
 - name: Authors
   description: Operations available for author endpoints
-
+- name: Books
+  description: Operations available for book endpoints
 paths:
   /oauth/google:
     post:
@@ -204,6 +204,57 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/errorResponse"
+  
+  /book:
+    post:
+      tags:
+        - Books
+      summary: User add book
+      description: Add a new book
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                amount:
+                  type: integer
+                authorID:
+                  type: integer
+                status:
+                  type: boolean
+                year:
+                  type: integer
+      responses:
+        201:
+          description: Added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Book"
+        409:
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        500:
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
 
   /authors:
     post:
@@ -283,6 +334,41 @@ components:
           type: string
         lastName:
           type: string
+
+    errorResponse:
+      type: object
+      properties:
+        status:
+          type: number
+        error:
+          type: string
+
+    successResponse:
+      type: object
+      properties:
+        status:
+          type: number
+        message:
+          type: string
+    
+    Book:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        title:
+          type: string
+        description:
+          type: string
+        amount:
+          type: integer
+        year:
+          type: integer
+        authorID:
+          type: integer
+        status:
+          type: boolean
 
     errorResponse:
       type: object
