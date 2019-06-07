@@ -286,7 +286,61 @@ paths:
               schema:
                 $ref: "#/components/schemas/errorResponse"
 
+  /books/{id}:
+    get:
+      tags:
+        - Books
+      summary: User fetch book
+      description: Get a single book
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Numeric ID of the book to get
+      responses:
+        200:
+          description: Book fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Book"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
 
+    delete:
+      tags:
+        - Books
+      summary: User delete book
+      description: Delete a specific book
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Numeric ID of the book to delete
+      responses:
+        200:
+          description: Book deleted successfully
+          
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        500:
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
   /authors:
     post:
       tags:
@@ -411,7 +465,7 @@ components:
           updatedAt:
             type: string
             format: date
-
+          
     errorResponse:
       type: object
       properties:
