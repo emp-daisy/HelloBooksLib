@@ -30,11 +30,14 @@ class Authenticate {
     if (!req.headers.authorization) {
       return util.errorStatus(res, 403, 'Authentication is required');
     }
-
-    const token = req.headers.authorization.split(' ')[1];
+    let token = req.headers.authorization;
+    if(token.startsWith('bearer ')) {
+      token = req.headers.authorization.split(' ')[1]
+    }
 
     try {
       const decode = Auth.verifyToken(token);
+      if(!decode) return util.errorStatus(res, 401, 'Unauthorized');
       req.user = decode;
 
       return next();

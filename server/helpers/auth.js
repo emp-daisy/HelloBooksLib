@@ -23,8 +23,11 @@ class  Helper {
   }
 
   static verifyToken(token) {
-    const decoded = jwt.verify(token, secret);
-    return decoded;
+    try{
+      return jwt.verify(token, secret);
+    } catch(err) {
+      return false;
+    }
   }
 
   static getOneTimeToken(payload, otp) {
