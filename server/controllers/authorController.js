@@ -1,6 +1,7 @@
 /* eslint-disable require-jsdoc */
 import models from '../db/models';
 import util from '../helpers/utilities';
+import Author from '../models/authorModel'
 
 class AuthorController {
   static async addAuthor(req, res) {
@@ -12,12 +13,7 @@ class AuthorController {
         lastName
       });
 
-      const authorObj = {
-        authorId: author.id,
-        firstName: author.firstName,
-        middleName: author.middleName ? author.middleName : undefined,
-        lastName: author.lastName,
-      };
+      const authorObj = new Author(author);
 
       return util.successStatus(res, 201, 'Author added successfully', authorObj);
     } catch (error) {
@@ -31,12 +27,7 @@ class AuthorController {
       const author = await models.Authors.findByPk(authorId);
       if (!author) return util.errorStatus(res, 404, 'Author not found');
 
-      const authorObj = {
-        authorId: author.id,
-        firstName: author.firstName,
-        middleName: author.middleName ? author.middleName : undefined,
-        lastName: author.lastName,
-      };
+      const authorObj = new Author(author);
 
       return util.successStatus(res, 200, 'Author found', authorObj);
     }catch(error) {
@@ -58,12 +49,8 @@ class AuthorController {
           returning: true }
         );
 
-      const authorObj = {
-        authorId: response[1][0].id,
-        firstName: response[1][0].firstName,
-        middleName: response[1][0].middleName ? response[1][0].middleName : undefined,
-        lastName: response[1][0].lastName,
-      };
+      const author = response[1][0];
+      const authorObj = new Author(author);
 
       return util.successStatus(res, 200, 'Author updated successfully', authorObj);
 
