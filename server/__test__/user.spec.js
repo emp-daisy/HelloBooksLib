@@ -223,7 +223,7 @@ describe('User tests', () => {
     it('Should reset the password for valid user with valid password token',  async done => {
       server()
       .post(`${url}/auth/resetpassword`)
-      .send({id: 1, token: passwordToken, password: 'password'})
+      .send({id: 1, token: passwordToken, password: 'Password123'})
       .end((err, res) => {
         expect(res.statusCode).toEqual(200);
         expect(res.body).toHaveProperty('message');
@@ -236,7 +236,7 @@ describe('User tests', () => {
     it('Should not reset password for invalid user',  async done => {
       server()
       .post(`${url}/auth/resetpassword`)
-      .send({id: 5000484, token: passwordToken, password: 'password'})
+      .send({id: 5000484, token: passwordToken, password: 'Password123'})
       .end((err, res) => {
         expect(res.statusCode).toEqual(401);
         expect(res.body).toHaveProperty('error');
@@ -249,13 +249,27 @@ describe('User tests', () => {
     it('Should not reset password for user with invalid token',  async done => {
       server()
       .post(`${url}/auth/resetpassword`)
-      .send({id: 1, token: wrongPasswordToken, password: 'password'})
+      .send({id: 1, token: wrongPasswordToken, password: 'Password123'})
       .end((err, res) => {
         expect(res.statusCode).toEqual(401);
         expect(res.body).toHaveProperty('error');
         expect(res.body.error).toEqual('Invalid password reset link');
         done();
         expect(res.body).toMatchSnapshot();
+      });
+    });
+
+    it('Should not reset password that does not meet validation criteria',  async done => {
+      server()
+      .post(`${url}/auth/resetpassword`)
+      .send({id: 1, token: passwordToken, password: 'pass'})
+      .end((err, res) => {
+        expect(res.statusCode).toEqual(400);
+        expect(res.body).toHaveProperty('error');
+        expect(res.body.error[0])
+          .toEqual('Password must contain at least one uppercase letter, one lowercase letter and one numeric digit');
+        expect(res.body.error[1]).toEqual('Password Length should be at least 8 Characters');
+        done();
       });
     });
   });

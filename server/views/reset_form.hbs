@@ -1,41 +1,161 @@
-<div style="width: 480px; margin: auto;">
-  <h1 style='color: #5d45e3'>Password Reset</h1>
-  <p style='font-family:Arial, Helvetica, sans-serif; color: #5d45e3'>
-    Hey {{name}}, enter your new password and click the button to reset it
-  </p>
-  <form action='{{link}}' method='POST'>
-    <div style='display: flex; flex-direction: column;'>
-      <input type='hidden' name='id' value='{{id}}'/>
-      <input type='hidden' name='token' value='{{token}}'/>
-      <input 
-        style='display:inline-block;
-          padding:5px 10px; 
-          border:1px solid #5d45e3; 
-          font-size: medium; 
-          border-radius: 3px;
-          height: 50px;
-          ';
-        type='password' 
-        name='password' 
-        value='' 
-        placeholder='Enter your new password...'
-      />
-      <br>
-      <input 
-        style='display:inline-block;
-          padding:5px 10px; 
-          border:1px solid #5d45e3; 
-          text-decoration: none; 
-          text-transform: uppercase; 
-          font-size: medium; 
-          color: white; 
-          background: #5d45e3; 
-          border-radius: 3px;
-          height: 50px;
-          ' 
-        type='submit' 
-        value='Reset Password'
-      />
+<html>
+  <head>
+    <style>
+      @import url('https://fonts.googleapis.com/css?family=Josefin+Sans&display=swap');
+      #errors ul {
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        flex-direction: column;
+        background-color: #ff00002f;
+        color: #ff00009a;
+        border: 1px solid #ff000079;
+        min-height: 30px;
+        margin-top: 3px;
+        padding: 0;
+        font-family: 'Josefin Sans', sans-serif;
+        border-radius: 3px;
+      }
+
+      #success ul {
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        flex-direction: column;
+        background-color: #00ff002f;
+        color: #00ff00;
+        border: 1px solid #00ff0079;
+        min-height: 30px;
+        margin-top: 3px;
+        padding: 0;
+        font-family: 'Josefin Sans', sans-serif;
+        border-radius: 3px;
+      }
+      li {
+        list-style: none;
+        padding-left: 10px;
+        padding-top: 5px;
+        margin-bottom: 7px;
+        width: 100%;
+
+      }
+      input[type=submit] {
+        display:inline-block;
+        padding:5px 10px; 
+        border:1px solid #5d45e3; 
+        text-decoration: none; 
+        text-transform: uppercase; 
+        font-size: medium; 
+        color: white; 
+        background: #5d45e3; 
+        border-radius: 3px;
+        height: 50px;
+      }
+
+      input[type=password] {
+        display:inline-block;
+        padding:5px 10px; 
+        border:1px solid #5d45e3; 
+        font-size: medium; 
+        border-radius: 3px;
+        height: 50px;
+      }
+
+      input[type=submit]:disabled {
+       background-color: #5d45e389;
+       border:1px solid #5d45e389; 
+      }
+    </style>
+  </head>
+  <body>
+    <div style="width: 480px; margin: auto;">
+      <h1 style='color: #5d45e3'>Password Reset</h1>
+      <p style='font-family:Arial, Helvetica, sans-serif; color: #5d45e3'>
+        Hey {{name}}, enter your new password and click the button to reset it
+      </p>
+      <form id='reset-form'>
+        <div style='display: flex; flex-direction: column;'>
+          <input id='id' type='hidden' name='id' value='{{id}}'/>
+          <input id='token' type='hidden' name='token' value='{{token}}'/>
+          <input id='link' type='hidden' value='{{link}}'/>
+          <input id='password' type='password' name='password' value='' placeholder='Enter your new password...' required/>
+          <br>
+          <div id='errors' style='display: none'>
+            <ul>
+            </ul>
+          </div>
+          <div id='success' style='display: none'>
+            <ul>
+            </ul>
+          </div>
+          <input id='submit' type='submit' value='Reset Password'/>
+        </div>
+      </form>
     </div>
-  </form>
-</div>
+    <script>
+      const url = document.getElementById('link').value;
+      const reset = document.getElementById('reset-form');
+      const errorCont = document.getElementById('errors');
+      const errorContainer = document.querySelector('#errors ul');
+      const successCont = document.getElementById('success');
+      const successContainer = document.querySelector('#success ul');
+      const password = document.getElementById('password');
+      const submit = document.getElementById('submit');
+      const id = document.getElementById('id');
+      const token = document.getElementById('token');
+
+      const createNode = (element) => document.createElement(element);
+      const append = (parent, el) => parent.appendChild(el);
+
+      reset.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        fetch(url, {
+          method: 'POST',
+          body: JSON.stringify({
+              id: id.value,
+              token: token.value,
+              password: password.value,
+          }),
+          headers: {
+              'Content-Type': 'application/json',
+          }
+        })
+        .then(res => res.json())
+        .then(response => {
+          if (response.error) {
+            const errors = response.error;
+            errorCont.style.display = 'block';
+            errors.forEach(error => {
+              let li = createNode('li');
+              li.innerText = `${error}`;
+              append(errorContainer, li);
+            })
+            setTimeout(() => {
+              errorCont.style.display = 'none';
+              errorContainer.innerHTML = '';
+            }, 3000);
+          }
+          if (response.status === 200) {
+            submit.disabled = true;
+            password.disabled = true;
+            successCont.style.display = 'block';
+            let li = createNode('li');
+            li.innerText = `${response.message} You can now log in with your new password`;
+            append(successContainer, li);
+          }
+        })
+        .catch((error) => {
+          errorCont.style.display = 'block';
+          let msg = createNode('li');
+          msg.innerHTML = error.message || 'Error in connecting, Please check your internet connection and try again';
+          append(errorContainer, msg);
+          setTimeout(() => {
+            errorCont.style.display = 'none';
+            errorContainer.innerHTML = '';
+          }, 5000);
+        });
+      });
+    </script>
+  </body>
+</html>
