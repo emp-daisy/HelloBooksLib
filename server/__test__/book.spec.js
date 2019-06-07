@@ -53,15 +53,9 @@ describe('Books tests', () => {
         .end((err, res) => {
           expect(res.statusCode).toEqual(400);
           expect(res.body.status).toEqual(400);
-          expect(res.body.error[0]).toEqual(
-            'Amount is not valid currency: Please input a valid amount'
-          );
-          expect(res.body.error[1]).toEqual(
-            'AuthorID can not be left empty: Please input amount'
-          );
-          expect(res.body.error[2]).toEqual(
-            'Year is not valid year: Please input a valid year'
-          );
+          expect(res.body.error[0]).toEqual('Amount is not valid currency: Please input a valid amount');
+          expect(res.body.error[1]).toEqual('AuthorID can not be left empty: Please input amount');
+          expect(res.body.error[2]).toEqual('CategoryID can not be left empty: Please input categoryID');
           done();
         });
     });
