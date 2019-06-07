@@ -178,3 +178,38 @@ describe('Test list authors functionality', () => {
   });
 });
 
+describe('test delete author', () => {
+  beforeAll((done) => {
+    server()
+    .post(`${url}/authors`)
+    .send({
+      firstName: 'Test',
+      middleName: 'James',
+      lastName: 'Rockson'
+    })
+    .end((err, res) => {
+      done();
+    })
+    })
+  it('should delete an author', async done => {
+    server()
+    .delete(`${url}/authors/2`)
+    .end((err, res) => {
+      expect(res.statusCode).toEqual(200);
+      expect(res.body).toHaveProperty('message');
+      expect(res.body.message).toEqual('Author deleted successfully');
+      done();
+    });
+  });
+
+  it('should throw an error when the author does not exist', async done => {
+    server()
+    .delete(`${url}/authors/5`)
+    .end((err, res) => {
+      expect(res.statusCode).toEqual(404);
+      expect(res.body).toHaveProperty('error');
+      // expect(res.body.message).toEqual('The author specified does not exist');
+      done();
+    });
+  });
+});

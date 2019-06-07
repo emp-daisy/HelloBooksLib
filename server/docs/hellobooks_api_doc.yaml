@@ -417,6 +417,117 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/errorResponse"
+  /authors/{id}:
+    get:
+      tags:
+        - Authors
+      summary: Get an author using ID
+      description: Get a single author
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Numeric ID of the author to get
+      responses:
+        200:
+          description: Author retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Author"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+
+    patch:
+      tags:
+        - Authors
+      summary: Update an author's details
+      description: Modify an author's details
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Numeric ID of the author to modify
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                middleName:
+                  type: string
+                lastName:
+                  type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Author"
+        400:
+          description: Bad request due to input error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        500:
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+
+    delete:
+      tags:
+        - Authors
+      summary: Delete an author using ID
+      description: Delete a specific author
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Numeric ID of the author to delete
+      responses:
+        200:
+          description: Author deleted successfully
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        500:
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
 
 components:
   securitySchemes:
