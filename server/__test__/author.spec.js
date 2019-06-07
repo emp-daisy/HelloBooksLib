@@ -43,7 +43,8 @@ describe('Authors tests', () => {
           expect(res.statusCode).toEqual(400);
           expect(res.body).toHaveProperty('error');
           expect(res.body.error[0]).toEqual('first Name can only contain letters: Please remove invalid characters');
-          expect(res.body.error[1]).toEqual('Last name can ony contain letters: remove invalid characters');
+          expect(res.body.error[1]).toEqual('Middle Name name can ony contain letters: remove invalid characters');
+          expect(res.body.error[2]).toEqual('Last name can ony contain letters: remove invalid characters');
           done();
           expect(res.body).toMatchSnapshot();
         });
@@ -112,3 +113,68 @@ describe('Authors tests', () => {
     });
   });
 });
+
+describe('Test list authors functionality', () => {
+  let tokenAuth;
+
+  beforeAll((done) => {
+    server()
+    .post(`${url}/auth/signup`)
+    .send({
+      firstName: 'Test',
+      lastName: 'Testing',
+      email: 'testing2@example.com',
+      password: 'PassWord123..'
+    })
+    .end((regErr, regRes) => {
+      const { email } = regRes.body.data
+      server()
+    .post(`${url}/auth/signin`)
+    .send({
+      email,
+      password: 'PassWord123..'
+    })
+    .end((err, res) => {
+      tokenAuth  = `Bearer ${res.body.data.token}`;     
+      done();
+    })
+    })
+  });
+
+  it('Should not list authors for a user when authorization header is missing', async done => {
+    server()
+    .get(`${url}/authors`)
+    .end((err, res) => {
+      expect(res.statusCode).toEqual(403);
+      expect(res.body).toHaveProperty('error');
+      expect(res.body.error).toEqual('Authentication is required');
+      done();
+    });
+  });
+
+  it('Should list all authors for an authorised user', async done => {
+    server()
+    .get(`${url}/authors`)
+    .set('Authorization', tokenAuth)
+    .end((err, res) => {
+      expect(res.statusCode).toEqual(200);
+      expect(res.body).toHaveProperty('data');
+      expect(res.body).toHaveProperty('message');
+      expect(res.body.message).toEqual('Authors retrieved successfully');
+      done();
+    });
+  });
+  
+  it('Should not list authors for a user with invalid token', async done => {
+    server()
+    .get(`${url}/authors`)
+    .set('Authorization', `Bearer ghhjkjkkkia`)
+    .end((err, res) => {
+      expect(res.statusCode).toEqual(401);
+      expect(res.body).toHaveProperty('error');
+      expect(res.body.error).toEqual('Unauthorized');
+      done();
+    });
+  });
+});
+

@@ -3,6 +3,7 @@ import passport from 'passport';
 import util from '../helpers/utilities';
 // eslint-disable-next-line no-unused-vars
 import passportconfig from '../helpers/passport';
+import Auth from '../helpers/auth'
 
 class Authenticate {
   static googleLogin(req, res, next) {
@@ -23,6 +24,23 @@ class Authenticate {
       req.userProfile = user;
       next();
     })(req, res, next);
+  }
+
+  static isloggedIn(req, res, next) {
+    if (!req.headers.authorization) {
+      return util.errorStatus(res, 403, 'Authentication is required');
+    }
+
+    const token = req.headers.authorization.split(' ')[1];
+
+    try {
+      const decode = Auth.verifyToken(token);
+      req.user = decode;
+
+      return next();
+    } catch (error) {
+      return util.errorStatus(res, 401, 'Unauthorized');
+    }
   }
 }
 

@@ -13,7 +13,7 @@ const author = {
 
   wrongInputType: {
     firstName: 'John John',
-    middleName: '',
+    middleName: '*',
     lastName: '---???'
   },
 
