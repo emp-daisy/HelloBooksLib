@@ -33,10 +33,8 @@ export function up(queryInterface) {
       },
       {
         category: 'Science'
-      },
-    ], {
-      ignoreDuplicates: true
-    });
+      }
+    ], {});
   };
 
   export function down(queryInterface) {
