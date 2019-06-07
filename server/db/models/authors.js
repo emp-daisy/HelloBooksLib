@@ -5,5 +5,12 @@ export default (sequelize, DataTypes) => {
     lastName: DataTypes.STRING
   }, {});
 
+  Authors.associate = (models) => {
+    Authors.hasMany(models.Books, {
+      foreignKey: 'authorID',
+      onDelete: 'CASCADE'
+    });
+  };
+
   return Authors;
 };

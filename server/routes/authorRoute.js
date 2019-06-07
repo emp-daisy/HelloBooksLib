@@ -4,7 +4,8 @@ import Validate from '../middleware/validation';
 
 const authorRoute = express.Router();
 
-authorRoute.post('/', Validate.newAuthor, AuthorController.addAuthor);
+authorRoute.post('/', Validate.author, AuthorController.addAuthor);
 authorRoute.get('/:id', AuthorController.getAuthor);
+authorRoute.patch('/:id', Validate.author, AuthorController.updateAuthor);
 
 export default authorRoute;
