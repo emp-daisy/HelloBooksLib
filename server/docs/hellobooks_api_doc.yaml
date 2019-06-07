@@ -18,6 +18,12 @@ externalDocs:
 servers:
 - url: /api/v1
 - url: https://hello-books-lib-staging.herokuapp.com/api/v1/ # Heroku deployment (staging)
+
+securityDefinitions:
+  Bearer:
+    - type: apiKey
+    - name: Authorization
+    - in: header
 tags:
 - name: Users
   description: Operations available for user endpoints
@@ -331,6 +337,32 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/errorResponse"
+    get:
+      tags:
+        - Authors
+      security:
+        - bearerAuth: []
+      summary: List all the available Authors
+      description: A logged in user can get a list of the available Authors
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/successResponse"
+        403:
+          description: Authentication is required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        500:
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
 
 components:
   securitySchemes:
@@ -362,6 +394,8 @@ components:
           type: integer
           format: int64
         firstName:
+          type: string
+        middleName:
           type: string
         lastName:
           type: string

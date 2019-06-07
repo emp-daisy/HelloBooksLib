@@ -24,6 +24,17 @@ class AuthorController {
       util.errorStatus(res, 500, error.name);
     }
   }
+
+  static async listAuthor(req, res) {
+    try {
+      const result = await models.Authors.findAll();
+
+      return util.successStatus(res, 200, 'Authors retrieved successfully', result)
+    } catch (error) {
+      return util.errorStatus(res, 500, error.name)
+    }
+  }
+
 }
 
 export default AuthorController;
