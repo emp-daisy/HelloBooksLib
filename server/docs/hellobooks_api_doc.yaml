@@ -18,6 +18,12 @@ externalDocs:
 servers:
 - url: /api/v1
 - url: https://hello-books-lib-staging.herokuapp.com/api/v1/ # Heroku deployment (staging)
+
+securityDefinitions:
+  Bearer:
+    - type: apiKey
+    - name: Authorization
+    - in: header
 tags:
 - name: Users
   description: Operations available for user endpoints
@@ -334,10 +340,10 @@ paths:
     get:
       tags:
         - Authors
-      summary: List all the available Authors
-      description: A logged in user can get a list of the available Authors
       security:
         - bearerAuth: []
+      summary: List all the available Authors
+      description: A logged in user can get a list of the available Authors
       responses:
         200:
           description: OK
@@ -455,5 +461,3 @@ components:
           type: number
         message:
           type: string
-        data:
-          type: array

@@ -27,10 +27,6 @@ class AuthorController {
 
   static async listAuthor(req, res) {
     try {
-      if (!req.headers.authorization) {
-        util.errorStatus(res, 403, 'Authentication is required')
-      }
-      
       const result = await models.Authors.findAll();
 
       return util.successStatus(res, 200, 'Authors retrieved successfully', result)

@@ -1,8 +1,6 @@
 import supertest from 'supertest';
 import app from '../index';
 import author from './mock_data/authors.mock';
-import mockUser from './mock_data/mock_users';
-
 
 const server = () => supertest(app);
 const url = '/api/v1';
@@ -58,13 +56,39 @@ describe('Test list authors functionality', () => {
 
   beforeAll((done) => {
     server()
+    .post(`${url}/auth/signup`)
+    .send({
+      firstName: 'Test',
+      lastName: 'Testing',
+      email: 'testing2@example.com',
+      password: 'PassWord123..'
+    })
+    .end((regErr, regRes) => {
+      const { email } = regRes.body.data
+      server()
     .post(`${url}/auth/signin`)
-    .send(mockUser.completeLoginData)
+    .send({
+      email,
+      password: 'PassWord123..'
+    })
     .end((err, res) => {
-      tokenAuth  = res.body.data.token;     
+      tokenAuth  = `Bearer ${res.body.data.token}`;     
       done();
     })
+    })
   });
+
+  it('Should not list authors for a user when authorization header is missing', async done => {
+    server()
+    .get(`${url}/authors`)
+    .end((err, res) => {
+      expect(res.statusCode).toEqual(403);
+      expect(res.body).toHaveProperty('error');
+      expect(res.body.error).toEqual('Authentication is required');
+      done();
+    });
+  });
+
   it('Should list all authors for an authorised user', async done => {
     server()
     .get(`${url}/authors`)
@@ -77,4 +101,17 @@ describe('Test list authors functionality', () => {
       done();
     });
   });
+  
+  it('Should not list authors for a user with invalid token', async done => {
+    server()
+    .get(`${url}/authors`)
+    .set('Authorization', `Bearer ghhjkjkkkia`)
+    .end((err, res) => {
+      expect(res.statusCode).toEqual(401);
+      expect(res.body).toHaveProperty('error');
+      expect(res.body.error).toEqual('Unauthorized');
+      done();
+    });
+  });
 });
+
