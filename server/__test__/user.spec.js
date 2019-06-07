@@ -350,22 +350,10 @@ describe('User tests', () => {
 });
 
 describe('test for verifying email', () => {
-  it('Should send a 200 response if user token and id is valid',  async done => {
-    server()
-    .get(`${url}/auth/verifyemail?token=${token}&id=${userId}`)
-    .end((err, res) => {
-      expect(res.statusCode).toEqual(200);
-      expect(res.body).toHaveProperty('message');
-      expect(res.body.message).toEqual('Email verified successfully');
-      done();
-      expect(res.body).toMatchSnapshot();
-    })
-  });
   it('Should fail if token doesn\'t match the user email_confirm_code token', async done => {
      server()
     .get(`${url}/auth/verifyemail?token=${token.substring(2, 30)}&id=${userId}`)
     .end((err, res) => {
-      console.log(res.body)
       expect(res.statusCode).toEqual(401);
       expect(res.body).toHaveProperty('error');
       expect(res.body.error).toEqual('Invalid verification link');
@@ -373,7 +361,7 @@ describe('test for verifying email', () => {
       expect(res.body).toMatchSnapshot();
     })
   });
-   it('Should fail if user id is invalid', async done => {
+    it('Should fail if user id is invalid', async done => {
      server()
     .get(`${url}/auth/verifyemail?token=${token}&id=${994444}`)
     .end((err, res) => {
@@ -416,6 +404,18 @@ describe('test for verifying email', () => {
       done();
       expect(res.body).toMatchSnapshot();
     })
+  });  
+
+    it('Should send a 200 response if user token and id is valid',  async done => {
+    server()
+    .get(`${url}/auth/verifyemail?token=${token}&id=${userId}`)
+    .end((err, res) => {
+      expect(res.statusCode).toEqual(200);
+      expect(res.body).toHaveProperty('message');
+      expect(res.body.message).toEqual('Email verified successfully');
+      done();
+      expect(res.body).toMatchSnapshot();
+    })
   });
 
     it('Should send a 403 response if user is already verified',  async done => {
@@ -429,7 +429,7 @@ describe('test for verifying email', () => {
       expect(res.body).toMatchSnapshot();
     })
   });
-}
+});
 describe('test super admin role assigning', () => {
     beforeAll((done) => {
       server()
