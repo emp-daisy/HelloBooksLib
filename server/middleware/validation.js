@@ -1,4 +1,4 @@
-import { check, validationResult } from 'express-validator/check';
+import { check, validationResult, param } from 'express-validator/check';
 import util from '../helpers/utilities';
 
 const validate = {
@@ -136,9 +136,9 @@ const validate = {
       .trim()
       .withMessage('first Name can only contain letters: Please remove invalid characters'),
     check('middleName')
-      .custom((param) => {
-        if(param){
-          if(!param.match(/^[A-Za-z]+$/)) {
+      .custom((item) => {
+        if(item){
+          if(!item.match(/^[A-Za-z]+$/)) {
             throw new Error('Middle Name name can ony contain letters: remove invalid characters');
           }
         }
@@ -152,6 +152,48 @@ const validate = {
       .trim()
       .withMessage('Last name can ony contain letters: remove invalid characters'),
       
+    (req, res, next) => {
+      const errors = validationResult(req);
+      const errMessages = [];
+      if (!errors.isEmpty()) {
+        errors.array({ onlyFirstError: true }).forEach((err) => {
+          errMessages.push(err.msg);
+        });
+        return util.errorStatus(res, 400, errMessages);
+      }
+      return next();
+    },
+  ],
+
+  resetPassword : [
+    check('password')
+      .not()
+      .isEmpty({ ignore_whitespace: true })
+      .withMessage('Password should not be empty: Please input password')
+      .matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]/, "i")
+      .withMessage('Password must contain at least one uppercase letter, one lowercase letter and one numeric digit')
+      .trim()
+      .isLength({ min: 8 })
+      .withMessage('Password Length should be at least 8 Characters'),
+
+    (req, res, next) => {
+      const errors = validationResult(req);
+      const errMessages = [];
+      if (!errors.isEmpty()) {
+        errors.array().forEach((err) => {
+          errMessages.push(err.msg);
+        });
+        return util.errorStatus(res, 400, errMessages);
+      }
+      return next();
+    },
+  ],
+
+  id : [
+    param('id')
+      .matches(/^[1-9][0-9]*$/)
+      .withMessage('ID must be a number greater than 1'),
+
     (req, res, next) => {
       const errors = validationResult(req);
       const errMessages = [];

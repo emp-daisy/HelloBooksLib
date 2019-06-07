@@ -24,7 +24,7 @@ class BookController {
     }
   }
 
-  static async getBooks(req, res) {
+  static async getAllBooks(req, res) {
     if (req.query.page) {
       let { page, limit } = req.query;
       page = parseInt(page, 10);
@@ -51,14 +51,26 @@ class BookController {
         Utils.errorStatus(res, 500, error.message);
       }
     } else {
-      try {
-        const books = await models.Books.findAll();
-        return Utils.successStatus(res, 200, 'success', books);
-      } catch (error) {
-        log(error.message);
-        Utils.errorStatus(res, 500, error.message);
-      }
+      return Utils.successStatus(res, 200, 'Books fetched successfully', await models.Books.findAll());
     }
+  }
+
+  static async getSpecificBook(req, res) {
+    const book = await models.Books.findByPk(req.params.id);
+    if(!book) return Utils.errorStatus(res, 404, 'Book with the specified ID not found');
+
+    return Utils.successStatus(res,
+      200,
+      'Book fetched successfully',
+      book
+    );
+  }
+
+  static async deleteBook(req, res) {
+    const book = await models.Books.destroy({ where: { id: req.params.id }});
+    if(!book) return Utils.errorStatus(res, 404, 'Book with the specified ID not found');
+
+    return Utils.successStatus(res, 200, 'Book deleted successfully', {});
   }
 }
 

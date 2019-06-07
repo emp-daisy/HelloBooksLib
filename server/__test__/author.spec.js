@@ -43,7 +43,8 @@ describe('Authors tests', () => {
           expect(res.statusCode).toEqual(400);
           expect(res.body).toHaveProperty('error');
           expect(res.body.error[0]).toEqual('first Name can only contain letters: Please remove invalid characters');
-          expect(res.body.error[1]).toEqual('Last name can ony contain letters: remove invalid characters');
+          expect(res.body.error[1]).toEqual('Middle Name name can ony contain letters: remove invalid characters');
+          expect(res.body.error[2]).toEqual('Last name can ony contain letters: remove invalid characters');
           done();
           expect(res.body).toMatchSnapshot();
         });
