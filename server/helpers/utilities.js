@@ -42,11 +42,11 @@ class Utilities {
   * @memberof Utilities
   */
 
-  static async isExist(key, model) {
-    const isExist = await models[model].findOne( { where: { id : key} });
+  static async exits(key, model) {
+    const exists = await models[model].findOne( { where: { id : key} });
 
-    if(isExist) {
-      return isExist.dataValues;
+    if(exists) {
+      return exists.dataValues;
     }
 
     return false;
