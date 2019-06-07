@@ -4,6 +4,7 @@ import util from '../helpers/utilities';
 // eslint-disable-next-line no-unused-vars
 import passportconfig from '../helpers/passport';
 import Auth from '../helpers/auth'
+import models from '../db/models';
 
 class Authenticate {
   static googleLogin(req, res, next) {
@@ -31,7 +32,7 @@ class Authenticate {
       return util.errorStatus(res, 403, 'Authentication is required');
     }
     let token = req.headers.authorization;
-    if(token.startsWith('bearer ')) {
+    if(token.startsWith('Bearer ')) {
       token = req.headers.authorization.split(' ')[1]
     }
 
@@ -44,6 +45,18 @@ class Authenticate {
     } catch (error) {
       return util.errorStatus(res, 401, 'Unauthorized');
     }
+  }
+
+  static async isSuperAdmin(req, res, next) {
+    const { user } = req;
+    
+    const superAdmin = await models.Users.findOne({where: {email: user.email}})
+
+    if(!superAdmin) return util.errorStatus(res, 401, 'Unauthorized');
+
+    if(superAdmin.role !== 'super_admin') return util.errorStatus(res, 401, 'Unauthorized');
+
+    return next();
   }
 }
 

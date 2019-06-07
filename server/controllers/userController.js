@@ -54,15 +54,17 @@ class UserController {
   static async emailSignin(req, res) {
     try {
       const { email, password } = req.body;
+
       const user = await models.Users.findOne({ where: { email } });
+
       if (!user) return util.errorStatus(res, 401, 'Incorrect Login information');
 
       const result = await auth.comparePassword(password, user.password);
 
       if (!result) return util.errorStatus(res, 401, 'Incorrect Login information');
 
-      const {id, firstName, lastName, email: emailAddress} = user.dataValues;
-      const token = auth.generateToken({ id, firstName, lastName, email: emailAddress });
+      const {id, firstName, lastName, email: emailAddress, role} = user.dataValues;
+      const token = auth.generateToken({ id, firstName, lastName, email: emailAddress, role });
 
       return util.successStatus(res, 200, 'Login successful', {
         token,
@@ -142,11 +144,13 @@ class UserController {
       const user = await models.Users.findByPk(id);
       if(!user) return util.errorStatus(res, 401, 'Invalid verification link');
       const { email_confirm_code, email } = user;
-      
+
+      if (email_confirm_code === null) return util.errorStatus(res, 403, 'Email already verified');
+
       if(email_confirm_code !== token) {
           return util.errorStatus(res, 401, 'Invalid verification link');
       }
-      models.Users.update({ email_confirm_code: null },{ where: { email } });
+      await models.Users.update({ email_confirm_code: null },{ where: { email } });
       // this should redirect the user to a page. but for test sakes, I will return a response.
       return util.successStatus(res, 200, 'Email verified successfully');
     } catch (err) {
@@ -210,20 +214,8 @@ class UserController {
   }
 
   static async assignUserRole(req, res) {
-    let token  = req.headers.authorization ? req.headers.authorization : req.query.token;
     const { email, role } = req.body;
-
-    if( !token ) return util.errorStatus(res, 401, 'Not Authorized');
-
-    token = token.startsWith('bearer ') ? token.slice(7, token.length) : token;
-
-    const payload = auth.verifyToken(token);
-    if(!payload) return util.errorStatus(res, 401, 'Not Authorized');
     try {
-        const superAdmin = await models.Users.findOne({where: {email: payload.email}})
-
-        if(!superAdmin) return util.errorStatus(res, 401, 'Not Authorized');
-
         const user = await models.Users.findOne({where: {email}});
 
         if(!user) return util.errorStatus(res, 404, 'User does not exists');
@@ -231,7 +223,7 @@ class UserController {
         models.Users.update({ role }, {where: { email } });
 
         return util.successStatus(res, 200, 'Role Assigned successfully', {
-          assignedBy: superAdmin.firstName,
+          assignedBy: req.user.firstName,
           id: user.id,
           firstName: user.firstName,
           lastName: user.lastName,

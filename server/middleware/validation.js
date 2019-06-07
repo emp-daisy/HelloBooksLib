@@ -153,8 +153,6 @@ const validate = {
       return next();
     },
   ],
-<<<<<<< HEAD
-
   author : [
     check('firstName')
       .not()

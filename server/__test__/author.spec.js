@@ -135,7 +135,7 @@ describe('Test list authors functionality', () => {
       password: 'PassWord123..'
     })
     .end((err, res) => {
-      tokenAuth  = `bearer ${res.body.data.token}`;     
+      tokenAuth  = `Bearer ${res.body.data.token}`;     
       done();
     })
     })

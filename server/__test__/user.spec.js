@@ -365,6 +365,7 @@ describe('test for verifying email', () => {
      server()
     .get(`${url}/auth/verifyemail?token=${token.substring(2, 30)}&id=${userId}`)
     .end((err, res) => {
+      console.log(res.body)
       expect(res.statusCode).toEqual(401);
       expect(res.body).toHaveProperty('error');
       expect(res.body.error).toEqual('Invalid verification link');
@@ -405,7 +406,7 @@ describe('test for verifying email', () => {
       expect(res.body).toMatchSnapshot();
     })
   });
-      it('Should fail if user token is not defined', async done => {
+    it('Should fail if user token is not defined', async done => {
      server()
     .get(`${url}/auth/verifyemail?id=${userId}`)
     .end((err, res) => {
@@ -417,7 +418,19 @@ describe('test for verifying email', () => {
     })
   });
 
-  describe('test super admin role assigning', () => {
+    it('Should send a 403 response if user is already verified',  async done => {
+    server()
+    .get(`${url}/auth/verifyemail?token=${token}&id=${userId}`)
+    .end((err, res) => {
+      expect(res.statusCode).toEqual(403);
+      expect(res.body).toHaveProperty('error');
+      expect(res.body.error).toEqual('Email already verified');
+      done();
+      expect(res.body).toMatchSnapshot();
+    })
+  });
+}
+describe('test super admin role assigning', () => {
     beforeAll((done) => {
       server()
       .post(`${url}/auth/signin`)
@@ -430,7 +443,7 @@ describe('test for verifying email', () => {
     it('Should pass and return 200 response if role was successfully assigned', async done => {
       server()
       .post(`${url}/auth/assignrole`)
-      .set('Authorization', `bearer ${superAdminToken}`)
+      .set('Authorization', `Bearer ${superAdminToken}`)
       .send({email: 'john.doe@test.com', role: 'admin'})
       .end((err, res) => {
         expect(res.statusCode).toEqual(200);
@@ -443,12 +456,12 @@ describe('test for verifying email', () => {
     it('Should fail and return 401 response if user is not found in db', async done => {
       server()
       .post(`${url}/auth/assignrole`)
-      .set('Authorization', 'bearer kjjodndsfj94mkfdsif0dfdsfmosj')
+      .set('Authorization', 'Bearer kjjodndsfj94mkfdsif0dfdsfmosj')
       .send({email: 'john.doe@test.com', role: 'admin'})
       .end((err, res) => {
         expect(res.statusCode).toEqual(401);
         expect(res.body).toHaveProperty('error');
-         expect(res.body.error).toEqual('Not Authorized');
+         expect(res.body.error).toEqual('Unauthorized');
         done();
         expect(res.body).toMatchSnapshot();
       })
@@ -456,7 +469,7 @@ describe('test for verifying email', () => {
     it('Should fail and return 404 response if user email is not found', async done => {
       server()
       .post(`${url}/auth/assignrole`)
-      .set('Authorization', `bearer ${superAdminToken}`)
+      .set('Authorization', `Bearer ${superAdminToken}`)
       .send({email: 'jane.doe@test.com', role: 'admin'})
       .end((err, res) => {
         expect(res.statusCode).toEqual(404);
@@ -466,14 +479,14 @@ describe('test for verifying email', () => {
         expect(res.body).toMatchSnapshot();
       })
     });
-     it('Should fail and return 401 response if there is no authorization is set', async done => {
+     it('Should fail and return 403 response if there is no authorization is set', async done => {
       server()
       .post(`${url}/auth/assignrole`)
       .send({email: 'john.doe@test.com', role: 'admin'})
       .end((err, res) => {
-        expect(res.statusCode).toEqual(401);
+        expect(res.statusCode).toEqual(403);
         expect(res.body).toHaveProperty('error');
-        expect(res.body.error).toEqual('Not Authorized');
+        expect(res.body.error).toEqual('Authentication is required');
         done();
         expect(res.body).toMatchSnapshot();
       })
@@ -482,6 +495,7 @@ describe('test for verifying email', () => {
       server()
       .post(`${url}/auth/assignrole`)
       .send({email: '', role: 'admin'})
+      .set('Authorization', `Bearer ${superAdminToken}`)
       .end((err, res) => {
         expect(res.statusCode).toEqual(400);
         expect(res.body).toHaveProperty('error');
@@ -493,6 +507,7 @@ describe('test for verifying email', () => {
       server()
       .post(`${url}/auth/assignrole`)
       .send({email: 'john.doe@test.com', role: ''})
+      .set('Authorization', `Bearer ${superAdminToken}`)
       .end((err, res) => {
         expect(res.statusCode).toEqual(400);
         expect(res.body).toHaveProperty('error');
@@ -500,5 +515,4 @@ describe('test for verifying email', () => {
         expect(res.body).toMatchSnapshot();
       })
     });
-  })
-})
+  });
