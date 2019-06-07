@@ -5,7 +5,7 @@ export function up(queryInterface, Sequelize) {
     id: {
       allowNull: false,
       autoIncrement: true,
-      primaryKey: true,
+      primarykey: true,
       type: Sequelize.INTEGER
     },
     title: {
@@ -30,8 +30,12 @@ export function up(queryInterface, Sequelize) {
       }
     },
     categoryID: {
-      allowNull: true,
-      type: Sequelize.INTEGER
+      allowNull: false,
+      type: Sequelize.INTEGER,
+      references: {
+        model: 'Categories',
+        key: 'id'
+      }
     },
     reviewID: {
       allowNull: true,

@@ -70,6 +70,17 @@ describe('Books tests', () => {
           done();
         });
     });
+    it('Should throw an error when categoryID does not exist in the database', async (done) => {
+      server()
+        .post(`${url}/books`)
+        .send(mockBook.wrongCategoryIDBookData)
+        .end((err, res) => {
+          expect(res.statusCode).toEqual(400);
+          expect(res.body.status).toEqual(400);
+          expect(res.body.error[0]).toEqual('No Category with the specified ID was found');
+          done();
+        });
+    });
   });
   
   describe('Get all books', () => {
