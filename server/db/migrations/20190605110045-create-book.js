@@ -29,6 +29,10 @@ export function up(queryInterface, Sequelize) {
         key: 'id'
       }
     },
+    categoryID: {
+      allowNull: true,
+      type: Sequelize.INTEGER
+    },
     reviewID: {
       allowNull: true,
       type: Sequelize.INTEGER

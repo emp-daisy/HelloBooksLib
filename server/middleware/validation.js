@@ -93,9 +93,23 @@ const validate = {
       .isInt()
       .withMessage('AuthorID is not valid integer: Please input a valid authorID')
       .custom( async (id) => {
-        const isExist = await util.checkAuthorID(id);
+        const isExist = await util.isExist(id, 'Authors');
         if (!isExist) {
           throw new Error('No author with the specified ID was found')
+        }
+
+        return true;
+      }),
+    check('categoryID')
+      .not()
+      .isEmpty({ ignore_whitespace: true })
+      .withMessage('CategoryID can not be left empty: Please input categoryID')
+      .isInt()
+      .withMessage('categoryID is not valid integer: Please input a valid categoryID')
+      .custom( async (id) => {
+        const isExist = await util.isExist(id, 'Categories');
+        if (!isExist) {
+          throw new Error('No Category with the specified ID was found')
         }
         return true;
       }),

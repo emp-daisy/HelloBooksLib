@@ -12,6 +12,7 @@ class BookController {
       const book = await models.Books.create({
         title,
         description,
+        categoryID,
         amount,
         authorID,
         status,
