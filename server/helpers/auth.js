@@ -22,6 +22,11 @@ class  Helper {
     return token;
   }
 
+  static verifyToken(token) {
+    const decoded = jwt.verify(token, secret);
+    return decoded;
+  }
+
   static getOneTimeToken(payload, otp) {
     const token = jwt.sign(payload, otp, { expiresIn: '30 mins' });
     return token;
