@@ -50,6 +50,68 @@ describe('Authors tests', () => {
         });
     });
   });
+
+  describe('Get author', () => {
+    it('Should get an existing author', async (done) => {
+      server()
+        .get(`${url}/authors/1`)
+        .end((err, res) => {
+          expect(res.statusCode).toEqual(200);
+          expect(res.body.message).toEqual('Author found');
+          expect(res.body.data).toHaveProperty('firstName');
+          expect(res.body.data).toHaveProperty('lastName');
+          done();
+        });
+    });
+
+    it('Should not get an author that doesn\'t exit', async (done) => {
+      server()
+        .get(`${url}/authors/869887797`)
+        .end((err, res) => {
+          expect(res.statusCode).toEqual(404);
+          expect(res.body).toHaveProperty('error');
+          expect(res.body.error).toEqual('Author not found');
+          done();
+        });
+    });
+  });
+
+  describe('Update author', () => {
+    it('Should update an existing author', async (done) => {
+      server()
+        .patch(`${url}/authors/1`)
+        .send(author.updateAuthor1)
+        .end((err, res) => {
+          expect(res.statusCode).toEqual(200);
+          expect(res.body.message).toEqual('Author updated successfully');
+          done();
+        });
+    });
+
+    it('Should not update an author that doesn\'t exit', async (done) => {
+      server()
+        .patch(`${url}/authors/9993434`)
+        .send({firstName: 'first', lastName: 'last'})
+        .end((err, res) => {
+          expect(res.statusCode).toEqual(404);
+          expect(res.body).toHaveProperty('error');
+          expect(res.body.error).toEqual('Author not found');
+          done();
+        });
+    });
+
+    it('Should not update an author with invalid data', async (done) => {
+      server()
+        .patch(`${url}/authors/9993434`)
+        .send(author.invalidUpdate)
+        .end((err, res) => {
+          expect(res.statusCode).toEqual(400);
+          expect(res.body).toHaveProperty('error');
+          expect(res.body.error[0]).toEqual('Middle Name name can ony contain letters: remove invalid characters');
+          done();
+        });
+    });
+  });
 });
 
 describe('Test list authors functionality', () => {

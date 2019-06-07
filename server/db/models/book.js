@@ -13,10 +13,6 @@ export default (sequelize, DataTypes) => {
       allowNull: false,
       type: DataTypes.NUMERIC
     },
-    authorID: {
-      allowNull: true,
-      type: DataTypes.INTEGER
-    },
     reviewID: {
       allowNull: true,
       type: DataTypes.INTEGER
@@ -30,5 +26,12 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.INTEGER
     }
   }, {});
+  
+  Books.associate = (models) => {
+    Books.belongsTo(models.Authors, {
+      foreignKey: 'authorID',
+      onDelete: 'CASCADE'
+    });
+  };
   return Books;
 };

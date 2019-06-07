@@ -127,7 +127,7 @@ const validate = {
     },
   ],
 
-  newAuthor : [
+  author : [
     check('firstName')
       .not()
       .isEmpty({ ignore_whitespace: true })

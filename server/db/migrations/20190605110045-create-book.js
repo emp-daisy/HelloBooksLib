@@ -21,8 +21,13 @@ export function up(queryInterface, Sequelize) {
       type: Sequelize.NUMERIC
     },
     authorID: {
-      allowNull: true,
-      type: Sequelize.INTEGER
+      allowNull: false,
+      type: Sequelize.INTEGER,
+      onDelete: 'CASCADE',
+      references: {
+        model: 'Authors',
+        key: 'id'
+      }
     },
     reviewID: {
       allowNull: true,
