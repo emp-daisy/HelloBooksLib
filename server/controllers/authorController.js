@@ -69,6 +69,19 @@ class AuthorController {
     }
   }
 
+  static async deleteAuthor(req, res) {
+    try {
+      const deleteAuthor = await models.Authors.destroy({where: {id: req.params.id}})
+
+      if (!deleteAuthor) {
+        return util.errorStatus(res, 404, 'The author specified does not exist');
+      }
+      
+      return util.successStatus(res, 200, 'Author deleted successfully');
+    } catch (error) {
+      util.errorStatus(res, 500, error.name);
+    }
+  }
 }
 
 export default AuthorController;

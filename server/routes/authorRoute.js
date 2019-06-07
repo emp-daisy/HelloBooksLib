@@ -9,5 +9,6 @@ authorRoute.post('/', Validate.author, AuthorController.addAuthor);
 authorRoute.get('/', Authenticate.isloggedIn, AuthorController.listAuthor);
 authorRoute.get('/:id', AuthorController.getAuthor);
 authorRoute.patch('/:id', Validate.author, AuthorController.updateAuthor);
+authorRoute.delete('/:id', AuthorController.deleteAuthor);
 
 export default authorRoute;
