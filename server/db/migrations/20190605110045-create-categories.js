@@ -1,5 +1,4 @@
 /* eslint-disable require-jsdoc */
-/* eslint-disable no-unused-vars */
 
 export function up(queryInterface, Sequelize) {
   return queryInterface.createTable('Categories', {
