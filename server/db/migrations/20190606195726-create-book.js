@@ -5,7 +5,7 @@ export function up(queryInterface, Sequelize) {
     id: {
       allowNull: false,
       autoIncrement: true,
-      primarykey: true,
+      primaryKey: true,
       type: Sequelize.INTEGER
     },
     title: {
