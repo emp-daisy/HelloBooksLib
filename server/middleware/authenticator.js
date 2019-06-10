@@ -50,11 +50,11 @@ class Authenticate {
   static async isSuperAdmin(req, res, next) {
     const { user } = req;
     
-    const superAdmin = await models.Users.findOne({where: {email: user.email}})
+    const foundUser = await models.Users.findOne({where: {email: user.email}})
 
-    if(!superAdmin) return util.errorStatus(res, 401, 'Unauthorized');
+    if(!foundUser) return util.errorStatus(res, 401, 'Unauthorized');
 
-    if(superAdmin.role !== 'super_admin') return util.errorStatus(res, 401, 'Unauthorized');
+    if(foundUser.role !== 'super_admin') return util.errorStatus(res, 401, 'Unauthorized');
 
     return next();
   }

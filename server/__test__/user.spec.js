@@ -405,7 +405,6 @@ describe('test for verifying email', () => {
       expect(res.body).toMatchSnapshot();
     })
   });  
-
     it('Should send a 200 response if user token and id is valid',  async done => {
     server()
     .get(`${url}/auth/verifyemail?token=${token}&id=${userId}`)
@@ -446,6 +445,7 @@ describe('test super admin role assigning', () => {
       .set('Authorization', `Bearer ${superAdminToken}`)
       .send({email: 'john.doe@test.com', role: 'admin'})
       .end((err, res) => {
+        console.log(res.body)
         expect(res.statusCode).toEqual(200);
         expect(res.body).toHaveProperty('message');
         expect(res.body.message).toEqual('Role Assigned successfully');
@@ -453,7 +453,7 @@ describe('test super admin role assigning', () => {
         expect(res.body).toMatchSnapshot();
       })
     });
-    it('Should fail and return 401 response if user is not found in db', async done => {
+    it('Should fail and return 401 response if super_user is not found in db', async done => {
       server()
       .post(`${url}/auth/assignrole`)
       .set('Authorization', 'Bearer kjjodndsfj94mkfdsif0dfdsfmosj')

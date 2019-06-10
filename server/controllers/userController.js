@@ -220,14 +220,16 @@ class UserController {
 
         if(!user) return util.errorStatus(res, 404, 'User does not exists');
 
-        models.Users.update({ role }, {where: { email } });
+        await models.Users.update({ role }, {where: { email } });
+        const updatedUser = await models.Users.findOne({where: { email }})
 
         return util.successStatus(res, 200, 'Role Assigned successfully', {
           assignedBy: req.user.firstName,
           id: user.id,
           firstName: user.firstName,
           lastName: user.lastName,
-          email:  user.email
+          email:  user.email,
+          role: updatedUser.role
         })
     } catch(err) {
         return util.errorStatus(res, 500, err.message);
