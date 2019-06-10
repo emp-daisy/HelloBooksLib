@@ -29,6 +29,14 @@ export function up(queryInterface, Sequelize) {
         key: 'id'
       }
     },
+    categoryID: {
+      allowNull: false,
+      type: Sequelize.INTEGER,
+      references: {
+        model: 'Categories',
+        key: 'id'
+      }
+    },
     reviewID: {
       allowNull: true,
       type: Sequelize.INTEGER

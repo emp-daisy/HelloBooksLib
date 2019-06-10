@@ -7,11 +7,12 @@ const log = debug('dev');
 
 class BookController {
   static async addBook(req, res) {
-    const { title, description, amount, authorID, status, year } = req.body;
+    const { title, description, amount, authorID, status, year, categoryID } = req.body;
     try {
       const book = await models.Books.create({
         title,
         description,
+        categoryID,
         amount,
         authorID,
         status,

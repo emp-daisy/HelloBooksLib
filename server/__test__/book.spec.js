@@ -53,15 +53,9 @@ describe('Books tests', () => {
         .end((err, res) => {
           expect(res.statusCode).toEqual(400);
           expect(res.body.status).toEqual(400);
-          expect(res.body.error[0]).toEqual(
-            'Amount is not valid currency: Please input a valid amount'
-          );
-          expect(res.body.error[1]).toEqual(
-            'AuthorID can not be left empty: Please input amount'
-          );
-          expect(res.body.error[2]).toEqual(
-            'Year is not valid year: Please input a valid year'
-          );
+          expect(res.body.error[0]).toEqual('Amount is not valid currency: Please input a valid amount');
+          expect(res.body.error[1]).toEqual('AuthorID can not be left empty: Please input amount');
+          expect(res.body.error[2]).toEqual('CategoryID can not be left empty: Please input categoryID');
           done();
         });
     });
@@ -73,6 +67,17 @@ describe('Books tests', () => {
           expect(res.statusCode).toEqual(400);
           expect(res.body.status).toEqual(400);
           expect(res.body.error[0]).toEqual('No author with the specified ID was found');
+          done();
+        });
+    });
+    it('Should throw an error when categoryID does not exist in the database', async (done) => {
+      server()
+        .post(`${url}/books`)
+        .send(mockBook.wrongCategoryIDBookData)
+        .end((err, res) => {
+          expect(res.statusCode).toEqual(400);
+          expect(res.body.status).toEqual(400);
+          expect(res.body.error[0]).toEqual('No Category with the specified ID was found');
           done();
         });
     });

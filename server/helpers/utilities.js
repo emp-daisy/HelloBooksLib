@@ -35,15 +35,21 @@ class Utilities {
 
    /**
   * @static
-  * @description Check if author exist in database
-  * @param {integer} authorID - the author's id to be checked in database
-  * @returns {boolean} returns true or false
+  * @description Check if data exist in database
+  * @param {integer} key - the table's id to be checked against in database
+  * @param {table} model - the table name
+  * @returns {boolean / dataValue} returns dataValue or false
   * @memberof Utilities
   */
 
-  static async checkAuthorID(authorID) {
-    const author = await models.Authors.findOne( { where: { id : authorID} });
-    return author;
+  static async exits(key, model) {
+    const exists = await models[model].findOne( { where: { id : key} });
+
+    if(exists) {
+      return exists.dataValues;
+    }
+
+    return false;
   }
 }
 
