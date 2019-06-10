@@ -45,6 +45,10 @@ export function up(queryInterface, Sequelize) {
     email_confirm_code: {
       type: Sequelize.STRING,
       allowNull: true
+    },
+    role: {
+      type: Sequelize.STRING,
+      allowNull: false
     }
   });
 }

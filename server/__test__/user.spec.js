@@ -8,6 +8,7 @@ import mockUser from './mock_data/mock_users';
 const server = () => supertest(app);
 const url = '/api/v1';
 let token;
+let superAdminToken;
 let userId;
 const passwordToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJqb2huLmRvZUB0ZXN0LmNvbSIsImlhdCI6MTU1OTY2MTgwMn0.d_2-msW7YeZ0RtzHhe_7-b3QBmy0IuCJUAeey6SwPhY';
 const wrongPasswordToken = 'eyJhbGciOi.eyJpZCI6MSwiZW1haWwiOiJ.rAb7aZJip36siJGnU';
@@ -349,17 +350,6 @@ describe('User tests', () => {
 });
 
 describe('test for verifying email', () => {
-  it('Should send a 200 response if user token and id is valid',  async done => {
-    server()
-    .get(`${url}/auth/verifyemail?token=${token}&id=${userId}`)
-    .end((err, res) => {
-      expect(res.statusCode).toEqual(200);
-      expect(res.body).toHaveProperty('message');
-      expect(res.body.message).toEqual('Email verified successfully');
-      done();
-      expect(res.body).toMatchSnapshot();
-    })
-  });
   it('Should fail if token doesn\'t match the user email_confirm_code token', async done => {
      server()
     .get(`${url}/auth/verifyemail?token=${token.substring(2, 30)}&id=${userId}`)
@@ -371,7 +361,7 @@ describe('test for verifying email', () => {
       expect(res.body).toMatchSnapshot();
     })
   });
-   it('Should fail if user id is invalid', async done => {
+    it('Should fail if user id is invalid', async done => {
      server()
     .get(`${url}/auth/verifyemail?token=${token}&id=${994444}`)
     .end((err, res) => {
@@ -404,7 +394,7 @@ describe('test for verifying email', () => {
       expect(res.body).toMatchSnapshot();
     })
   });
-      it('Should fail if user token is not defined', async done => {
+    it('Should fail if user token is not defined', async done => {
      server()
     .get(`${url}/auth/verifyemail?id=${userId}`)
     .end((err, res) => {
@@ -414,5 +404,114 @@ describe('test for verifying email', () => {
       done();
       expect(res.body).toMatchSnapshot();
     })
+  });  
+    it('Should send a 200 response if user token and id is valid',  async done => {
+    server()
+    .get(`${url}/auth/verifyemail?token=${token}&id=${userId}`)
+    .end((err, res) => {
+      expect(res.statusCode).toEqual(200);
+      expect(res.body).toHaveProperty('message');
+      expect(res.body.message).toEqual('Email verified successfully');
+      done();
+      expect(res.body).toMatchSnapshot();
+    })
   });
-})
+
+    it('Should send a 403 response if user is already verified',  async done => {
+    server()
+    .get(`${url}/auth/verifyemail?token=${token}&id=${userId}`)
+    .end((err, res) => {
+      expect(res.statusCode).toEqual(403);
+      expect(res.body).toHaveProperty('error');
+      expect(res.body.error).toEqual('Email already verified');
+      done();
+      expect(res.body).toMatchSnapshot();
+    })
+  });
+});
+describe('test super admin role assigning', () => {
+    beforeAll((done) => {
+      server()
+      .post(`${url}/auth/signin`)
+      .send({email: 'super_admin@test.com', password: 'PassWord123..'})
+      .end((err, res) => {
+        superAdminToken = res.body.data.token;
+        done();
+      })
+    });
+    it('Should pass and return 200 response if role was successfully assigned', async done => {
+      server()
+      .post(`${url}/auth/assignrole`)
+      .set('Authorization', `Bearer ${superAdminToken}`)
+      .send({email: 'john.doe@test.com', role: 'admin'})
+      .end((err, res) => {
+        expect(res.statusCode).toEqual(200);
+        expect(res.body).toHaveProperty('message');
+        expect(res.body.message).toEqual('Role Assigned successfully');
+        done();
+        expect(res.body).toMatchSnapshot();
+      })
+    });
+    it('Should fail and return 401 response if super_user is not found in db', async done => {
+      server()
+      .post(`${url}/auth/assignrole`)
+      .set('Authorization', 'Bearer kjjodndsfj94mkfdsif0dfdsfmosj')
+      .send({email: 'john.doe@test.com', role: 'admin'})
+      .end((err, res) => {
+        expect(res.statusCode).toEqual(401);
+        expect(res.body).toHaveProperty('error');
+         expect(res.body.error).toEqual('Unauthorized');
+        done();
+        expect(res.body).toMatchSnapshot();
+      })
+    });
+    it('Should fail and return 404 response if user email is not found', async done => {
+      server()
+      .post(`${url}/auth/assignrole`)
+      .set('Authorization', `Bearer ${superAdminToken}`)
+      .send({email: 'jane.doe@test.com', role: 'admin'})
+      .end((err, res) => {
+        expect(res.statusCode).toEqual(404);
+        expect(res.body).toHaveProperty('error');
+         expect(res.body.error).toEqual('User does not exists');
+        done();
+        expect(res.body).toMatchSnapshot();
+      })
+    });
+     it('Should fail and return 403 response if there is no authorization is set', async done => {
+      server()
+      .post(`${url}/auth/assignrole`)
+      .send({email: 'john.doe@test.com', role: 'admin'})
+      .end((err, res) => {
+        expect(res.statusCode).toEqual(403);
+        expect(res.body).toHaveProperty('error');
+        expect(res.body.error).toEqual('Authentication is required');
+        done();
+        expect(res.body).toMatchSnapshot();
+      })
+    });
+    it('Should fail and return 400 response if email is missing from request body ', async done => {
+      server()
+      .post(`${url}/auth/assignrole`)
+      .send({email: '', role: 'admin'})
+      .set('Authorization', `Bearer ${superAdminToken}`)
+      .end((err, res) => {
+        expect(res.statusCode).toEqual(400);
+        expect(res.body).toHaveProperty('error');
+        done();
+        expect(res.body).toMatchSnapshot();
+      })
+    });
+    it('Should fail and return 400 response if role is missing from request body ', async done => {
+      server()
+      .post(`${url}/auth/assignrole`)
+      .send({email: 'john.doe@test.com', role: ''})
+      .set('Authorization', `Bearer ${superAdminToken}`)
+      .end((err, res) => {
+        expect(res.statusCode).toEqual(400);
+        expect(res.body).toHaveProperty('error');
+        done();
+        expect(res.body).toMatchSnapshot();
+      })
+    });
+  });
