@@ -445,7 +445,6 @@ describe('test super admin role assigning', () => {
       .set('Authorization', `Bearer ${superAdminToken}`)
       .send({email: 'john.doe@test.com', role: 'admin'})
       .end((err, res) => {
-        console.log(res.body)
         expect(res.statusCode).toEqual(200);
         expect(res.body).toHaveProperty('message');
         expect(res.body.message).toEqual('Role Assigned successfully');
