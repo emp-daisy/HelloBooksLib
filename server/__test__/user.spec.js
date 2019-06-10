@@ -452,6 +452,19 @@ describe('test super admin role assigning', () => {
         expect(res.body).toMatchSnapshot();
       })
     });
+     it('Should fail and return 404 response if role type is not found', async done => {
+      server()
+      .post(`${url}/auth/assignrole`)
+      .set('Authorization', `Bearer ${superAdminToken}`)
+      .send({email: 'john.doe@test.com', role: 'thor'})
+      .end((err, res) => {
+        expect(res.statusCode).toEqual(404);
+        expect(res.body).toHaveProperty('error');
+        expect(res.body.error).toEqual('Role type not found')
+        done();
+        expect(res.body).toMatchSnapshot();
+      })
+    });
     it('Should fail and return 401 response if super_user is not found in db', async done => {
       server()
       .post(`${url}/auth/assignrole`)

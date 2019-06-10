@@ -220,6 +220,10 @@ class UserController {
 
         if(!user) return util.errorStatus(res, 404, 'User does not exists');
 
+        const roleSpec = ["admin", "user", "super_admin"];
+
+        if(!roleSpec.includes(role)) return util.errorStatus(res, 404, 'Role type not found')
+
         await models.Users.update({ role }, {where: { email } });
         const updatedUser = await models.Users.findOne({where: { email }})
 
