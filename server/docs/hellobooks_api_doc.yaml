@@ -536,7 +536,18 @@ paths:
       security:
         - bearerAuth: []
       summary: Assign role to users
-      description: Authenticate by user role before they can perform certain actions  
+      description: Authenticate by user role before they can perform certain actions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                role:
+                  type: string  
       responses:
         200:
           description: OK
