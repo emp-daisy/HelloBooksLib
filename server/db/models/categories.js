@@ -1,4 +1,3 @@
-
 export default (sequelize, DataTypes) => {
   const Categories = sequelize.define('Categories', {
     category: {

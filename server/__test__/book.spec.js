@@ -1,15 +1,16 @@
 import supertest from 'supertest';
 import app from '../index';
 import mockBook from './mock_data/mock_books';
+import mockReqBook from './mock_data/mock_requested_books';
 
 const server = () => supertest(app);
-const url = '/api/v1';
+const url = '/api/v1/books';
 
 describe('Books tests', () => {
   describe('test for add books', () => {
     it('Should add a new book when all required input is supplied', async done => {
       server()
-        .post(`${url}/books`)
+        .post(`${url}`)
         .send(mockBook.completeBookData)
         .end((err, res) => {
           expect(res.statusCode).toEqual(201);
@@ -18,7 +19,7 @@ describe('Books tests', () => {
           expect(res.body.data).toHaveProperty('year');
           expect(res.body.data).toHaveProperty('title');
           expect(res.body.data).toHaveProperty('amount');
-          expect(res.body.data).toHaveProperty('status');
+          expect(res.body.data).toHaveProperty('active');
           expect(res.body.data).toHaveProperty('description');
           done();
           expect(Object.keys(res.body.data)).toMatchSnapshot();
@@ -26,7 +27,7 @@ describe('Books tests', () => {
     });
     it('Should throw an error when inputs are not supplied', async done => {
       server()
-        .post(`${url}/books`)
+        .post(`${url}`)
         .send(mockBook.emptyBookData)
         .end((err, res) => {
           expect(res.statusCode).toEqual(400);
@@ -41,43 +42,54 @@ describe('Books tests', () => {
             'Amount can not be left empty: Please input amount'
           );
           expect(res.body.error[3]).toEqual(
-            'AuthorID can not be left empty: Please input amount'
+            'ISBN can not be left empty: Please input isbn'
+          );
+          expect(res.body.error[4]).toEqual(
+            'AuthorID can not be left empty: Please input authorID'
+          );
+          expect(res.body.error[5]).toEqual(
+            'CategoryID can not be left empty: Please input categoryID'
+          );
+          expect(res.body.error[6]).toEqual(
+            'Year can not be left empty: Please input amount'
           );
           done();
         });
     });
     it('Should throw an error when inputs are not supported', async done => {
       server()
-        .post(`${url}/books`)
+        .post(`${url}`)
         .send(mockBook.unsupportedBookData)
         .end((err, res) => {
           expect(res.statusCode).toEqual(400);
           expect(res.body.status).toEqual(400);
           expect(res.body.error[0]).toEqual('Amount is not valid currency: Please input a valid amount');
-          expect(res.body.error[1]).toEqual('AuthorID can not be left empty: Please input amount');
-          expect(res.body.error[2]).toEqual('CategoryID can not be left empty: Please input categoryID');
+          expect(res.body.error[1]).toEqual('ISBN can not be left empty: Please input isbn');
+          expect(res.body.error[2]).toEqual('AuthorID can not be left empty: Please input authorID');
+          expect(res.body.error[3]).toEqual('CategoryID can not be left empty: Please input categoryID');
+          expect(res.body.error[4]).toEqual('Year is not valid year: Please input a valid year');
           done();
         });
     });
     it('Should throw an error when authorID does not exist in the database', async (done) => {
       server()
-        .post(`${url}/books`)
+        .post(`${url}`)
         .send(mockBook.wrongAuthorIDBookData)
         .end((err, res) => {
           expect(res.statusCode).toEqual(400);
           expect(res.body.status).toEqual(400);
-          expect(res.body.error[0]).toEqual('No author with the specified ID was found');
+          expect(res.body.error[1]).toEqual('No author with the specified ID was found');
           done();
         });
     });
     it('Should throw an error when categoryID does not exist in the database', async (done) => {
       server()
-        .post(`${url}/books`)
+        .post(`${url}`)
         .send(mockBook.wrongCategoryIDBookData)
         .end((err, res) => {
           expect(res.statusCode).toEqual(400);
           expect(res.body.status).toEqual(400);
-          expect(res.body.error[0]).toEqual('No Category with the specified ID was found');
+          expect(res.body.error[1]).toEqual('No Category with the specified ID was found');
           done();
         });
     });
@@ -86,7 +98,7 @@ describe('Books tests', () => {
   describe('Get all books', () => {
     it('Should fetch all books successfully', async (done) => {
       server()
-        .get(`${url}/books`)
+        .get(`${url}`)
         .end((err, res) => {
           expect(res.statusCode).toEqual(200);
           expect(res.body.message).toEqual('Books fetched successfully');
@@ -94,7 +106,7 @@ describe('Books tests', () => {
           expect(res.body.data[0]).toHaveProperty('year');
           expect(res.body.data[0]).toHaveProperty('title');
           expect(res.body.data[0]).toHaveProperty('amount');
-          expect(res.body.data[0]).toHaveProperty('status');
+          expect(res.body.data[0]).toHaveProperty('active');
           expect(res.body.data[0]).toHaveProperty('description');
           done();
           expect(Object.keys(res.body.data)).toMatchSnapshot();
@@ -105,7 +117,7 @@ describe('Books tests', () => {
       const page = 1;
       const limit = 10;
       server()
-        .get(`${url}/books?page=${page}&limit=${limit}`)
+        .get(`${url}?page=${page}&limit=${limit}`)
         .end((err, res) => {
           const { data } = res.body;
           const response = data[0];
@@ -114,7 +126,7 @@ describe('Books tests', () => {
           expect(response).toHaveProperty('year');
           expect(response).toHaveProperty('title');
           expect(response).toHaveProperty('amount');
-          expect(response).toHaveProperty('status');
+          expect(response).toHaveProperty('active');
           expect(response).toHaveProperty('description');
           done();
         });
@@ -124,7 +136,7 @@ describe('Books tests', () => {
       const page = 'page';
       const limit = 'limit';
       server()
-        .get(`${url}/books?page=${page}&limit=${limit}`)
+        .get(`${url}?page=${page}&limit=${limit}`)
         .end((err, res) => {
           const { data } = res.body;
           const response = data[0];
@@ -133,7 +145,7 @@ describe('Books tests', () => {
           expect(response).toHaveProperty('year');
           expect(response).toHaveProperty('title');
           expect(response).toHaveProperty('amount');
-          expect(response).toHaveProperty('status');
+          expect(response).toHaveProperty('active');
           expect(response).toHaveProperty('description');
           done();
         });
@@ -143,7 +155,7 @@ describe('Books tests', () => {
   describe('Get specific book', () => {
     it('Should fetch a specific book successfully', async (done) => {
       server()
-        .get(`${url}/books/1`)
+        .get(`${url}/1`)
         .end((err, res) => {
           expect(res.statusCode).toEqual(200);
           expect(res.body.message).toEqual('Book fetched successfully');
@@ -151,7 +163,7 @@ describe('Books tests', () => {
           expect(res.body.data).toHaveProperty('year');
           expect(res.body.data).toHaveProperty('title');
           expect(res.body.data).toHaveProperty('amount');
-          expect(res.body.data).toHaveProperty('status');
+          expect(res.body.data).toHaveProperty('active');
           expect(res.body.data).toHaveProperty('description');
           done();
           expect(Object.keys(res.body.data)).toMatchSnapshot();
@@ -160,7 +172,7 @@ describe('Books tests', () => {
 
     it('Should return an error message when a non existing book ID is specified', async (done) => {
       server()
-        .get(`${url}/books/510`)
+        .get(`${url}/510`)
         .end((err, res) => {
           expect(res.statusCode).toEqual(404);
           expect(res.body.error).toEqual('Book with the specified ID not found');
@@ -171,7 +183,7 @@ describe('Books tests', () => {
 
     it('Should return an error message when a non integer book ID is specified', async (done) => {
       server()
-        .get(`${url}/books/q`)
+        .get(`${url}/q`)
         .end((err, res) => {
           expect(res.statusCode).toEqual(400);
           expect(res.body.error[0]).toEqual('ID must be a number greater than 1');
@@ -184,7 +196,7 @@ describe('Books tests', () => {
   describe('Delete specific book', () => {
     it('Should delete a specific book successfully', async (done) => {
       server()
-        .delete(`${url}/books/1`)
+        .delete(`${url}/1`)
         .end((err, res) => {
           expect(res.statusCode).toEqual(200);
           expect(res.body.message).toEqual('Book deleted successfully');
@@ -195,7 +207,7 @@ describe('Books tests', () => {
 
     it('Should return an error message when a non existing book ID is specified', async (done) => {
       server()
-        .delete(`${url}/books/510`)
+        .delete(`${url}/510`)
         .end((err, res) => {
           expect(res.statusCode).toEqual(404);
           expect(res.body.error).toEqual('Book with the specified ID not found');
@@ -206,13 +218,66 @@ describe('Books tests', () => {
 
     it('Should return an error message when a non integer book ID is specified', async (done) => {
       server()
-        .delete(`${url}/books/q`)
+        .delete(`${url}/q`)
         .end((err, res) => {
           expect(res.statusCode).toEqual(400);
           expect(res.body.error[0]).toEqual('ID must be a number greater than 1');
           expect(res.body.status).toEqual(400);
           done();
         });
+    });
+  });
+
+  describe('Request a new Book', () => {
+    it('Should succesfully make a request if all input are supplied', async (done) => {
+      server()
+        .post(`${url}/request`)
+        .send(mockReqBook.completeBookData)
+        .end((err, res) => {
+          expect(res.statusCode).toEqual(201);
+          expect(res.body.message).toEqual('Book requested successfully');
+          expect(res.body.status).toEqual(201);
+          expect(res.body.data).toHaveProperty('title');
+          expect(res.body.data).toHaveProperty('description');
+          expect(res.body.data).toHaveProperty('author');
+          expect(res.body.data).toHaveProperty('year');
+          expect(res.body.data).toHaveProperty('categoryID');
+          done();
+        })
+    })
+    it('Should throw an error when Category does not exist in database', (done) => {
+      server()
+        .post(`${url}/request`)
+        .send(mockReqBook.wrongCategoryIDBookData)
+        .end((err, res) => {
+          expect(res.statusCode).toEqual(400);
+          expect(res.body.error[0]).toEqual('No Category with the specified ID was found');
+          expect(res.body.status).toEqual(400);
+          done();
+        })
+    });
+    it('Should throw an error when inputs are not supplied', (done) => {
+      server()
+        .post(`${url}/request`)
+        .send(mockReqBook.emptyBookData)
+        .end((err, res) => {
+          expect(res.body.error[0]).toEqual(
+            'Title can not be left empty: Please input title'
+          );
+          expect(res.body.error[1]).toEqual(
+            'Description can not be left empty: Please input description'
+          );
+          expect(res.body.error[2]).toEqual(
+            'Author can not be left empty: Please input author'
+          );
+          expect(res.body.error[3]).toEqual(
+            'CategoryID can not be left empty: Please input categoryID'
+          );
+          expect(res.body.error[4]).toEqual(
+            'Year can not be left empty: Please input amount'
+          );
+          done();
+        })
     });
   });
 });

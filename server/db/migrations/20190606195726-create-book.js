@@ -41,9 +41,13 @@ export function up(queryInterface, Sequelize) {
       allowNull: true,
       type: Sequelize.INTEGER
     },
-    status: {
+    active: {
       allowNull: true,
       type: Sequelize.BOOLEAN
+    },
+    isbn: {
+      allowNull: false,
+      type: Sequelize.INTEGER
     },
     year: {
       allowNull: false,

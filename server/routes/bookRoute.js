@@ -8,5 +8,6 @@ bookRoute.post('/', Validate.addBook, BookController.addBook);
 bookRoute.get('/', BookController.getAllBooks);
 bookRoute.get('/:id', Validate.id, BookController.getSpecificBook);
 bookRoute.delete('/:id', Validate.id, BookController.deleteBook);
+bookRoute.post('/request',  Validate.requestBook, BookController.requestBook)
 
 export default bookRoute;
