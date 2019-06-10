@@ -27,7 +27,34 @@ const validate = {
       return next();
     },
   ],
-  signup: [
+  assignrole : [
+    check('email')
+      .not()
+      .isEmpty({ ignore_whitespace: true})
+      .withMessage('Email should not be empty: Please input a valid email address')
+      .isEmail()
+      .trim()
+      .withMessage('Email is not valid: Please input a valid email address'),
+    check('role')
+     .not()
+     .isEmpty({ ignore_whitespace: true})
+     .withMessage('Role should not be empty: Please input a valid user role')
+     .isAlpha()
+     .trim()
+     .withMessage('Role is not valid: please use a valid user role'),
+      (req, res, next) => {
+        const errors = validationResult(req);
+        const errMessages = [];
+        if (!errors.isEmpty()) {
+          errors.array({ onlyFirstError: true }).forEach((err) => {
+            errMessages.push(err.msg);
+          });
+          return util.errorStatus(res, 400, errMessages);
+        }
+        return next();
+    },
+  ],
+  signup : [
     check('firstName')
       .not()
       .isEmpty({ ignore_whitespace: true })
@@ -140,7 +167,6 @@ const validate = {
       return next();
     },
   ],
-
   author : [
     check('firstName')
       .not()
