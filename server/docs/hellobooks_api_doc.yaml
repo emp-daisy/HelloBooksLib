@@ -233,7 +233,11 @@ paths:
                 authorID:
                   type: integer
                 status:
-                  type: boolean
+                  type: string
+                categoryID:
+                  type: integer
+                isbn:
+                  type: integer
                 year:
                   type: integer
       responses:
@@ -287,6 +291,58 @@ paths:
                 $ref: "#/components/schemas/BookList"
         500:
           description: Added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+  /books/request:
+    post:
+      tags:
+        - Books
+      security:
+        - bearerAuth: []
+      summary: Request a book
+      description: User should be able to request a book
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                userID:
+                  type: integer
+                author:
+                  type: integer
+                year:
+                  type: integer
+                categoryID:
+                  type: integer
+      responses:
+        201:
+          description: Request successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Book"
+        409:
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        500:
+          description: Server error
           content:
             application/json:
               schema:
@@ -628,7 +684,9 @@ components:
         authorID:
           type: integer
         status:
-          type: boolean
+          type: string
+        categoryID:
+          type: integer
     
     BookList:
       type: array
@@ -648,7 +706,7 @@ components:
             type: integer
           authorID:
             type: integer
-          status:
+          active:
             type: boolean
           createdAt:
             type: string
@@ -660,7 +718,7 @@ components:
     errorResponse:
       type: object
       properties:
-        status:
+        active:
           type: number
         error:
           type: string
@@ -668,7 +726,7 @@ components:
     successResponse:
       type: object
       properties:
-        status:
+        active:
           type: number
         message:
           type: string

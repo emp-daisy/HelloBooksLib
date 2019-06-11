@@ -113,10 +113,16 @@ const validate = {
       .withMessage('Amount can not be left empty: Please input amount')
       .isCurrency()
       .withMessage('Amount is not valid currency: Please input a valid amount'),
+    check('isbn')
+      .not()
+      .isEmpty({ ignore_whitespace: true })
+      .withMessage('ISBN can not be left empty: Please input isbn')
+      .isNumeric()
+      .withMessage('ISBN is not valid currency: Please input a valid isbn'),
     check('authorID')
       .not()
       .isEmpty({ ignore_whitespace: true })
-      .withMessage('AuthorID can not be left empty: Please input amount')
+      .withMessage('AuthorID can not be left empty: Please input authorID')
       .isInt()
       .withMessage('AuthorID is not valid integer: Please input a valid authorID')
       .custom( async (id) => {
@@ -151,9 +157,9 @@ const validate = {
     check('status')
       .not()
       .isEmpty({ ignore_whitespace: true })
-      .withMessage('Status can not be left empty: Please input status')
-      .isBoolean()
-      .withMessage('Status is not valid boolean: Please input a valid status'),
+      .withMessage('Active status can not be left empty: Please input active')
+      .isIn('Available', 'Borrowed')
+      .withMessage('Status can only be "Available" or "Borrowed": Please input a valid Status'),
 
     (req, res, next) => {
       const errors = validationResult(req);
@@ -246,6 +252,66 @@ const validate = {
       return next();
     },
   ],
+
+  requestBook : [
+    check('title')
+    .not()
+    .isEmpty({ ignore_whitespace: true })
+    .withMessage('Title can not be left empty: Please input title'),
+  check('description')
+    .not()
+    .isEmpty({ ignore_whitespace: true })
+    .withMessage('Description can not be left empty: Please input description'),
+  check('author')
+    .not()
+    .isEmpty({ ignore_whitespace: true })
+    .withMessage('Author can not be left empty: Please input author'),
+  check('categoryID')
+    .not()
+    .isEmpty({ ignore_whitespace: true })
+    .withMessage('CategoryID can not be left empty: Please input categoryID')
+    .isInt()
+    .withMessage('categoryID is not valid integer: Please input a valid categoryID')
+    .custom( async (id) => {
+      const isExist = await util.exits(id, 'Categories');
+      if (!isExist) {
+        throw new Error('No Category with the specified ID was found')
+      }
+      return true;
+    }),
+  check('year')
+    .not()
+    .isEmpty({ ignore_whitespace: true })
+    .withMessage('Year can not be left empty: Please input amount')
+    .isNumeric({ min: 1000, max: 2019 })
+    .withMessage('Year is not valid year: Please input a valid year')
+    .isLength({ min: 4, max: 4 })
+    .withMessage('Year is not valid year: Please input a valid year'),
+  check('userID')
+    .not()
+    .isEmpty({ ignore_whitespace: true })
+    .withMessage('UserID can not be left empty: Please input userID')
+    .isInt()
+    .withMessage('UserID is not valid integer: Please input a valid userID')
+    .custom( async (id) => {
+      const isExist = await util.exits(id, 'Users');
+      if (!isExist) {
+        throw new Error('No User with the specified ID was found')
+      }
+      return true;
+    }),
+
+  (req, res, next) => {
+    const errors = validationResult(req);
+    const errMessages = [];
+    if (!errors.isEmpty()) {
+      errors.array({ onlyFirstError: true }).forEach((err) => {
+        errMessages.push(err.msg);
+      });
+      return util.errorStatus(res, 400, errMessages);
+    }
+    return next();
+  },  ]
 }
 
 export default validate;

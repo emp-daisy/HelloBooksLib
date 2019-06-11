@@ -19,13 +19,17 @@ export default (sequelize, DataTypes) => {
       allowNull: true,
       type: DataTypes.INTEGER
     },
+    isbn: {
+      alloNull: false,
+      type: DataTypes.INTEGER
+    },
     categoryID: {
       allowNull: false,
       type: DataTypes.INTEGER
     },
     status: {
       allowNull: true,
-      type: DataTypes.BOOLEAN
+      type: DataTypes.STRING
     },
     year: {
       allowNull: false,

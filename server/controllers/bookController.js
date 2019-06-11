@@ -7,7 +7,7 @@ const log = debug('dev');
 
 class BookController {
   static async addBook(req, res) {
-    const { title, description, amount, authorID, status, year, categoryID } = req.body;
+    const { title, description, amount, authorID, status, year, categoryID, isbn } = req.body;
     try {
       const book = await models.Books.create({
         title,
@@ -16,9 +16,9 @@ class BookController {
         amount,
         authorID,
         status,
-        year
+        year,
+        isbn
       });
-
       return Utils.successStatus(res, 201, 'Book added successfully', book);
     } catch (error) {
       Utils.errorStatus(res, 500, error.message);
@@ -72,6 +72,23 @@ class BookController {
     if(!book) return Utils.errorStatus(res, 404, 'Book with the specified ID not found');
 
     return Utils.successStatus(res, 200, 'Book deleted successfully', {});
+  }
+
+  static async requestBook(req, res) {
+    const { title, description, author, year, categoryID, userID} = req.body;
+    try {
+      const requestedBook = await models.Requested_Books.create({
+        title,
+        description,
+        author,
+        year,
+        categoryID,
+        userID
+      });
+      return Utils.successStatus(res, 201, 'Book requested successfully', requestedBook);
+    } catch (error) {
+      Utils.errorStatus(res, 500, error.message);
+    }
   }
 }
 
