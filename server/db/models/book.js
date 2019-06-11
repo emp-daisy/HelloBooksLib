@@ -27,9 +27,9 @@ export default (sequelize, DataTypes) => {
       allowNull: false,
       type: DataTypes.INTEGER
     },
-    active: {
+    status: {
       allowNull: true,
-      type: DataTypes.BOOLEAN
+      type: DataTypes.STRING
     },
     year: {
       allowNull: false,

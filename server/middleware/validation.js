@@ -154,12 +154,12 @@ const validate = {
       .withMessage('Year is not valid year: Please input a valid year')
       .isLength({ min: 4, max: 4 })
       .withMessage('Year is not valid year: Please input a valid year'),
-    check('active')
+    check('status')
       .not()
       .isEmpty({ ignore_whitespace: true })
       .withMessage('Active status can not be left empty: Please input active')
-      .isBoolean()
-      .withMessage('Active is not valid boolean: Please input a valid active'),
+      .isIn('Available', 'Borrowed')
+      .withMessage('Status can only be "Available" or "Borrowed": Please input a valid Status'),
 
     (req, res, next) => {
       const errors = validationResult(req);

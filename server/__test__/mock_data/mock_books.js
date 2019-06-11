@@ -3,7 +3,7 @@ const mockBook = {
     title: 'Coding with one eye',
     description: 'This book teaches you how to code without really knowing what you are doing',
     amount: 3451,
-    active: true,
+    status: 'Available',
     year: 2019,
     authorID: 1,
     isbn: 1234354678,
@@ -13,7 +13,7 @@ const mockBook = {
     title: 'Coding with one eye',
     description: 'This book teaches you how to code without really knowing what you are doing',
     amount: 3451,
-    active: true,
+    status: 'Available',
     year: 2019,
     authorID: 98
   },
@@ -21,7 +21,7 @@ const mockBook = {
     title: 'Coding with one eye',
     description: 'This book teaches you how to code without really knowing what you are doing',
     amount: 3451,
-    active: true,
+    status: 'Available',
     year: 2019,
     authorID: 1,
     isbn: '',
@@ -31,7 +31,7 @@ const mockBook = {
     title: '',
     description: '',
     amount: '',
-    active: true,
+    status: 'Available',
     year: ''
   },
   unsupportedBookData: {

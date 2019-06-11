@@ -232,8 +232,10 @@ paths:
                   type: integer
                 authorID:
                   type: integer
-                active:
-                  type: boolean
+                status:
+                  type: string
+                categoryID:
+                  type: integer
                 isbn:
                   type: integer
                 year:
@@ -297,6 +299,8 @@ paths:
     post:
       tags:
         - Books
+      security:
+        - bearerAuth: []
       summary: Request a book
       description: User should be able to request a book
       requestBody:
@@ -314,8 +318,6 @@ paths:
                   type: integer
                 author:
                   type: integer
-                isbn:
-                  type: integer
                 year:
                   type: integer
                 categoryID:
@@ -326,7 +328,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Book/request"
+                $ref: "#/components/schemas/Book"
         409:
           description: Conflict
           content:
@@ -681,8 +683,10 @@ components:
           type: integer
         authorID:
           type: integer
-        active:
-          type: boolean
+        status:
+          type: string
+        categoryID:
+          type: integer
     
     BookList:
       type: array
