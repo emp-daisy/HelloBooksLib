@@ -27,35 +27,53 @@ class Authenticate {
     })(req, res, next);
   }
 
-  static isloggedIn(req, res, next) {
-    if (!req.headers.authorization) {
-      return util.errorStatus(res, 403, 'Authentication is required');
+  /**
+   * @static
+   * @description Authenticate the routes
+   * @param {object} req - Request object
+   * @param {object} res - Response object
+   * @param {Object} next - Next function call
+   * @returns {object} Json
+   * @memberof Controllers
+   */
+  static async isLoggedIn(req, res, next) {
+    const codedToken = req.headers.authorization;
+    if (!codedToken) {
+      return util.errorStatus(res, 401, 'Authorization error');
     }
-    let token = req.headers.authorization;
-    if(token.startsWith('Bearer ')) {
-      token = req.headers.authorization.split(' ')[1]
-    }
-
+    const token = codedToken.split(' ')[1];
     try {
-      const decode = Auth.verifyToken(token);
-      if(!decode) return util.errorStatus(res, 401, 'Unauthorized');
-      req.user = decode;
-
-      return next();
-    } catch (error) {
-      return util.errorStatus(res, 401, 'Unauthorized');
+      const verify = Auth.verifyToken(token);
+      const { id } = verify;
+      const theuser = await models.Users.findByPk(id);
+      if (!theuser) {
+        return util.errorStatus(res, 401, 'Unauthorized user');
+      }
+      req.loggedinUser = theuser.dataValues;
+    } catch (err) {
+      return util.errorStatus(res, 401, 'Unauthorized user');
     }
+    return next();
   }
 
+  /**
+   * @static
+   * @description Checks that user is a staff
+   * @param {object} req - Request object
+   * @param {object} res - Response object
+   * @param {Object} next - Next function call
+   * @returns {object} Json
+   * @memberof Controllers
+   */
   static async isSuperAdmin(req, res, next) {
-    const { user } = req;
-    
-    const foundUser = await models.Users.findOne({where: {email: user.email}})
-
-    if(!foundUser) return util.errorStatus(res, 401, 'Unauthorized');
-
-    if(foundUser.role !== 'super_admin') return util.errorStatus(res, 401, 'Unauthorized');
-
+    const { loggedinUser } = req;
+    if (loggedinUser.role !== 'super_admin') {
+      return util.errorStatus(
+        res,
+        403,
+        'Forbidden, You Are not allowed to perform this action'
+      );
+    }
     return next();
   }
 }
