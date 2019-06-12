@@ -7,18 +7,23 @@ const { Op } = sequelize;
 
 class BookController {
   static async addBook(req, res) {
-    const { title, description, amount, authorID, status, year, categoryID, isbn } = req.body;
-    const book = await models.Books.create({
-      title,
-      description,
-      categoryID,
-      amount,
-      authorID,
-      status,
-      year,
-      isbn
-    });
-    return Utils.successStatus(res, 201, 'Book added successfully', book);
+    const { title, description, tag, amount, authorID, status, year, categoryID, isbn } = req.body;
+    try {
+      const book = await models.Books.create({
+        title,
+        description,
+        tag,
+        categoryID,
+        amount,
+        authorID,
+        status,
+        year,
+        isbn
+      });
+      return Utils.successStatus(res, 201, 'Book added successfully', book);
+    } catch (error) {
+      Utils.errorStatus(res, 500, error.message);
+    }
   }
 
   static async getAllBooks(req, res) {
@@ -29,21 +34,69 @@ class BookController {
       limit = parseInt(limit, 10);
       limit = limit > 0 ? limit : 50;
       const offset = (page - 1) * limit;
-      const books = await models.Books.findAndCountAll({
-        limit,
-        offset,
-        $sort: { id: 1 }
-      });
-      const pages = Math.ceil(books.count / limit);
-      const data = books.rows;
-      return res.status(200).json({
-        status: res.status,
-        message: 'success',
-        pages,
-        data
-      });
+      try {
+        const books = await models.Books.findAndCountAll({
+          limit,
+          offset,
+          $sort: { id: 1 }
+        });
+        const pages = Math.ceil(books.count / limit);
+        const data = books.rows;
+        return res.status(200).json({
+          status: res.status,
+          message: 'success',
+          pages,
+          data
+        });
+      } catch (error) {
+        log(error.message);
+        Utils.errorStatus(res, 500, error.message);
+      }
     } 
-    return Utils.successStatus(res, 200, 'Books fetched successfully', await models.Books.findAll());
+    if (req.query) {
+      try {
+        if (req.query.searchBook) {         
+            const searchResult = await models.Books.findAll({where: {
+              [Op.or]: [
+                {title: {[Op.like]: `%${req.query.searchBook}%`}},
+                {description: {[Op.like]: `%${req.query.searchBook}%`}},
+                {tag: {[Op.like]: `%${req.query.searchBook}%`}},
+              ]
+            }});             
+            if (!searchResult[0]) {
+              return Utils.errorStatus(res, 404, 'No record found')  
+            }
+            return Utils.successStatus(res, 200, 'Books fetched successfully', searchResult) 
+          } 
+
+        if (req.query.author) {
+          const searchResult = await models.Books.findAll({
+            include: [{
+                model: models.Authors,
+                as: 'Author',
+                where: { 
+                  [Op.or]: [
+                    {firstName: {[Op.like]: `%${req.query.author}%`}},
+                    {middleName: {[Op.like]: `%${req.query.author}%`}},
+                    {lastName: {[Op.like]: `%${req.query.author}%`}},
+                  ]
+                 }
+            }]
+        });
+          if (!searchResult[0]) {
+          return Utils.errorStatus(res, 404, 'No record found')  
+        }
+            return Utils.successStatus(res, 200, 'Books fetched successfully', searchResult)  
+          }
+        }
+       catch (error) {
+        Utils.errorStatus(res, 500, error.message);
+      }
+    }
+    
+   
+      return Utils.successStatus(res, 200, 'Books fetched successfully', await models.Books.findAll());
+    
   }
 
   static async getSpecificBook(req, res) {
@@ -65,16 +118,21 @@ class BookController {
   }
 
   static async requestBook(req, res) {
-    const { title, description, author, year, categoryID, userID} = req.body;
-    const requestedBook = await models.RequestedBooks.create({
-      title,
-      description,
-      author,
-      year,
-      categoryID,
-      userID
-    });
-    return Utils.successStatus(res, 201, 'Book requested successfully', requestedBook);
+    const { title, description, tag, author, year, categoryID, userID} = req.body;
+    try {
+      const requestedBook = await models.RequestedBooks.create({
+        title,
+        description,
+        tag,
+        author,
+        year,
+        categoryID,
+        userID
+      });
+      return Utils.successStatus(res, 201, 'Book requested successfully', requestedBook);
+    } catch (error) {
+      Utils.errorStatus(res, 500, error.message);
+    }
   }
 
   static async lendBook(req, res) {

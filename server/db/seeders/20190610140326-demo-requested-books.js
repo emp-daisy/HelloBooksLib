@@ -9,6 +9,7 @@ for (i = 0; i < seeds; i += 1) {
   bookSeeds.push({
     title: faker.random.words(),
     description: faker.lorem.sentence(),
+    tag: faker.random.words(),
     author: faker.fake("{{name.lastName}} {{name.firstName}} {{name.lastName}}"),
     categoryID: faker.random.number({'min': 1, 'max': 10}),
     year: faker.random.number({'min': 1900, 'max': 2019}),

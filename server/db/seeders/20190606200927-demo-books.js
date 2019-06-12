@@ -47,6 +47,7 @@ for (i = 0; i < seeds; i += 1) {
   bookSeeds.push({
     title: faker.random.words(),
     description: faker.lorem.sentence(),
+    tag: faker.random.words(),
     amount: faker.commerce.price(),
     authorID: 1,
     status: status[Math.floor(Math.random() * status.length)],

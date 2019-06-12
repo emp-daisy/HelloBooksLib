@@ -3,6 +3,7 @@ export default (sequelize, DataTypes) => {
   const RequestedBooks = sequelize.define('RequestedBooks', {
     title: DataTypes.STRING,
     description: DataTypes.STRING,
+    tag: DataTypes.STRING,
     author: DataTypes.STRING,
     userID: DataTypes.INTEGER,
     categoryID: DataTypes.INTEGER,

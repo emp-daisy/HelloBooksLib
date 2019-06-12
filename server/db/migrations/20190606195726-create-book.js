@@ -16,6 +16,10 @@ export function up(queryInterface, Sequelize) {
       allowNull: false,
       type: Sequelize.TEXT
     },
+    tag: {
+      allowNull: false,
+      type: Sequelize.TEXT
+    },
     amount: {
       allowNull: false,
       type: Sequelize.NUMERIC
