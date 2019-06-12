@@ -20,7 +20,7 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.INTEGER
     },
     isbn: {
-      alloNull: false,
+      allowNull: false,
       type: DataTypes.INTEGER
     },
     categoryID: {

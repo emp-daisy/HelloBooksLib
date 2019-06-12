@@ -12,4 +12,6 @@ bookRoute.delete('/:id', Validate.id, BookController.deleteBook);
 bookRoute.post('/request', 
 Authenticate.isLoggedIn, Validate.requestBook, BookController.requestBook)
 
+bookRoute.post('/borrow', Authenticate.isloggedIn, Authenticate.isAdmin, Validate.lendBook, BookController.lendBook);
+
 export default bookRoute;
