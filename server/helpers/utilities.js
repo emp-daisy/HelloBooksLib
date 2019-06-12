@@ -51,6 +51,25 @@ class Utilities {
 
     return false;
   }
+
+  /**
+   * @static
+   * @description Check if author exist in database
+   * @param {integer} authorID - the author's id to be checked in database
+   * @returns {boolean} returns true or false
+   * @memberof Utilities
+   */
+
+  static async generatePassword() {
+    let result = '';
+    const characters =
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const charactersLength = characters.length;
+    for (let i = 0; i < 8; i += 1) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+  }
 }
 
 export default Utilities;

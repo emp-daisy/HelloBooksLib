@@ -8,9 +8,10 @@ import mockUser from './mock_data/mock_users';
 const server = () => supertest(app);
 const url = '/api/v1';
 let token;
+let userToken;
 let superAdminToken;
 let userId;
-const passwordToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJqb2huLmRvZUB0ZXN0LmNvbSIsImlhdCI6MTU1OTY2MTgwMn0.d_2-msW7YeZ0RtzHhe_7-b3QBmy0IuCJUAeey6SwPhY';
+const passwordToken =   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJqb2huLmRvZUB0ZXN0LmNvbSIsImlhdCI6MTU1OTkxMDkzMX0.L8oDiM8GDx11vpv3KVjI0RLPduLCgnYq3qddgxH_ROs';
 const wrongPasswordToken = 'eyJhbGciOi.eyJpZCI6MSwiZW1haWwiOiJ.rAb7aZJip36siJGnU';
 
 
@@ -23,6 +24,7 @@ describe('User tests', () => {
         .end((err, res) => {
           token = res.body.data.mailToken;
           userId = res.body.data.id;
+          userToken = res.body.data.token;
           expect(res.statusCode).toEqual(201);
           expect(res.body.message).toEqual('User Created successfully');
           expect(res.body.status).toEqual(201);
@@ -50,7 +52,22 @@ describe('User tests', () => {
         expect(res.body.error[0]).toEqual('First Name should not be left empty: Please input firstName');
         expect(res.body.error[1]).toEqual('Last name should not be left empty: Please input lastName');
         expect(res.body.error[2]).toEqual('Email is not valid: Please input a valid email address');
-        expect(res.body.error[3]).toEqual('Password should not be empty: Please input password');
+        done();
+      });
+    });
+
+    it('Should throw an error if the input password is unsupported', async (done) => {
+      server()
+      .post(`${url}/auth/signup`)
+      .send({
+        firstName: 'test',
+        lastName: 'tested',
+        email: 'testin@tested.com',
+        password: '',
+      })
+      .end((err, res) => {
+        expect(res.statusCode).toEqual(400);
+        expect(res.body.error[0]).toEqual('Password should not be empty: Please input password');
         done();
       });
     });
@@ -294,6 +311,28 @@ describe('User tests', () => {
         });
     });
 
+    it('Should sign in a super_admin', async done => {
+      server()
+        .post(`${url}/auth/signin`)
+        .send({
+          email: 'judeviolet@gmail.com',
+          password: 'password'
+        })
+        .end((err, res) => {
+          superAdminToken = res.body.data.token;
+          expect(res.statusCode).toEqual(200);
+          expect(res.body.message).toEqual('Login successful');
+          expect(res.body.status).toEqual(200);
+          expect(res.body.data).toHaveProperty('token');
+          expect(res.body.data).toHaveProperty('id');
+          expect(res.body.data).toHaveProperty('firstName');
+          expect(res.body.data).toHaveProperty('lastName');
+          expect(res.body.data).toHaveProperty('email');
+          done();
+          expect(Object.keys(res.body.data)).toMatchSnapshot();
+        });
+    });
+
     it('Should not sign in with incomplete form data', async done => {
       server()
         .post(`${url}/auth/signin`)
@@ -430,15 +469,6 @@ describe('test for verifying email', () => {
   });
 });
 describe('test super admin role assigning', () => {
-    beforeAll((done) => {
-      server()
-      .post(`${url}/auth/signin`)
-      .send({email: 'super_admin@test.com', password: 'PassWord123..'})
-      .end((err, res) => {
-        superAdminToken = res.body.data.token;
-        done();
-      })
-    });
     it('Should pass and return 200 response if role was successfully assigned', async done => {
       server()
       .post(`${url}/auth/assignrole`)
@@ -473,7 +503,7 @@ describe('test super admin role assigning', () => {
       .end((err, res) => {
         expect(res.statusCode).toEqual(401);
         expect(res.body).toHaveProperty('error');
-         expect(res.body.error).toEqual('Unauthorized');
+         expect(res.body.error).toEqual('Unauthorized user');
         done();
         expect(res.body).toMatchSnapshot();
       })
@@ -491,14 +521,14 @@ describe('test super admin role assigning', () => {
         expect(res.body).toMatchSnapshot();
       })
     });
-     it('Should fail and return 403 response if there is no authorization is set', async done => {
+     it('Should fail and return 401 response if there is no authorization is set', async done => {
       server()
       .post(`${url}/auth/assignrole`)
       .send({email: 'john.doe@test.com', role: 'admin'})
       .end((err, res) => {
-        expect(res.statusCode).toEqual(403);
+        expect(res.statusCode).toEqual(401);
         expect(res.body).toHaveProperty('error');
-        expect(res.body.error).toEqual('Authentication is required');
+        expect(res.body.error).toEqual('Authorization error');
         done();
         expect(res.body).toMatchSnapshot();
       })
@@ -526,5 +556,182 @@ describe('test super admin role assigning', () => {
         done();
         expect(res.body).toMatchSnapshot();
       })
+    });
+
+    it('Should not create a user with incorrect data', async done => {
+      server()
+        .post(`${url}/auth/users/user`)
+        .set('authorization', `Bearer ${superAdminToken}`)
+        .end((err, res) => {
+          expect(res.statusCode).toEqual(400);
+          expect(res.body).toHaveProperty('error');
+          expect(res.body.error[0]).toEqual(
+            'First Name should not be left empty: Please input firstName'
+          );
+          done();
+          expect(res.body).toMatchSnapshot();
+        });
+    });
+
+    it('Should create a user with correct data', async done => {
+      server()
+        .post(`${url}/auth/users/user`)
+        .set('authorization', `Bearer ${superAdminToken}`)
+        .send({
+          firstName: 'fans',
+          lastName: 'realfan',
+          email: 'fans@realfan.com'
+        })
+        .end((err, res) => {
+          expect(res.statusCode).toEqual(201);
+          expect(res.body).toHaveProperty('data');
+          done();
+          expect(Object.keys(res.body.data)).toMatchSnapshot();
+        });
+    });
+
+    it('Should not create a user if the user is Unauthorized', async done => {
+      server()
+        .post(`${url}/auth/users/user`)
+        .set('authorization', `Bearer ${userToken}`)
+        .send({
+          firstName: 'fans',
+          lastName: 'realfan',
+          email: 'fans@realfan.com'
+        })
+        .end((err, res) => {
+          expect(res.statusCode).toEqual(403);
+          expect(res.body).toHaveProperty('error');
+          expect(res.body.error).toEqual('Forbidden, You Are not allowed to perform this action');
+          done();
+          expect(res.body).toMatchSnapshot();
+        });
+    });
+
+    it('Should not create a user if the user already exists', async done => {
+      server()
+        .post(`${url}/auth/users/user`)
+        .set('authorization', `Bearer ${superAdminToken}`)
+        .send({
+          firstName: 'fans',
+          lastName: 'realfan',
+          email: 'fans@realfan.com'
+        })
+        .end((err, res) => {
+          expect(res.statusCode).toEqual(409);
+          expect(res.body).toHaveProperty('error');
+          expect(res.body.error).toEqual('email address exists already');
+          done();
+          expect(res.body).toMatchSnapshot();
+        });
+    });
+
+    it('Should not create a user for an invalid role type', async done => {
+      server()
+        .post(`${url}/auth/users/userzz`)
+        .set('authorization', `Bearer ${superAdminToken}`)
+        .send({
+          firstName: 'fans',
+          lastName: 'realfan',
+          email: 'fans@realfan.com'
+        })
+        .end((err, res) => {
+          expect(res.statusCode).toEqual(400);
+          expect(res.body).toHaveProperty('error');
+          expect(res.body.error[0]).toEqual('Should be admin or user');
+          done();
+          expect(res.body).toMatchSnapshot();
+        });
+    });
+
+    it('Should get all users from the db', async done => {
+      server()
+        .get(`${url}/auth/getusers`)
+        .set('authorization', `Bearer ${superAdminToken}`)
+        .end((err, res) => {
+          expect(res.statusCode).toEqual(200);
+          expect(res.body).toHaveProperty('data');
+          expect(res.body.message).toEqual('data');
+          done();
+          expect(res.body).toMatchSnapshot();
+        });
+    });
+
+    it('Should get a single user from the db', async done => {
+      server()
+        .get(`${url}/auth/getusers?userId=1`)
+        .set('authorization', `Bearer ${superAdminToken}`)
+        .end((err, res) => {
+          expect(res.statusCode).toEqual(200);
+          expect(res.body).toHaveProperty('data');
+          expect(res.body.message).toEqual('data');
+          done();
+          expect(res.body).toMatchSnapshot();
+        });
+    });
+
+    it('Should not get a user from the db if the user dosen\'t exist', async done => {
+      server()
+        .get(`${url}/auth/getusers?userId=67`)
+        .set('authorization', `Bearer ${superAdminToken}`)
+        .end((err, res) => {
+          expect(res.statusCode).toEqual(404);
+          expect(res.body).toHaveProperty('error');
+          expect(res.body.error).toEqual('User not found');
+          done();
+          expect(res.body).toMatchSnapshot();
+        });
+    });
+
+    it('Should return an error for an incorrect userId', async done => {
+      server()
+        .get(`${url}/auth/getusers?userId=67ff`)
+        .set('authorization', `Bearer ${superAdminToken}`)
+        .end((err, res) => {
+          expect(res.statusCode).toEqual(400);
+          expect(res.body).toHaveProperty('error');
+          expect(res.body.error[0]).toEqual('ID must be a number greater than 1');
+          done();
+          expect(res.body).toMatchSnapshot();
+        });
+    });
+
+    it('Should get delete a user from the db', async done => {
+      server()
+        .delete(`${url}/auth/user/5`)
+        .set('authorization', `Bearer ${superAdminToken}`)
+        .end((err, res) => {
+          expect(res.statusCode).toEqual(200);
+          expect(res.body).toHaveProperty('message');
+          expect(res.body.message).toEqual('User deleted Successfully');
+          done();
+          expect(res.body).toMatchSnapshot();
+        });
+    });
+
+    it('Should return an error for a user not in the db', async done => {
+      server()
+        .delete(`${url}/auth/user/90`)
+        .set('authorization', `Bearer ${superAdminToken}`)
+        .end((err, res) => {
+          expect(res.statusCode).toEqual(404);
+          expect(res.body).toHaveProperty('error');
+          expect(res.body.error).toEqual('User not found');
+          done();
+          expect(res.body).toMatchSnapshot();
+        });
+    });
+
+    it('Should return an error for an incorrect id', async done => {
+      server()
+        .delete(`${url}/auth/user/g6`)
+        .set('authorization', `Bearer ${superAdminToken}`)
+        .end((err, res) => {
+          expect(res.statusCode).toEqual(400);
+          expect(res.body).toHaveProperty('error');
+          expect(res.body.error[0]).toEqual('ID must be a number greater than 1');
+          done();
+          expect(res.body).toMatchSnapshot();
+        });
     });
   });

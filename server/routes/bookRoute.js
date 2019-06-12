@@ -10,6 +10,6 @@ bookRoute.get('/', BookController.getAllBooks);
 bookRoute.get('/:id', Validate.id, BookController.getSpecificBook);
 bookRoute.delete('/:id', Validate.id, BookController.deleteBook);
 bookRoute.post('/request', 
-Authenticate.isloggedIn, Validate.requestBook, BookController.requestBook)
+Authenticate.isLoggedIn, Validate.requestBook, BookController.requestBook)
 
 export default bookRoute;
