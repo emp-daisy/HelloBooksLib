@@ -311,7 +311,50 @@ const validate = {
       return util.errorStatus(res, 400, errMessages);
     }
     return next();
-  },  ]
+  },  ],
+  
+
+  lendBook : [
+    check('isbn')
+      .not()
+      .isEmpty({ ignore_whitespace: true })
+      .withMessage('ISBN can not be left empty: Please input ISBN')
+      .isInt()
+      .withMessage('ISBN is not valid integer: Please input a valid ISBN')
+      .isLength({ min: 4, max: 10 })
+      .withMessage('ISBN should be a minimum of 4 digits'),
+    check('title')
+      .not()
+      .isEmpty({ ignore_whitespace: true })
+      .withMessage('Title can not be left empty: Please input Title'),
+    check('patronId')
+      .not()
+      .isEmpty({ ignore_whitespace: true })
+      .withMessage('patronId can not be left empty: Please input patronId')
+      .isInt()
+      .withMessage('patronId is not valid integer: Please input a valid patronId')
+      .isNumeric({ min: 1 })
+      .withMessage('patronId should be atleast 1'),
+    check('cost')
+      .not()
+      .isEmpty({ ignore_whitespace: true })
+      .withMessage('cost can not be left empty: Please input cost')
+      .isInt()
+      .withMessage('cost is not valid integer: Please input a valid cost')
+      .isLength({ min: 2 })
+      .withMessage('Cost should be a minimum of 2 digits'),
+
+    (req, res, next) => {
+      const errors = validationResult(req);
+      const errMessages = [];
+      if (!errors.isEmpty()) {
+        errors.array({ onlyFirstError: true }).forEach((err) => {
+          errMessages.push(err.msg);
+        });
+        return util.errorStatus(res, 400, errMessages);
+      }
+      return next();
+    },  ]
 }
 
 export default validate;

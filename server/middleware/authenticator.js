@@ -58,6 +58,16 @@ class Authenticate {
 
     return next();
   }
+
+  static async isAdmin(req, res, next) {
+    const { user } = req;
+
+    if(user.role !== 'admin' && user.role !== 'super_admin') {
+      return util.errorStatus(res, 401, 'Unauthorized');
+    }
+
+    return next();
+  }
 }
 
 export default Authenticate;

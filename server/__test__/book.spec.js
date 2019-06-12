@@ -6,6 +6,8 @@ import mockReqBook from './mock_data/mock_requested_books';
 const server = () => supertest(app);
 const url = '/api/v1/books';
 
+let token ;
+
 describe('Books tests', () => {
   describe('test for add books', () => {
     it('Should add a new book when all required input is supplied', async done => {
@@ -229,7 +231,6 @@ describe('Books tests', () => {
   });
 
   describe('Request a new Book', () => {
-    let token ;
     beforeAll((done) => {
       server()
     .post('/api/v1/auth/signup')
@@ -307,6 +308,117 @@ describe('Books tests', () => {
           );
           done();
         })
+    });
+  });
+
+  describe('Borrow a book', () => {
+    let adminToken;
+  
+    beforeAll((done) => {
+      server()
+      .post(`/api/v1/auth/signin`)
+      .send({
+        email: 'admin@test.com',
+        password: 'PassWord123..'
+      })
+      .end((err, res) => {
+        adminToken  = res.body.data.token;
+        done();
+      })
+    })
+
+    it('Should lend a book', async done => {
+      server()
+      .post(`${url}/borrow`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({
+        isbn: 34334,
+        title: 'Book Title',
+        patronId: 3,
+        cost: 10
+      })
+      .end((_err, res) => {
+        expect(res.statusCode).toEqual(201);
+        expect(res.body).toHaveProperty('data');
+        expect(res.body.message).toEqual('Success');
+        expect(res.body.data.title).toEqual('Book Title');
+        expect(res.body.data.cost).toEqual(10);
+        expect(res.body.data.isbn).toEqual(34334);
+        done();
+      });
+    });
+
+    it('Should not lend a book to a patron with 3 books', async done => {
+      server()
+      .post(`${url}/borrow`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({
+        isbn: 34334,
+        title: 'Book Title',
+        patronId: 4,
+        cost: 10
+      })
+      .end((_err, res) => {
+        expect(res.statusCode).toEqual(405);
+        expect(res.body).toHaveProperty('error');
+        expect(res.body.error).toEqual('You cannot have more than 3 books in your possession');
+        done();
+      });
+    });
+
+    it('Should not lend a book if the patron has fines to pay', async done => {
+      server()
+      .post(`${url}/borrow`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({
+        isbn: 34334,
+        title: 'Book Title',
+        patronId: 5,
+        cost: 10
+      })
+      .end((_err, res) => {
+        expect(res.statusCode).toEqual(405);
+        expect(res.body).toHaveProperty('error');
+        done();
+      });
+    });
+
+    it('Should return error if form data is incorrect', async done => {
+      server()
+      .post(`${url}/borrow`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({
+        isbn: 'dfd ',
+        title: ' ',
+        patronId: 5,
+        cost: 'dfd'
+      })
+      .end((_err, res) => {
+        expect(res.statusCode).toEqual(400);
+        expect(res.body).toHaveProperty('error');
+        expect(res.body.error[0]).toEqual('ISBN is not valid integer: Please input a valid ISBN');
+        expect(res.body.error[1]).toEqual('Title can not be left empty: Please input Title');
+        expect(res.body.error[2]).toEqual('cost is not valid integer: Please input a valid cost');
+        done();
+      });
+    });
+
+    it('Should return unauthorized if user is not an admin', async done => {
+      server()
+      .post(`${url}/borrow`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        isbn: 343434,
+        title: 'Book Title',
+        patronId: 30,
+        cost: 10
+      })
+      .end((_err, res) => {
+        expect(res.statusCode).toEqual(401);
+        expect(res.body).toHaveProperty('error');
+        expect(res.body.error).toEqual('Unauthorized');
+        done();
+      });
     });
   });
 });

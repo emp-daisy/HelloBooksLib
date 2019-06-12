@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable require-jsdoc */
-import auth from '../.././helpers/auth';
+import auth from '../../helpers/auth';
 
 
 const password = auth.hashPassword('PassWord123..');
@@ -28,7 +28,17 @@ export function up(queryInterface, Sequelize) {
           role: 'super_admin',
           socialId: null,
           profilePic: null,
-      }
+      },      
+      {
+        firstName: 'admin',
+        lastName: 'admin',
+        email: 'admin@test.com',
+        password,
+        signupMethod: 'local',
+        role: 'admin',
+        socialId: null,
+        profilePic: null,
+    }
     ],
     {}
   );

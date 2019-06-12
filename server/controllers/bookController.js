@@ -90,6 +90,50 @@ class BookController {
       Utils.errorStatus(res, 500, error.message);
     }
   }
+
+  static async lendBook(req, res) {
+    const { isbn, title, patronId, cost} = req.body;
+    
+    try {
+      const booksNotReturned = await models.Borrowed_books.findAndCountAll({ where: { patronId, returned : false } });
+
+      if (booksNotReturned.count >= 3) {
+        return Utils.errorStatus(res, 405, 'You cannot have more than 3 books in your possession');        
+      } 
+
+      const today = new Date();
+      const overdueBook = booksNotReturned.rows.find((book) => book.dueDate < today);
+
+      if(overdueBook) {
+        const dueDate = overdueBook.dueDate.toString().substring(0, 15);
+        const responseObj = {
+          message: `The book titled ${overdueBook.title.toUpperCase()} was due for return on ${dueDate}. Kindly return before we can proceed with a new request`
+        }
+        return Utils.errorStatus(res, 405, responseObj); 
+      }
+
+      const dateBorrowed = new Date();
+      const dueDate = new Date();
+      // Books are due for return after 3 days
+      dueDate.setDate(dueDate.getDate() + 3); 
+
+      const borrowedBook = await models.Borrowed_books.create({
+        isbn,
+        title,
+        dateBorrowed,
+        dueDate,
+        patronId,
+        cost
+      });
+
+      await models.Books.update({ status: 'borrowed' }, { where: { isbn } });
+
+      return Utils.successStatus(res, 201, 'Success', borrowedBook);
+
+    } catch (error) {
+      Utils.errorStatus(res, 500, error.message);
+    }
+  }
 }
 
 export default BookController;
