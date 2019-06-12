@@ -26,11 +26,7 @@ export function up(queryInterface, Sequelize)  {
       patronId: {
         allowNull: false,
         type: Sequelize.INTEGER
-      },
-      cost: {
-        allowNull: true,
-        type: Sequelize.INTEGER
-      },       
+      },      
       returned: {
         allowNull: false,
         type: Sequelize.BOOLEAN,

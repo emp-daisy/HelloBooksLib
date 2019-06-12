@@ -334,15 +334,13 @@ describe('Books tests', () => {
       .send({
         isbn: 34334,
         title: 'Book Title',
-        patronId: 3,
-        cost: 10
+        patronId: 3
       })
       .end((_err, res) => {
         expect(res.statusCode).toEqual(201);
         expect(res.body).toHaveProperty('data');
         expect(res.body.message).toEqual('Success');
         expect(res.body.data.title).toEqual('Book Title');
-        expect(res.body.data.cost).toEqual(10);
         expect(res.body.data.isbn).toEqual(34334);
         done();
       });
@@ -355,8 +353,7 @@ describe('Books tests', () => {
       .send({
         isbn: 34334,
         title: 'Book Title',
-        patronId: 4,
-        cost: 10
+        patronId: 4
       })
       .end((_err, res) => {
         expect(res.statusCode).toEqual(405);
@@ -373,8 +370,7 @@ describe('Books tests', () => {
       .send({
         isbn: 34334,
         title: 'Book Title',
-        patronId: 5,
-        cost: 10
+        patronId: 5
       })
       .end((_err, res) => {
         expect(res.statusCode).toEqual(405);
@@ -390,15 +386,13 @@ describe('Books tests', () => {
       .send({
         isbn: 'dfd ',
         title: ' ',
-        patronId: 5,
-        cost: 'dfd'
+        patronId: 5
       })
       .end((_err, res) => {
         expect(res.statusCode).toEqual(400);
         expect(res.body).toHaveProperty('error');
         expect(res.body.error[0]).toEqual('ISBN is not valid integer: Please input a valid ISBN');
         expect(res.body.error[1]).toEqual('Title can not be left empty: Please input Title');
-        expect(res.body.error[2]).toEqual('cost is not valid integer: Please input a valid cost');
         done();
       });
     });
@@ -410,8 +404,7 @@ describe('Books tests', () => {
       .send({
         isbn: 343434,
         title: 'Book Title',
-        patronId: 30,
-        cost: 10
+        patronId: 30
       })
       .end((_err, res) => {
         expect(res.statusCode).toEqual(401);

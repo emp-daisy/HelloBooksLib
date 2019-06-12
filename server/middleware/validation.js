@@ -402,14 +402,6 @@ const validate = {
       .withMessage('patronId is not valid integer: Please input a valid patronId')
       .isNumeric({ min: 1 })
       .withMessage('patronId should be atleast 1'),
-    check('cost')
-      .not()
-      .isEmpty({ ignore_whitespace: true })
-      .withMessage('cost can not be left empty: Please input cost')
-      .isInt()
-      .withMessage('cost is not valid integer: Please input a valid cost')
-      .isLength({ min: 2 })
-      .withMessage('Cost should be a minimum of 2 digits'),
 
     (req, res, next) => {
       const errors = validationResult(req);

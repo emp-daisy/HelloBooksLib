@@ -78,9 +78,9 @@ class Authenticate {
   }
 
   static async isAdmin(req, res, next) {
-    const { user } = req;
+    const { loggedinUser } = req;
 
-    if(user.role !== 'admin' && user.role !== 'super_admin') {
+    if(loggedinUser.role !== 'admin' && loggedinUser.role !== 'super_admin') {
       return util.errorStatus(res, 401, 'Unauthorized');
     }
 

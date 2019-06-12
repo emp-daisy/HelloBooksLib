@@ -11,7 +11,6 @@ export function up(queryInterface) {
         isbn: 44537,
         title: 'As a man thinketh',
         patronId: 4,
-        cost: 10,
         dateBorrowed,
         dueDate
       },
@@ -19,7 +18,6 @@ export function up(queryInterface) {
         isbn: 89374,
         title: 'You can Win',
         patronId: 4,
-        cost: 10,
         dateBorrowed,
         dueDate
       },
@@ -27,7 +25,6 @@ export function up(queryInterface) {
         isbn: 34454,
         title: 'Tender is the Night',
         patronId: 4,
-        cost: 10,
         dateBorrowed,
         dueDate
       },
@@ -36,7 +33,6 @@ export function up(queryInterface) {
         isbn: 43553,
         title: 'Tender is the Night',
         patronId: 5,
-        cost: 10,
         dateBorrowed,
         dueDate: '2019-06-10 04:41:25.258+02'
       },

@@ -92,7 +92,7 @@ class BookController {
   }
 
   static async lendBook(req, res) {
-    const { isbn, title, patronId, cost} = req.body;
+    const { isbn, title, patronId} = req.body;
     
     try {
       const booksNotReturned = await models.Borrowed_books.findAndCountAll({ where: { patronId, returned : false } });
@@ -122,8 +122,7 @@ class BookController {
         title,
         dateBorrowed,
         dueDate,
-        patronId,
-        cost
+        patronId    
       });
 
       await models.Books.update({ status: 'borrowed' }, { where: { isbn } });

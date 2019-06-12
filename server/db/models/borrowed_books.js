@@ -25,11 +25,7 @@ export default (sequelize, DataTypes) => {
       allowNull: false,
       type: DataTypes.BOOLEAN,
       defaultValue: false
-    },    
-    cost: {
-      allowNull: false,
-      type: DataTypes.INTEGER
-    },
+    },  
   }, {timestamps: false});
 
   return Borrowed_books;
