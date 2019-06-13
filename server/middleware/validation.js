@@ -408,7 +408,7 @@ const validate = {
       .custom( async (id) => {
         const isExist = await models.Users.findOne({ where: { id } });
         if (!isExist) {
-          throw new Error('No Book with the specified isbn was found')
+          throw new Error('No User with the specified patronID was found')
         }
         return true;
       }),
