@@ -103,7 +103,6 @@ class BookController {
       const today = new Date();
       const overdueBook = booksNotReturned.rows.filter((book) => book.dueDate < today);
   
-console.log(overdueBook);
       if(overdueBook.length >= 1) {
         const dueBooks = overdueBook.map((book) =>`The book titled '${book.title.toUpperCase()}' was due for return on ${book.dueDate.toString().substring(0, 15)},`);
 
