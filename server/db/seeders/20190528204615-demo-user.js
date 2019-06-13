@@ -21,8 +21,7 @@ export function up(queryInterface, Sequelize) {
         profilePic: null,
         bio: null,
         favoriteQuote: null,
-        favoriteBooks: [null],
-        username: '@johnero'
+        favoriteBooks: [null]
 
       },
       {
@@ -37,8 +36,7 @@ export function up(queryInterface, Sequelize) {
         role: 'super_admin',
         bio: null,
         favoriteQuote: null,
-        favoriteBooks: [null],
-        username: '@juderobooksman'
+        favoriteBooks: [null]
       }
     ],
     {}

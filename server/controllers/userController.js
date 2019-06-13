@@ -14,7 +14,7 @@ dotenv.config();
 
 class UserController {
   static async signUp(req, res) {
-    const { firstName, lastName, email, password, username } = req.body;
+    const { firstName, lastName, email, password} = req.body;
     try {
       const foundUser = await models.Users.findOne({ where: { email } });
 
@@ -33,7 +33,6 @@ class UserController {
         bio: null,
         favoriteBooks: [null],
         favoriteQuote: null,
-        username
       };
 
       const createdUser = await models.Users.create(user);
@@ -48,8 +47,7 @@ class UserController {
         lastName: createdUser.lastName,
         email: createdUser.email,
         signupMethod: 'local',
-        mailToken,
-        username: createdUser.username
+        mailToken
       });
     } catch (error) {
       util.errorStatus(res, 500, error.name);
@@ -328,22 +326,21 @@ class UserController {
   }
 
   static async getProfile(req, res) {
-    const { is_own_profile } = req;
+    const { isOwnProfile } = req;
     const { id } = req.query;
 
     const returnUserObj = (userID) => {
       return models.Users.findByPk(userID, {
-        attributes: ['profilePic', 'bio', 'favoriteQuote', 'favoriteBooks', 'firstName', 'username', 'lastName']
+        attributes: ['profilePic', 'bio', 'favoriteQuote', 'favoriteBooks', 'firstName', 'lastName']
       })
     }
  
      try {
           const user = await returnUserObj(id);
            return util.successStatus(res, 200, 'profile retrieved successfully', {
-              is_own_profile,
+              isOwnProfile,
               firstName: user.firstName,
               lastName: user.lastName,
-              username: user.username,
               bio: user.bio,
               profilePic: user.profilePic,
               favoriteQuote: user.favoriteQuote,
@@ -359,11 +356,13 @@ class UserController {
 
     const {...args} = req.body;
 
-    if(Object.keys(args).length <= 0) return util.errorStatus(res, 400, 'You must one or more profile attributes to update')
+    //this line actually is for testing with backend. Normally when a user tries to update from front-end,
+    //this length would be greater than zero
+    if(Object.keys(args).length <= 0) return util.errorStatus(res, 400, 'You must set one or more profile attributes to update')
 
-    const { is_own_profile, loggedinUser } = req;
+    const { isOwnProfile, loggedinUser } = req;
 
-    if(!is_own_profile) return util.errorStatus(res, 401, 'Unauthorized user');
+    if(!isOwnProfile) return util.errorStatus(res, 401, 'Unauthorized user');
    
     try {
       await models.Users.update(args, {where: { id: loggedinUser.id }})
@@ -373,7 +372,6 @@ class UserController {
       return util.successStatus(res, 200, 'Update success', {
          firstName: updatedUser.firstName,
          lastName: updatedUser.lastName,
-         username: updatedUser.username,
          bio: updatedUser.bio,
          profilePic: updatedUser.profilePic,
          favoriteQuote: updatedUser.favoriteQuote,

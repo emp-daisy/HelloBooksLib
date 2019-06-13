@@ -27,8 +27,7 @@ const mockUser = {
     bio: 'I love to swim',
     profilePic: 'catchemyoung.jpg',
     favoriteQuote: 'I believe I can fly', 
-    favoriteBooks: ['YDKJS'], 
-    username: 'updatedusername'
+    favoriteBooks: ['YDKJS']
   }
 }
 

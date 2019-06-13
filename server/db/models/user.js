@@ -49,10 +49,6 @@ export default (sequelize, DataTypes) => {
       favoriteQuote: {
         type: DataTypes.STRING,
         allowNull: true
-      },
-      username: {
-        type: DataTypes.STRING,
-        allowNull: true,
       }
     },
     {}

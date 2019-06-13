@@ -88,9 +88,9 @@ class Authenticate {
     const user = Auth.verifyToken(token);
     
     if(Number(id) !== user.id) {
-      req.is_own_profile = false
+      req.isOwnProfile = false
     } else {
-      req.is_own_profile = true;
+      req.isOwnProfile = true;
     }
 
     next();

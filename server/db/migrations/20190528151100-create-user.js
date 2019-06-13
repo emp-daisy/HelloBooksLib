@@ -61,11 +61,7 @@ export function up(queryInterface, Sequelize) {
     favoriteQuote: {
       type: Sequelize.STRING,
       allowNull: true
-    },
-     username: {
-        type: Sequelize.STRING,
-        allowNull: true
-      }
+    }
   });
 }
 export function down(queryInterface, Sequelize) {

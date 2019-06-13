@@ -831,9 +831,7 @@ paths:
                 favoriteQuote:
                   type: string
                 favoriteBooks:
-                  type: array
-                username:
-                  type: string  
+                  type: array  
       responses:
         200:
           description: OK

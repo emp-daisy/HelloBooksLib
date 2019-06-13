@@ -45,7 +45,7 @@ describe('User tests', () => {
         firstName: '',
         lastName: '',
         email: 'testin.com',
-        password: '',
+        password: ''
       })
       .end((err, res) => {
         expect(res.statusCode).toEqual(400);
@@ -63,7 +63,7 @@ describe('User tests', () => {
         firstName: 'test',
         lastName: 'tested',
         email: 'testin@tested.com',
-        password: '',
+        password: ''
       })
       .end((err, res) => {
         expect(res.statusCode).toEqual(400);
@@ -744,7 +744,7 @@ describe('Test get user profile', () => {
         expect(res.statusCode).toEqual(200)
         expect(res.body).toHaveProperty('message');
         expect(res.body.message).toEqual('profile retrieved successfully');
-        expect(res.body.data.is_own_profile).toEqual(true);
+        expect(res.body.data.isOwnProfile).toEqual(true);
         done();
       });
   });
@@ -754,7 +754,7 @@ describe('Test get user profile', () => {
       .get(`${url}/auth/profile?id=${4}`)
       .set('authorization', `Bearer ${userToken}`)
       .end((err, res) => {
-        expect(res.body.data.is_own_profile).toEqual(false)
+        expect(res.body.data.isOwnProfile).toEqual(false)
         done();
       });
   });

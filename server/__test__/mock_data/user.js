@@ -8,7 +8,6 @@ const user = [
     bio: 'I live for now, hoem alone shore lorem spectum ',
     favoriteQuote: 'Only a programmer knows the pain of debugging',
     favoriteBooks: ['hellboy', 'helloworld', 'headfirst javascript'],
-    username: '@eniola',
     profilePic: 'myphoto.jpg'
   },
   {
