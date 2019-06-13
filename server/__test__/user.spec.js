@@ -698,7 +698,7 @@ describe('test super admin role assigning', () => {
 
     it('Should get delete a user from the db', async done => {
       server()
-        .delete(`${url}/auth/user/5`)
+        .delete(`${url}/auth/user/1`)
         .set('authorization', `Bearer ${superAdminToken}`)
         .end((err, res) => {
           expect(res.statusCode).toEqual(200);
