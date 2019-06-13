@@ -3,7 +3,7 @@ import passport from 'passport';
 import util from '../helpers/utilities';
 // eslint-disable-next-line no-unused-vars
 import passportconfig from '../helpers/passport';
-import Auth from '../helpers/auth'
+import Auth from '../helpers/auth';
 import models from '../db/models';
 
 class Authenticate {
@@ -58,7 +58,7 @@ class Authenticate {
 
   /**
    * @static
-   * @description Checks that user is a staff
+   * @description Checks that user is a super Admin
    * @param {object} req - Request object
    * @param {object} res - Response object
    * @param {Object} next - Next function call
@@ -77,26 +77,34 @@ class Authenticate {
     return next();
   }
 
+  /**
+   * @static
+   * @description Checks that user is an Admin
+   * @param {object} req - Request object
+   * @param {object} res - Response object
+   * @param {Object} next - Next function call
+   * @returns {object} Json
+   * @memberof Controllers
+   */
   static async isAdmin(req, res, next) {
     const { loggedinUser } = req;
 
-    if(loggedinUser.role !== 'admin' && loggedinUser.role !== 'super_admin') {
-      return util.errorStatus(res, 401, 'Unauthorized');
+    if (loggedinUser.role !== 'admin' && loggedinUser.role !== 'super_admin') {
+      return util.errorStatus(
+        res,
+        403,
+        'Forbidden, You Are not allowed to perform this action'
+      );
     }
 
     return next();
   }
   
   static async isOwnProfile(req, res, next) {
-    const codedToken = req.headers.authorization;
-
+    const { loggedinUser } = req;
     const { id } = req.query;
-
-    const token = codedToken.split(' ')[1];
-
-    const user = Auth.verifyToken(token);
     
-    if(Number(id) !== user.id) {
+    if(Number(id) !== loggedinUser.id) {
       req.isOwnProfile = false
     } else {
       req.isOwnProfile = true;
