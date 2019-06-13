@@ -86,6 +86,7 @@ class Authenticate {
 
     return next();
   }
+  
   static async isOwnProfile(req, res, next) {
     const codedToken = req.headers.authorization;
 

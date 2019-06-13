@@ -105,9 +105,9 @@ class BookController {
   
       if(overdueBook.length >= 1) {
         const dueBooks = overdueBook.map((book) =>`The book titled '${book.title.toUpperCase()}' was due for return on ${book.dueDate.toString().substring(0, 15)},`);
-
+        const dueBookTwo = dueBooks[1] ? dueBooks[1] : '' ;
         const responseObj = {
-          message: `${dueBooks[0]} ${dueBooks[1]} Kindly return before we can proceed with a new request`
+          message: `${dueBooks[0]} ${dueBookTwo} Kindly return before we can proceed with a new request`
         }
         return Utils.errorStatus(res, 400, responseObj); 
       }
