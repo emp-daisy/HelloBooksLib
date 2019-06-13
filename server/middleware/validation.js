@@ -84,7 +84,6 @@ const validate = {
       .isEmail()
       .trim()
       .withMessage('Email is not valid: Please input a valid email address'),
-
     (req, res, next) => {
       const errors = validationResult(req);
       const errMessages = [];

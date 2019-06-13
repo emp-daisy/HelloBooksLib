@@ -45,7 +45,7 @@ describe('User tests', () => {
         firstName: '',
         lastName: '',
         email: 'testin.com',
-        password: '',
+        password: ''
       })
       .end((err, res) => {
         expect(res.statusCode).toEqual(400);
@@ -63,7 +63,7 @@ describe('User tests', () => {
         firstName: 'test',
         lastName: 'tested',
         email: 'testin@tested.com',
-        password: '',
+        password: ''
       })
       .end((err, res) => {
         expect(res.statusCode).toEqual(400);
@@ -735,3 +735,112 @@ describe('test super admin role assigning', () => {
         });
     });
   });
+describe('Test get user profile', () => {
+  it('Should pass and return status 200 if user own profile is successfully retrieved', async done => {
+    server()
+      .get(`${url}/auth/profile?id=${userId}`)
+      .set('authorization', `Bearer ${userToken}`)
+      .end((err, res) => {
+        expect(res.statusCode).toEqual(200)
+        expect(res.body).toHaveProperty('message');
+        expect(res.body.message).toEqual('profile retrieved successfully');
+        expect(res.body.data.isOwnProfile).toEqual(true);
+        done();
+      });
+  });
+
+  it('Should pass, return status 200 and set req.is_own_profile to false if query id does not match user id', async done => {
+    server()
+      .get(`${url}/auth/profile?id=${4}`)
+      .set('authorization', `Bearer ${userToken}`)
+      .end((err, res) => {
+        expect(res.body.data.isOwnProfile).toEqual(false)
+        done();
+      });
+  });
+
+  it('Should fail and return status 401 if no token is set', async done => {
+    server()
+      .get(`${url}/auth/profile?id=${userId}`)
+      .end((err, res) => {
+        expect(res.statusCode).toEqual(401)
+        expect(res.body).toHaveProperty('error');
+        expect(res.body.error).toEqual('Authorization error');
+        done();
+      });
+  });
+
+  it('Should fail and return status 401 if token is not recognized', async done => {
+    server()
+      .get(`${url}/auth/profile?id=${userId}`)
+      .set('authorization', 'Bearer nds034kmmqi34kmakk')
+      .end((err, res) => {
+        expect(res.statusCode).toEqual(401);
+        expect(res.body).toHaveProperty('error');
+        expect(res.body.error).toEqual('Unauthorized user');
+        done();
+      });
+  });
+});
+
+describe('Test update user profile', () => {
+  it('Should pass and return status 200 if user profile is updated successfully', async done => {
+    server()
+      .put(`${url}/auth/profile?id=${userId}`)
+      .set('authorization', `Bearer ${userToken}`)
+      .send(mockUser.updateUserProfile)
+      .end((err, res) => {
+        expect(res.statusCode).toEqual(200);
+        expect(res.body).toHaveProperty('message');
+        expect(res.body.message).toEqual('Update success')
+        done()
+      })
+  });
+
+  it('Should fail and return status 400 if no object was sent to update', async done => {
+    server()
+      .put(`${url}/auth/profile?id=${userId}`)
+      .set('authorization', `Bearer ${userToken}`)
+      .end((err, res) => {
+        expect(res.statusCode).toEqual(400);
+        expect(res.body).toHaveProperty('error');
+        done()
+      })
+  });
+
+  it('Should fail and return status 401 if user tries to edit another users\' profile', async done => {
+    server()
+      .put(`${url}/auth/profile?id=${4}`)
+      .set('authorization', `Bearer ${userToken}`)
+      .send(mockUser.updateUserProfile)
+      .end((err, res) => {
+        expect(res.statusCode).toEqual(401);
+        expect(res.body).toHaveProperty('error');
+        expect(res.body.error).toEqual('Unauthorized user');
+        done();
+      }); 
+  });
+
+  it('Should fail and return status 401 if no token is set', async done => {
+    server()
+      .put(`${url}/auth/profile?id=${userId}`)
+      .end((err, res) => {
+        expect(res.statusCode).toEqual(401)
+        expect(res.body).toHaveProperty('error');
+        expect(res.body.error).toEqual('Authorization error');
+        done();
+      });
+  });
+
+  it('Should fail and return status 401 if token is not recognized', async done => {
+    server()
+      .put(`${url}/auth/profile?id=${userId}`)
+      .set('authorization', 'Bearer nds034kmmqi34kmakk')
+      .end((err, res) => {
+        expect(res.statusCode).toEqual(401);
+        expect(res.body).toHaveProperty('error');
+        expect(res.body.error).toEqual('Unauthorized user');
+        done();
+      });
+  });
+});

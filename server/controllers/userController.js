@@ -14,7 +14,7 @@ dotenv.config();
 
 class UserController {
   static async signUp(req, res) {
-    const { firstName, lastName, email, password } = req.body;
+    const { firstName, lastName, email, password} = req.body;
     try {
       const foundUser = await models.Users.findOne({ where: { email } });
 
@@ -29,7 +29,10 @@ class UserController {
         password: hashPassword,
         email_confirm_code: mailToken,
         role: 'user',
-        signupMethod: 'local'
+        signupMethod: 'local',
+        bio: null,
+        favoriteBooks: [null],
+        favoriteQuote: null,
       };
 
       const createdUser = await models.Users.create(user);
@@ -320,6 +323,64 @@ class UserController {
     } catch (error) {
       util.errorStatus(res, 500, error.name);
     }
+  }
+
+  static async getProfile(req, res) {
+    const { isOwnProfile } = req;
+    const { id } = req.query;
+
+    const returnUserObj = (userID) => {
+      return models.Users.findByPk(userID, {
+        attributes: ['profilePic', 'bio', 'favoriteQuote', 'favoriteBooks', 'firstName', 'lastName']
+      })
+    }
+ 
+     try {
+          const user = await returnUserObj(id);
+           return util.successStatus(res, 200, 'profile retrieved successfully', {
+              isOwnProfile,
+              firstName: user.firstName,
+              lastName: user.lastName,
+              bio: user.bio,
+              profilePic: user.profilePic,
+              favoriteQuote: user.favoriteQuote,
+              favoriteBooks: user.favoriteBooks
+            })
+
+     } catch(err) {
+      return util.errorStatus(res, 500, err.name)
+     }
+  }
+
+  static async editProfile(req, res) {
+
+    const {...args} = req.body;
+
+    //this line actually is for testing with backend. Normally when a user tries to update from front-end,
+    //this length would be greater than zero
+    if(Object.keys(args).length <= 0) return util.errorStatus(res, 400, 'You must set one or more profile attributes to update')
+
+    const { isOwnProfile, loggedinUser } = req;
+
+    if(!isOwnProfile) return util.errorStatus(res, 401, 'Unauthorized user');
+   
+    try {
+      await models.Users.update(args, {where: { id: loggedinUser.id }})
+
+      const updatedUser = await models.Users.findByPk(loggedinUser.id);
+
+      return util.successStatus(res, 200, 'Update success', {
+         firstName: updatedUser.firstName,
+         lastName: updatedUser.lastName,
+         bio: updatedUser.bio,
+         profilePic: updatedUser.profilePic,
+         favoriteQuote: updatedUser.favoriteQuote,
+         favoriteBooks: updatedUser.favoriteBooks
+      })
+
+    } catch(err) {
+      return util.errorStatus(res, 500, err.name)
+    }  
   }
 }
 
