@@ -18,10 +18,10 @@ for (i = 0; i < seeds; i += 1) {
   });
 }
 export function up(queryInterface) {
-  return queryInterface.bulkInsert('Requested_Books', bookSeeds, {});
+  return queryInterface.bulkInsert('RequestedBooks', bookSeeds, {});
 }
 
 export function down(queryInterface) {
-  return queryInterface.bulkDelete('Requested_Books', null, {});
+  return queryInterface.bulkDelete('RequestedBooks', null, {});
 }
 

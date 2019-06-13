@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 export default (sequelize, DataTypes) => {
-  const Requested_Books = sequelize.define('Requested_Books', {
+  const RequestedBooks = sequelize.define('RequestedBooks', {
     title: DataTypes.STRING,
     description: DataTypes.STRING,
     author: DataTypes.STRING,
@@ -9,5 +9,5 @@ export default (sequelize, DataTypes) => {
     year: DataTypes.INTEGER
   }, {});
 
-  return Requested_Books;
+  return RequestedBooks;
 };

@@ -13,21 +13,33 @@ export function up(queryInterface, Sequelize) {
         firstName: 'John',
         lastName: 'Doe',
         email: 'john.doe@test.com',
-        password: 'password',
+        password:
+          '$2a$06$6.KeIwVJGmNJzuaQU4QC5eQScPh0HrIWmxZl1f7IlrQTLDw.Jz5Qi',
         signupMethod: 'local',
         role: 'user',
         socialId: null,
         profilePic: null
       },
       {
-          firstName: 'super',
-          lastName: 'admin',
-          email: 'super_admin@test.com',
-          password,
-          signupMethod: 'local',
-          role: 'super_admin',
-          socialId: null,
-          profilePic: null,
+        firstName: 'Jude',
+        lastName: 'Violet',
+        email: 'judeviolet@gmail.com',
+        password:
+          '$2a$06$6.KeIwVJGmNJzuaQU4QC5eQScPh0HrIWmxZl1f7IlrQTLDw.Jz5Qi',
+        signupMethod: 'local',
+        socialId: null,
+        profilePic: null,
+        role: 'super_admin'
+      },
+      {
+        firstName: 'super',
+        lastName: 'admin',
+        email: 'super_admin@test.com',
+        password,
+        signupMethod: 'local',
+        role: 'super_admin',
+        socialId: null,
+        profilePic: null,
       },      
       {
         firstName: 'admin',
@@ -38,7 +50,7 @@ export function up(queryInterface, Sequelize) {
         role: 'admin',
         socialId: null,
         profilePic: null,
-    }
+      }
     ],
     {}
   );

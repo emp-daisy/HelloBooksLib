@@ -1,5 +1,6 @@
-import { check, validationResult, param } from 'express-validator/check';
+import { check, validationResult, param, query } from 'express-validator/check';
 import util from '../helpers/utilities';
+import models from '../db/models';
 
 const validate = {
   signin: [
@@ -54,21 +55,28 @@ const validate = {
         return next();
     },
   ],
-  signup : [
+
+  signup: [
     check('firstName')
       .not()
       .isEmpty({ ignore_whitespace: true })
-      .withMessage('First Name should not be left empty: Please input firstName')
+      .withMessage(
+        'First Name should not be left empty: Please input firstName'
+      )
       .isAlpha()
       .trim()
-      .withMessage('first Name can only contain letters: Please remove invalid characters'),
+      .withMessage(
+        'first Name can only contain letters: Please remove invalid characters'
+      ),
     check('lastName')
       .not()
       .isEmpty({ ignore_whitespace: true })
       .withMessage('Last name should not be left empty: Please input lastName')
       .isAlpha()
       .trim()
-      .withMessage('Last name can ony contain letters: remove invalid characters'),
+      .withMessage(
+        'Last name can ony contain letters: remove invalid characters'
+      ),
     check('email')
       .not()
       .isEmpty({ ignore_whitespace: true })
@@ -76,12 +84,29 @@ const validate = {
       .isEmail()
       .trim()
       .withMessage('Email is not valid: Please input a valid email address'),
+
+    (req, res, next) => {
+      const errors = validationResult(req);
+      const errMessages = [];
+      if (!errors.isEmpty()) {
+        errors.array({ onlyFirstError: true }).forEach(err => {
+          errMessages.push(err.msg);
+        });
+        return util.errorStatus(res, 400, errMessages);
+      }
+      return next();
+    }
+  ],
+
+  password: [
     check('password')
       .not()
       .isEmpty({ ignore_whitespace: true })
       .withMessage('Password should not be empty: Please input password')
-      .matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]/, "i")
-      .withMessage('Password must contain at least one uppercase letter, one lowercase letter and one numeric digit')
+      .matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]/, 'i')
+      .withMessage(
+        'Password must contain at least one uppercase letter, one lowercase letter and one numeric digit'
+      )
       .trim()
       .isLength({ min: 8 })
       .withMessage('Password Length should be at least 8 Characters'),
@@ -90,14 +115,15 @@ const validate = {
       const errors = validationResult(req);
       const errMessages = [];
       if (!errors.isEmpty()) {
-        errors.array({ onlyFirstError: true }).forEach((err) => {
+        errors.array({ onlyFirstError: true }).forEach(err => {
           errMessages.push(err.msg);
         });
         return util.errorStatus(res, 400, errMessages);
       }
       return next();
-    },
+    }
   ],
+
   addBook: [
     check('title')
       .not()
@@ -173,6 +199,7 @@ const validate = {
       return next();
     },
   ],
+
   author : [
     check('firstName')
       .not()
@@ -233,6 +260,29 @@ const validate = {
       }
       return next();
     },
+  ],
+
+  role: [
+    param('role')
+      .not()
+      .isEmpty({ ignore_whitespace: true })
+      .withMessage('role should not be left empty')
+      .isIn(['user', 'admin'])
+      .withMessage('Should be admin or user')
+      .isAlpha()
+      .trim(),
+
+    (req, res, next) => {
+      const errors = validationResult(req);
+      const errMessages = [];
+      if (!errors.isEmpty()) {
+        errors.array().forEach(err => {
+          errMessages.push(err.msg);
+        });
+        return util.errorStatus(res, 400, errMessages);
+      }
+      return next();
+    }
   ],
 
   id : [
@@ -312,7 +362,25 @@ const validate = {
     }
     return next();
   },  ],
-  
+
+  userId: [
+    query('userId')
+      .optional()
+      .isInt()
+      .withMessage('ID must be a number greater than 1'),
+
+      (req, res, next) => {
+        const errors = validationResult(req);
+        const errMessages = [];
+        if (!errors.isEmpty()) {
+          errors.array({ onlyFirstError: true }).forEach(err => {
+            errMessages.push(err.msg);
+          });
+          return util.errorStatus(res, 400, errMessages);
+        }
+        return next();
+      }
+  ],
 
   lendBook : [
     check('isbn')
@@ -321,28 +389,29 @@ const validate = {
       .withMessage('ISBN can not be left empty: Please input ISBN')
       .isInt()
       .withMessage('ISBN is not valid integer: Please input a valid ISBN')
-      .isLength({ min: 4, max: 10 })
-      .withMessage('ISBN should be a minimum of 4 digits'),
-    check('title')
-      .not()
-      .isEmpty({ ignore_whitespace: true })
-      .withMessage('Title can not be left empty: Please input Title'),
+      .custom( async (isbn) => {
+        const Book = await models.Books.findOne({ where: { isbn } });
+        if (!Book) {
+          throw new Error('No Book with the specified isbn was found')
+        }
+        if (Book.dataValues.status === 'borrowed') {
+          throw new Error('This book has been borrowed out already')
+        }
+        return true;
+      }),
     check('patronId')
       .not()
       .isEmpty({ ignore_whitespace: true })
       .withMessage('patronId can not be left empty: Please input patronId')
       .isInt()
       .withMessage('patronId is not valid integer: Please input a valid patronId')
-      .isNumeric({ min: 1 })
-      .withMessage('patronId should be atleast 1'),
-    check('cost')
-      .not()
-      .isEmpty({ ignore_whitespace: true })
-      .withMessage('cost can not be left empty: Please input cost')
-      .isInt()
-      .withMessage('cost is not valid integer: Please input a valid cost')
-      .isLength({ min: 2 })
-      .withMessage('Cost should be a minimum of 2 digits'),
+      .custom( async (id) => {
+        const isExist = await models.Users.findOne({ where: { id } });
+        if (!isExist) {
+          throw new Error('No Book with the specified isbn was found')
+        }
+        return true;
+      }),
 
     (req, res, next) => {
       const errors = validationResult(req);
@@ -354,7 +423,8 @@ const validate = {
         return util.errorStatus(res, 400, errMessages);
       }
       return next();
-    },  ]
+    }
+  ]
 }
 
 export default validate;

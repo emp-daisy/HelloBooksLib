@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 export default (sequelize, DataTypes) => {
-  const Borrowed_books = sequelize.define('Borrowed_books', {
+  const BorrowedBooks = sequelize.define('BorrowedBooks', {
     isbn: {
       allowNull: false,
       type: DataTypes.INTEGER,
@@ -25,12 +25,8 @@ export default (sequelize, DataTypes) => {
       allowNull: false,
       type: DataTypes.BOOLEAN,
       defaultValue: false
-    },    
-    cost: {
-      allowNull: false,
-      type: DataTypes.INTEGER
-    },
+    },  
   }, {timestamps: false});
 
-  return Borrowed_books;
+  return BorrowedBooks;
 };

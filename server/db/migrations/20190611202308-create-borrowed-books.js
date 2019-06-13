@@ -1,6 +1,6 @@
 /* eslint-disable require-jsdoc */
 export function up(queryInterface, Sequelize)  {
-    return queryInterface.createTable('Borrowed_books', {
+    return queryInterface.createTable('BorrowedBooks', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -26,11 +26,7 @@ export function up(queryInterface, Sequelize)  {
       patronId: {
         allowNull: false,
         type: Sequelize.INTEGER
-      },
-      cost: {
-        allowNull: true,
-        type: Sequelize.INTEGER
-      },       
+      },      
       returned: {
         allowNull: false,
         type: Sequelize.BOOLEAN,
@@ -40,6 +36,6 @@ export function up(queryInterface, Sequelize)  {
   }
 
 export function down(queryInterface) {
-  return queryInterface.dropTable('Borrowed_books');
+  return queryInterface.dropTable('BorrowedBooks');
 }
 

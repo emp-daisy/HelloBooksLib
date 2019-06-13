@@ -220,7 +220,7 @@ class UserController {
 
         if(!user) return util.errorStatus(res, 404, 'User does not exists');
 
-        const roleSpec = ["admin", "user", "super_admin"];
+        const roleSpec = ['admin', 'user', 'super_admin'];
 
         if(!roleSpec.includes(role)) return util.errorStatus(res, 404, 'Role type not found')
 
@@ -228,7 +228,7 @@ class UserController {
         const updatedUser = await models.Users.findOne({where: { email }})
 
         return util.successStatus(res, 200, 'Role Assigned successfully', {
-          assignedBy: req.user.firstName,
+          assignedBy: req.loggedinUser.firstName,
           id: user.id,
           firstName: user.firstName,
           lastName: user.lastName,
@@ -237,6 +237,88 @@ class UserController {
         })
     } catch(err) {
         return util.errorStatus(res, 500, err.message);
+    }
+  }
+
+  static async getUserDetails(req, res) {
+    const { userId } = req.query;
+    let theUser;
+
+    try {
+      if (userId) {
+        theUser = await models.Users.findByPk(userId, {
+          attributes: ['id', 'firstName', 'lastName', 'email', 'signupMethod', 'role']
+        });
+
+        if (!theUser) {
+          return util.errorStatus(res, 404, 'User not found');
+        }
+      } else {
+        theUser = await models.Users.findAll({
+          attributes: ['id', 'firstName', 'lastName', 'email', 'signupMethod', 'role']
+        });
+      }
+    } catch (error) {
+      return util.errorStatus(res, 500, 'Internal Server Error');
+    }
+
+    return util.successStatus(res, 200, 'data', theUser);
+  }
+
+  static async deleteUser(req, res) {
+    const { id } = req.params;
+
+    try {
+      const theUser = await models.Users.findByPk(id);
+      if (!theUser) {
+        return util.errorStatus(res, 404, 'User not found');
+      }
+      await models.Users.destroy({ where: { id } });
+    } catch (error) {
+      return util.errorStatus(res, 500, 'Internal Server Error');
+    }
+
+    return util.successStatus(res, 200, 'User deleted Successfully');
+  }
+
+  static async createUser(req, res) {
+    const { firstName, lastName, email } = req.body;
+    const { role } = req.params;
+    const password = await util.generatePassword();
+    try {
+      const foundUser = await models.Users.findOne({ where: { email } });
+
+      if (foundUser) {
+        return util.errorStatus(res, 409, 'email address exists already');
+      }
+
+      const hashPassword = auth.hashPassword(password);
+      const user = {
+        firstName,
+        lastName,
+        email,
+        password: hashPassword,
+        signupMethod: 'local',
+        role
+      };
+
+      const createdUser = await models.Users.create(user);
+      const token = auth.generateToken({
+        id: createdUser.id
+      });
+
+      mailer.sendAdminMail(user.email, user.firstName, password);
+
+      return util.successStatus(res, 201, 'User Created successfully', {
+        token,
+        id: createdUser.id,
+        firstName: createdUser.firstName,
+        lastName: createdUser.lastName,
+        email: createdUser.email,
+        role
+      });
+    } catch (error) {
+      util.errorStatus(res, 500, error.name);
     }
   }
 }

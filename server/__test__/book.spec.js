@@ -8,6 +8,7 @@ const url = '/api/v1/books';
 
 let token ;
 
+
 describe('Books tests', () => {
   describe('test for add books', () => {
     it('Should add a new book when all required input is supplied', async done => {
@@ -332,36 +333,30 @@ describe('Books tests', () => {
       .post(`${url}/borrow`)
       .set('Authorization', `Bearer ${adminToken}`)
       .send({
-        isbn: 34334,
-        title: 'Book Title',
-        patronId: 3,
-        cost: 10
+        isbn: '1234354678',
+        patronId: 1,
       })
       .end((_err, res) => {
         expect(res.statusCode).toEqual(201);
         expect(res.body).toHaveProperty('data');
         expect(res.body.message).toEqual('Success');
-        expect(res.body.data.title).toEqual('Book Title');
-        expect(res.body.data.cost).toEqual(10);
-        expect(res.body.data.isbn).toEqual(34334);
         done();
       });
     });
 
-    it('Should not lend a book to a patron with 3 books', async done => {
+    it('Should not borrow out a book if it has already been borrowed', async done => {
       server()
       .post(`${url}/borrow`)
       .set('Authorization', `Bearer ${adminToken}`)
       .send({
-        isbn: 34334,
+        isbn: '1234354678',
         title: 'Book Title',
-        patronId: 4,
-        cost: 10
+        patronId: 4
       })
       .end((_err, res) => {
-        expect(res.statusCode).toEqual(405);
+        expect(res.statusCode).toEqual(400);
         expect(res.body).toHaveProperty('error');
-        expect(res.body.error).toEqual('You cannot have more than 3 books in your possession');
+        expect(res.body.error[0]).toEqual('This book has been borrowed out already');
         done();
       });
     });
@@ -371,13 +366,12 @@ describe('Books tests', () => {
       .post(`${url}/borrow`)
       .set('Authorization', `Bearer ${adminToken}`)
       .send({
-        isbn: 34334,
+        isbn: '1234354678',
         title: 'Book Title',
-        patronId: 5,
-        cost: 10
+        patronId: 5
       })
       .end((_err, res) => {
-        expect(res.statusCode).toEqual(405);
+        expect(res.statusCode).toEqual(400);
         expect(res.body).toHaveProperty('error');
         done();
       });
@@ -389,16 +383,13 @@ describe('Books tests', () => {
       .set('Authorization', `Bearer ${adminToken}`)
       .send({
         isbn: 'dfd ',
-        title: ' ',
-        patronId: 5,
-        cost: 'dfd'
+        patronId: 5
       })
       .end((_err, res) => {
         expect(res.statusCode).toEqual(400);
         expect(res.body).toHaveProperty('error');
         expect(res.body.error[0]).toEqual('ISBN is not valid integer: Please input a valid ISBN');
-        expect(res.body.error[1]).toEqual('Title can not be left empty: Please input Title');
-        expect(res.body.error[2]).toEqual('cost is not valid integer: Please input a valid cost');
+       
         done();
       });
     });
@@ -409,9 +400,7 @@ describe('Books tests', () => {
       .set('Authorization', `Bearer ${token}`)
       .send({
         isbn: 343434,
-        title: 'Book Title',
-        patronId: 30,
-        cost: 10
+        patronId: 30
       })
       .end((_err, res) => {
         expect(res.statusCode).toEqual(401);

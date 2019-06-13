@@ -145,9 +145,9 @@ describe('Test list authors functionality', () => {
     server()
     .get(`${url}/authors`)
     .end((err, res) => {
-      expect(res.statusCode).toEqual(403);
+      expect(res.statusCode).toEqual(401);
       expect(res.body).toHaveProperty('error');
-      expect(res.body.error).toEqual('Authentication is required');
+      expect(res.body.error).toEqual('Authorization error');
       done();
     });
   });
@@ -172,7 +172,7 @@ describe('Test list authors functionality', () => {
     .end((err, res) => {
       expect(res.statusCode).toEqual(401);
       expect(res.body).toHaveProperty('error');
-      expect(res.body.error).toEqual('Unauthorized');
+      expect(res.body.error).toEqual('Unauthorized user');
       done();
     });
   });

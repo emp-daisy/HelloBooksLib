@@ -1,6 +1,6 @@
 /* eslint-disable require-jsdoc */
 export function up(queryInterface, Sequelize){
-    return queryInterface.createTable('Requested_Books', {
+    return queryInterface.createTable('RequestedBooks', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -37,5 +37,5 @@ export function up(queryInterface, Sequelize){
   }
 
   export function down(queryInterface){
-    return queryInterface.dropTable('Requested_Books');
+    return queryInterface.dropTable('RequestedBooks');
   }
