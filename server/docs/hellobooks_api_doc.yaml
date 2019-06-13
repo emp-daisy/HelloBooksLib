@@ -422,16 +422,31 @@ paths:
           description: Set the number of result to get per page
           schema:
             type: string
-          # required: false
+        - in: query
+          name: searchBook
+          description: Keyword to search for in Books title, description and tags
+          schema:
+            type: string
+        - in: query
+          name: author
+          description: Name to search for in Authors
+          schema:
+            type: string
       responses:
         200:
-          description: Added
+          description: Success
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/BookList"
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
         500:
-          description: Added
+          description: Server error
           content:
             application/json:
               schema:
