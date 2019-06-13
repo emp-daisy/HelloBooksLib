@@ -33,10 +33,28 @@ export function up(queryInterface, Sequelize) {
         signupMethod: 'local',
         socialId: null,
         profilePic: null,
+        role: 'super_admin'
+      },
+      {
+        firstName: 'super',
+        lastName: 'admin',
+        email: 'super_admin@test.com',
+        password,
+        signupMethod: 'local',
         role: 'super_admin',
-        bio: null,
-        favoriteQuote: null,
-        favoriteBooks: [null]
+        socialId: null,
+        profilePic: null,
+      },      
+      {
+        firstName: 'admin',
+        lastName: 'admin',
+        email: 'admin@test.com',
+        password,
+        signupMethod: 'local',
+        role: 'admin',
+        socialId: null,
+        profilePic: null,
+
       }
     ],
     {}

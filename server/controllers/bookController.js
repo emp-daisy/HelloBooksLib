@@ -77,7 +77,7 @@ class BookController {
   static async requestBook(req, res) {
     const { title, description, author, year, categoryID, userID} = req.body;
     try {
-      const requestedBook = await models.Requested_Books.create({
+      const requestedBook = await models.RequestedBooks.create({
         title,
         description,
         author,
@@ -86,6 +86,50 @@ class BookController {
         userID
       });
       return Utils.successStatus(res, 201, 'Book requested successfully', requestedBook);
+    } catch (error) {
+      Utils.errorStatus(res, 500, error.message);
+    }
+  }
+
+  static async lendBook(req, res) {
+    const { isbn, patronId} = req.body;
+    
+    try {
+      const booksNotReturned = await models.BorrowedBooks.findAndCountAll({ where: { patronId, returned : false } });
+
+      if (booksNotReturned.count >= 3) {
+        return Utils.errorStatus(res, 400, 'You cannot have more than 3 books in your possession');        
+      } 
+      const today = new Date();
+      const overdueBook = booksNotReturned.rows.filter((book) => book.dueDate < today);
+  
+      if(overdueBook.length >= 1) {
+        const dueBooks = overdueBook.map((book) =>`The book titled '${book.title.toUpperCase()}' was due for return on ${book.dueDate.toString().substring(0, 15)},`);
+        const dueBookTwo = dueBooks[1] ? dueBooks[1] : '' ;
+        const responseObj = {
+          message: `${dueBooks[0]} ${dueBookTwo} Kindly return before we can proceed with a new request`
+        }
+        return Utils.errorStatus(res, 400, responseObj); 
+      }
+
+      const dateBorrowed = new Date();
+      const dueDate = new Date();
+      // Books are due for return after 3 days
+      dueDate.setDate(dueDate.getDate() + 3); 
+      const bookDetails = await models.Books.findOne({ where: { isbn }});
+      const { title } = bookDetails.dataValues ;
+      const borrowedBook = await models.BorrowedBooks.create({
+        isbn,
+        title,
+        dateBorrowed,
+        dueDate,
+        patronId    
+      });
+
+      await models.Books.update({ status: 'borrowed' }, { where: { isbn } });
+
+      return Utils.successStatus(res, 201, 'Success', borrowedBook);
+
     } catch (error) {
       Utils.errorStatus(res, 500, error.message);
     }

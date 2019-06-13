@@ -543,6 +543,51 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/errorResponse"
+  /books/borrow:
+    post:
+      tags:
+        - Books
+      security:
+        - bearerAuth: []
+      summary: lend a book
+      description: Admin should be able to lend out books
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                isbn:
+                  type: integer
+                patronId:
+                  type: integer
+      responses:
+        201:
+          description: Request successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Book"
+        405:
+          description: Not allowed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        500:
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+
   /authors:
     post:
       tags:

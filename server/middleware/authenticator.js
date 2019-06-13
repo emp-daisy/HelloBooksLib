@@ -77,7 +77,16 @@ class Authenticate {
     return next();
   }
 
+  static async isAdmin(req, res, next) {
+    const { loggedinUser } = req;
 
+    if(loggedinUser.role !== 'admin' && loggedinUser.role !== 'super_admin') {
+      return util.errorStatus(res, 401, 'Unauthorized');
+    }
+
+    return next();
+  }
+  
   static async isOwnProfile(req, res, next) {
     const codedToken = req.headers.authorization;
 

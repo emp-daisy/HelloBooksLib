@@ -1,5 +1,6 @@
 import { check, validationResult, param, query } from 'express-validator/check';
 import util from '../helpers/utilities';
+import models from '../db/models';
 
 const validate = {
   signin: [
@@ -367,11 +368,55 @@ const validate = {
       .isInt()
       .withMessage('ID must be a number greater than 1'),
 
+      (req, res, next) => {
+        const errors = validationResult(req);
+        const errMessages = [];
+        if (!errors.isEmpty()) {
+          errors.array({ onlyFirstError: true }).forEach(err => {
+            errMessages.push(err.msg);
+          });
+          return util.errorStatus(res, 400, errMessages);
+        }
+        return next();
+      }
+  ],
+
+  lendBook : [
+    check('isbn')
+      .not()
+      .isEmpty({ ignore_whitespace: true })
+      .withMessage('ISBN can not be left empty: Please input ISBN')
+      .isInt()
+      .withMessage('ISBN is not valid integer: Please input a valid ISBN')
+      .custom( async (isbn) => {
+        const Book = await models.Books.findOne({ where: { isbn } });
+        if (!Book) {
+          throw new Error('No Book with the specified isbn was found')
+        }
+        if (Book.dataValues.status === 'borrowed') {
+          throw new Error('This book has been borrowed out already')
+        }
+        return true;
+      }),
+    check('patronId')
+      .not()
+      .isEmpty({ ignore_whitespace: true })
+      .withMessage('patronId can not be left empty: Please input patronId')
+      .isInt()
+      .withMessage('patronId is not valid integer: Please input a valid patronId')
+      .custom( async (id) => {
+        const isExist = await models.Users.findOne({ where: { id } });
+        if (!isExist) {
+          throw new Error('No User with the specified patronID was found')
+        }
+        return true;
+      }),
+
     (req, res, next) => {
       const errors = validationResult(req);
       const errMessages = [];
       if (!errors.isEmpty()) {
-        errors.array({ onlyFirstError: true }).forEach(err => {
+        errors.array({ onlyFirstError: true }).forEach((err) => {
           errMessages.push(err.msg);
         });
         return util.errorStatus(res, 400, errMessages);
