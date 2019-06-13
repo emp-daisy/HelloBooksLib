@@ -14,7 +14,7 @@ dotenv.config();
 
 class UserController {
   static async signUp(req, res) {
-    const { firstName, lastName, email, password } = req.body;
+    const { firstName, lastName, email, password, username } = req.body;
     try {
       const foundUser = await models.Users.findOne({ where: { email } });
 
@@ -29,7 +29,11 @@ class UserController {
         password: hashPassword,
         email_confirm_code: mailToken,
         role: 'user',
-        signupMethod: 'local'
+        signupMethod: 'local',
+        bio: null,
+        favoriteBooks: [null],
+        favoriteQuote: null,
+        username
       };
 
       const createdUser = await models.Users.create(user);
@@ -44,7 +48,8 @@ class UserController {
         lastName: createdUser.lastName,
         email: createdUser.email,
         signupMethod: 'local',
-        mailToken
+        mailToken,
+        username: createdUser.username
       });
     } catch (error) {
       util.errorStatus(res, 500, error.name);
@@ -320,6 +325,64 @@ class UserController {
     } catch (error) {
       util.errorStatus(res, 500, error.name);
     }
+  }
+
+  static async getProfile(req, res) {
+    const { is_own_profile } = req;
+    const { id } = req.query;
+
+    const returnUserObj = (userID) => {
+      return models.Users.findByPk(userID, {
+        attributes: ['profilePic', 'bio', 'favoriteQuote', 'favoriteBooks', 'firstName', 'username', 'lastName']
+      })
+    }
+ 
+     try {
+          const user = await returnUserObj(id);
+           return util.successStatus(res, 200, 'profile retrieved successfully', {
+              is_own_profile,
+              firstName: user.firstName,
+              lastName: user.lastName,
+              username: user.username,
+              bio: user.bio,
+              profilePic: user.profilePic,
+              favoriteQuote: user.favoriteQuote,
+              favoriteBooks: user.favoriteBooks
+            })
+
+     } catch(err) {
+      return util.errorStatus(res, 500, err.name)
+     }
+  }
+
+  static async editProfile(req, res) {
+
+    const {...args} = req.body;
+
+    if(Object.keys(args).length <= 0) return util.errorStatus(res, 400, 'You must one or more profile attributes to update')
+
+    const { is_own_profile, loggedinUser } = req;
+
+    if(!is_own_profile) return util.errorStatus(res, 401, 'Unauthorized user');
+   
+    try {
+      await models.Users.update(args, {where: { id: loggedinUser.id }})
+
+      const updatedUser = await models.Users.findByPk(loggedinUser.id);
+
+      return util.successStatus(res, 200, 'Update success', {
+         firstName: updatedUser.firstName,
+         lastName: updatedUser.lastName,
+         username: updatedUser.username,
+         bio: updatedUser.bio,
+         profilePic: updatedUser.profilePic,
+         favoriteQuote: updatedUser.favoriteQuote,
+         favoriteBooks: updatedUser.favoriteBooks
+      })
+
+    } catch(err) {
+      return util.errorStatus(res, 500, err.name)
+    }  
   }
 }
 

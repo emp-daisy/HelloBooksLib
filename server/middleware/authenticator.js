@@ -76,6 +76,25 @@ class Authenticate {
     }
     return next();
   }
+
+
+  static async isOwnProfile(req, res, next) {
+    const codedToken = req.headers.authorization;
+
+    const { id } = req.query;
+
+    const token = codedToken.split(' ')[1];
+
+    const user = Auth.verifyToken(token);
+    
+    if(Number(id) !== user.id) {
+      req.is_own_profile = false
+    } else {
+      req.is_own_profile = true;
+    }
+
+    next();
+  }
 }
 
 export default Authenticate;

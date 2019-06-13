@@ -23,6 +23,13 @@ const mockUser = {
     email: 'testing1@example.com',
     password: 'randomword'
   },
+  updateUserProfile: {
+    bio: 'I love to swim',
+    profilePic: 'catchemyoung.jpg',
+    favoriteQuote: 'I believe I can fly', 
+    favoriteBooks: ['YDKJS'], 
+    username: 'updatedusername'
+  }
 }
 
 export default mockUser;

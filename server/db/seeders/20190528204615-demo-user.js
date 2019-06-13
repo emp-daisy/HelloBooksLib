@@ -18,7 +18,12 @@ export function up(queryInterface, Sequelize) {
         signupMethod: 'local',
         role: 'user',
         socialId: null,
-        profilePic: null
+        profilePic: null,
+        bio: null,
+        favoriteQuote: null,
+        favoriteBooks: [null],
+        username: '@johnero'
+
       },
       {
         firstName: 'Jude',
@@ -29,7 +34,11 @@ export function up(queryInterface, Sequelize) {
         signupMethod: 'local',
         socialId: null,
         profilePic: null,
-        role: 'super_admin'
+        role: 'super_admin',
+        bio: null,
+        favoriteQuote: null,
+        favoriteBooks: [null],
+        username: '@juderobooksman'
       }
     ],
     {}
