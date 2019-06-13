@@ -777,11 +777,11 @@ paths:
         - bearerAuth: []
       summary: Get user profile
       description: User can get other user profiles including theirs
-       parameters:
+      parameters:
         - in: query
           name: id
           schema:
-              type: integer
+            type: integer
           required: true 
       responses:
         200:
@@ -817,8 +817,14 @@ paths:
         - bearerAuth: []
       summary: User update profile
       description: User can update only their profile
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: integer
+          required: true
       requestBody:
-        required: false
+        required: true
         content:
           application/json:
             schema:
