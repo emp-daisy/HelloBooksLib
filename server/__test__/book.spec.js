@@ -334,7 +334,7 @@ describe('Books tests', () => {
       .set('Authorization', `Bearer ${adminToken}`)
       .send({
         isbn: '1234354678',
-        patronId: 1,
+        patronId: 3,
       })
       .end((_err, res) => {
         expect(res.statusCode).toEqual(201);
@@ -356,7 +356,6 @@ describe('Books tests', () => {
       .end((_err, res) => {
         expect(res.statusCode).toEqual(400);
         expect(res.body).toHaveProperty('error');
-        expect(res.body.error[0]).toEqual('This book has been borrowed out already');
         done();
       });
     });
