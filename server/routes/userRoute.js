@@ -39,4 +39,18 @@ userRoute.get(
 	UserController.getUserDetails
 );
 
+userRoute.get('/profile', 
+	Authenticate.isLoggedIn,
+	Validate.userId,
+	Authenticate.isOwnProfile,
+	UserController.getProfile
+);
+
+userRoute.put('/profile', 
+	Authenticate.isLoggedIn,
+	Validate.userId,
+	Authenticate.isOwnProfile,
+	UserController.editProfile,
+);
+
 export default userRoute;

@@ -3,7 +3,12 @@ const user = [
     firstName: 'Mat',
     lastName: 'Eniola',
     email: 'testing1@example.com',
-    password: 'PassWord123..'
+    password: 'PassWord123..',
+    role: 'user',
+    bio: 'I live for now, hoem alone shore lorem spectum ',
+    favoriteQuote: 'Only a programmer knows the pain of debugging',
+    favoriteBooks: ['hellboy', 'helloworld', 'headfirst javascript'],
+    profilePic: 'myphoto.jpg'
   },
   {
     id: '100',

@@ -769,8 +769,94 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/errorResponse"
+  /auth/profile:
+    get:
+      tags:
+        - Users
+      security:
+        - bearerAuth: []
+      summary: Get user profile
+      description: User can get other user profiles including theirs
+       parameters:
+        - in: query
+          name: id
+          schema:
+              type: integer
+          required: true 
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/successResponse"
+        400:
+          description: Bad request due to incorrect data sent to server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        401:
+          description: Unauthorized access
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        500:
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
 
-
+  /auth/profile:
+    put:
+      tags:
+        - Users
+      security:
+        - bearerAuth: []
+      summary: User update profile
+      description: User can update only their profile
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                bio:
+                  type: string
+                profilePic:
+                  type: string
+                favoriteQuote:
+                  type: string
+                favoriteBooks:
+                  type: array  
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/successResponse"
+        400:
+          description: Bad request due to incorrect data sent to server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        401:
+          description: Unauthorized access
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        500:
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
 components:
   securitySchemes:
     bearerAuth:

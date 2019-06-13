@@ -37,6 +37,18 @@ export default (sequelize, DataTypes) => {
       role: {
         type: DataTypes.STRING,
         allowNull: false
+      },
+      bio: {
+        type: DataTypes.TEXT,
+        allowNull: true
+      },
+      favoriteBooks: {
+        type: DataTypes.ARRAY(DataTypes.STRING),
+        allowNull: true
+      },
+      favoriteQuote: {
+        type: DataTypes.STRING,
+        allowNull: true
       }
     },
     {}

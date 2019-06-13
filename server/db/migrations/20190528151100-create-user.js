@@ -49,6 +49,18 @@ export function up(queryInterface, Sequelize) {
     role: {
       type: Sequelize.STRING,
       allowNull: false
+    },
+    bio: {
+      type: Sequelize.TEXT,
+      allowNull: true
+    },
+    favoriteBooks: {
+      type: Sequelize.ARRAY(Sequelize.STRING),
+      allowNull: true
+    },
+    favoriteQuote: {
+      type: Sequelize.STRING,
+      allowNull: true
     }
   });
 }
