@@ -853,8 +853,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/errorResponse"
-
-  /auth/profile:
     put:
       tags:
         - Users
@@ -882,7 +880,7 @@ paths:
                 favoriteQuote:
                   type: string
                 favoriteBooks:
-                  type: array  
+                  type: array(string)  
       responses:
         200:
           description: OK
