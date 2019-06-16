@@ -128,7 +128,7 @@ class BookController {
       );
     }
 
-    if(new Date(date) < book.dueDate) {
+    if(new Date(date) <= book.dueDate) {
       return Utils.errorStatus(
         res,
         400,

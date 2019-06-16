@@ -431,7 +431,7 @@ const validate = {
       .isEmpty()
       .withMessage('Date cannot be empty')
       .matches(/^(0?\d|1[012])\/([012]?\d|3[01])\/\d{4}$/)
-      .withMessage('Please provide a valid date. Format: (MM/DD/YY)'),
+      .withMessage('Please provide a valid date. Format: (MM/DD/YYYY)'),
 
     (req, res, next) => {
       const errors = validationResult(req);

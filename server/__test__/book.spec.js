@@ -449,7 +449,7 @@ describe('Books tests', () => {
       .end((_err, res) => {
         expect(res.statusCode).toEqual(400);
         expect(res.body).toHaveProperty('error');
-        expect(res.body.error[0]).toEqual('Please provide a valid date. Format: (MM/DD/YY)');
+        expect(res.body.error[0]).toEqual('Please provide a valid date. Format: (MM/DD/YYYY)');
         done();
       });
     });

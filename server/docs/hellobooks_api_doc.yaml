@@ -590,7 +590,7 @@ paths:
                 $ref: "#/components/schemas/errorResponse"
 
   /books/extend/{id}:
-    get:
+    patch:
       tags:
         - Books
       summary: Extend book return date
@@ -602,6 +602,16 @@ paths:
             type: integer
           required: true
           description: Numeric ID of the book that was borrowed
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                date:
+                  type: string
+                  example: 'MM/DD/YYYY'
       responses:
         200:
           description: Due date extended successfully
@@ -1022,8 +1032,8 @@ components:
       type: object
       properties:
         dueDate:
-          type: date
-          format: date
+          type: string
+          format: date-time
 
     errorResponse:
       type: object
