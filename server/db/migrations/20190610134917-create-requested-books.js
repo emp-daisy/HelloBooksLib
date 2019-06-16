@@ -13,7 +13,7 @@ export function up(queryInterface, Sequelize){
       description: {
         type: Sequelize.STRING
       },
-      tag: {
+      tags: {
         type: Sequelize.STRING
       },
       author: {

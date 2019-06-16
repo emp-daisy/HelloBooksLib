@@ -11,7 +11,7 @@ export default (sequelize, DataTypes) => {
       allowNull: false,
       type: DataTypes.TEXT
     },
-    tag: {
+    tags: {
       allowNull: false,
       type: DataTypes.TEXT
     },

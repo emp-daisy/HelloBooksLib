@@ -16,7 +16,7 @@ export function up(queryInterface, Sequelize) {
       allowNull: false,
       type: Sequelize.TEXT
     },
-    tag: {
+    tags: {
       allowNull: false,
       type: Sequelize.TEXT
     },

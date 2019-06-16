@@ -2,7 +2,7 @@ const mockBook = {
   completeBookData: {
     title: 'Coding with one eye',
     description: 'This book teaches you how to code without really knowing what you are doing',
-    tag: 'Coding',
+    tags: 'Coding',
     amount: 3451,
     status: 'Available',
     year: 2019,
@@ -13,7 +13,7 @@ const mockBook = {
   wrongAuthorIDBookData: {
     title: 'Coding with one eye',
     description: 'This book teaches you how to code without really knowing what you are doing',
-    tag: 'Coding',
+    tags: 'Coding',
     amount: 3451,
     status: 'Available',
     year: 2019,
@@ -22,7 +22,7 @@ const mockBook = {
   wrongCategoryIDBookData: {
     title: 'Coding with one eye',
     description: 'This book teaches you how to code without really knowing what you are doing',
-    tag: 'Coding',
+    tags: 'Coding',
     amount: 3451,
     status: 'Available',
     year: 2019,
@@ -33,7 +33,7 @@ const mockBook = {
   emptyBookData: {
     title: '',
     description: '',
-    tag: '',
+    tags: '',
     amount: '',
     status: 'Available',
     year: ''
@@ -41,7 +41,7 @@ const mockBook = {
   unsupportedBookData: {
     title: 'Coding with one eye',
     description: 'This book teaches you how to code without really knowing what you are doing',
-    tag: 'Coding',
+    tags: 'Coding',
     amount: 'money',
     active: 'wrong status',
     year: 'babab'

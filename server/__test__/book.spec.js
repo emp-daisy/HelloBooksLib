@@ -155,18 +155,19 @@ describe('Books tests', () => {
         });
     });
 
-    it('should list available books if search parameter matches any title, description and/or tag', done => {
+    it('should list available books if search parameter matches any title, description, tags and/or author', done => {
       const searchBook = 'Practical';
       server()
         .get(`${url}?searchBook=${searchBook}`)
         .end((_err, res) => {
           expect(res.statusCode).toEqual(200);
           expect(res.body.data[0]).toHaveProperty('year');
-          expect(res.body.data[0]).toHaveProperty('tag');
+          expect(res.body.data[0]).toHaveProperty('tags');
           expect(res.body.data[0]).toHaveProperty('title');
           expect(res.body.data[0]).toHaveProperty('amount');
           expect(res.body.data[0]).toHaveProperty('status');
           expect(res.body.data[0]).toHaveProperty('description');
+          expect(res.body.data[0]).toHaveProperty('Author');
           done();
         });
     });
@@ -175,18 +176,6 @@ describe('Books tests', () => {
       const searchBook = 'something';
       server()
         .get(`${url}?searchBook=${searchBook}`)
-        .end((_err, res) => {
-          expect(res.statusCode).toEqual(404);
-          expect(res.body).toHaveProperty('error');
-          expect(res.body.error).toEqual('No record found');
-          done();
-        });
-    });
-
-    it('should give error if search parameter does not matches any author\'s name', done => {
-      const author = 'Something';
-      server()
-        .get(`${url}?author=${author}`)
         .end((_err, res) => {
           expect(res.statusCode).toEqual(404);
           expect(res.body).toHaveProperty('error');

@@ -7,12 +7,12 @@ const { Op } = sequelize;
 
 class BookController {
   static async addBook(req, res) {
-    const { title, description, tag, amount, authorID, status, year, categoryID, isbn } = req.body;
+    const { title, description, tags, amount, authorID, status, year, categoryID, isbn } = req.body;
     try {
       const book = await models.Books.create({
         title,
         description,
-        tag,
+        tags,
         categoryID,
         amount,
         authorID,
@@ -27,14 +27,41 @@ class BookController {
   }
 
   static async getAllBooks(req, res) {
-    if (req.query.page) {
+    if (req.query) {
       let { page, limit } = req.query;
       page = parseInt(page, 10);
       page = page > 0 ? page : 1;
       limit = parseInt(limit, 10);
       limit = limit > 0 ? limit : 50;
       const offset = (page - 1) * limit;
-      try {
+
+      if (req.query.searchBook) {         
+        const searchResult = await models.Books.findAll({
+          limit,
+          offset,
+          $sort: { id: 1 },
+          include: [{
+              model: models.Authors,
+              as: 'Author',
+              where: { 
+                [Op.or]: [
+                  {firstName: {[Op.like]: `%${req.query.searchBook}%`}},
+                  {middleName: {[Op.like]: `%${req.query.searchBook}%`}},
+                  {lastName: {[Op.like]: `%${req.query.searchBook}%`}},
+                  {'$Books.title$': {[Op.like]: `%${req.query.searchBook}%`}},
+                  {'$Books.description$': {[Op.like]: `%${req.query.searchBook}%`}},
+                  {'$Books.tags$': {[Op.like]: `%${req.query.searchBook}%`}},
+                ]
+               }
+          }]
+      });
+        if (!searchResult[0]) {
+        return Utils.errorStatus(res, 404, 'No record found')  
+      }
+          return Utils.successStatus(res, 200, 'Books fetched successfully', searchResult) 
+        }
+
+        if (req.query.page) {
         const books = await models.Books.findAndCountAll({
           limit,
           offset,
@@ -48,52 +75,8 @@ class BookController {
           pages,
           data
         });
-      } catch (error) {
-        log(error.message);
-        Utils.errorStatus(res, 500, error.message);
       }
     } 
-    if (req.query) {
-      try {
-        if (req.query.searchBook) {         
-            const searchResult = await models.Books.findAll({where: {
-              [Op.or]: [
-                {title: {[Op.like]: `%${req.query.searchBook}%`}},
-                {description: {[Op.like]: `%${req.query.searchBook}%`}},
-                {tag: {[Op.like]: `%${req.query.searchBook}%`}},
-              ]
-            }});             
-            if (!searchResult[0]) {
-              return Utils.errorStatus(res, 404, 'No record found')  
-            }
-            return Utils.successStatus(res, 200, 'Books fetched successfully', searchResult) 
-          } 
-
-        if (req.query.author) {
-          const searchResult = await models.Books.findAll({
-            include: [{
-                model: models.Authors,
-                as: 'Author',
-                where: { 
-                  [Op.or]: [
-                    {firstName: {[Op.like]: `%${req.query.author}%`}},
-                    {middleName: {[Op.like]: `%${req.query.author}%`}},
-                    {lastName: {[Op.like]: `%${req.query.author}%`}},
-                  ]
-                 }
-            }]
-        });
-          if (!searchResult[0]) {
-          return Utils.errorStatus(res, 404, 'No record found')  
-        }
-            return Utils.successStatus(res, 200, 'Books fetched successfully', searchResult)  
-          }
-        }
-       catch (error) {
-        Utils.errorStatus(res, 500, error.message);
-      }
-    }
-    
    
       return Utils.successStatus(res, 200, 'Books fetched successfully', await models.Books.findAll());
     
@@ -118,12 +101,12 @@ class BookController {
   }
 
   static async requestBook(req, res) {
-    const { title, description, tag, author, year, categoryID, userID} = req.body;
+    const { title, description, tags, author, year, categoryID, userID} = req.body;
     try {
       const requestedBook = await models.RequestedBooks.create({
         title,
         description,
-        tag,
+        tags,
         author,
         year,
         categoryID,

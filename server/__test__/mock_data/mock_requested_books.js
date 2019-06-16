@@ -2,7 +2,7 @@ const mockBook = {
   completeBookData: {
     title: 'Javascript just got easier',
     description: 'Javascript A - Z',
-    tag: 'Javascript',
+    tags: 'Javascript',
     author: 'Pelumi Aleshinloye Lukmon',
     year: 2019,
     categoryID: 1,
@@ -11,7 +11,7 @@ const mockBook = {
   wrongCategoryIDBookData: {
     title: 'Javascript just got easier',
     description: 'Javascript A - Z',
-    tag: 'Javascript',
+    tags: 'Javascript',
     author: 'Pelumi Aleshinloye Lukmon',
     year: 2019,
     userID: 2,
@@ -20,7 +20,7 @@ const mockBook = {
   emptyBookData: {
     title: '',
     description: '',
-    tag: '',
+    tags: '',
     author: '',
     userID: 2,
   },
