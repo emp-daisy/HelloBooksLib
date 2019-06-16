@@ -252,10 +252,10 @@ describe('Books tests', () => {
       .end((_err, res) => {
         expect(res.body.data).toHaveProperty('token')
        // eslint-disable-next-line prefer-destructuring
-       token = res.body.data.token;
-       done();
+        token = res.body.data.token;
+        done();
+        })
       })
-    })
     });
     it('Should succesfully make a request if all input are supplied', async (done) => {
       server()
@@ -405,6 +405,103 @@ describe('Books tests', () => {
         expect(res.statusCode).toEqual(401);
         expect(res.body).toHaveProperty('error');
         expect(res.body.error).toEqual('Unauthorized');
+        done();
+      });
+    });
+  });
+
+  describe('Extend due date', () => {
+    let lenderToken;
+
+    beforeAll((done) => {
+      server()
+      .post(`/api/v1/auth/signin`)
+      .send({
+        email: 'extender@test.com',
+        password: 'PassWord123..'
+      })
+      .end((err, res) => {
+        lenderToken  = res.body.data.token;
+        done();
+      })
+    })
+
+    it('Should extend the due date if a valid details are provided', async done => {
+      server()
+      .patch(`${url}/extend/5`)
+      .set('Authorization', `Bearer ${lenderToken}`)
+      .send({ date: '01/01/2020'})
+      .end((_err, res) => {
+        expect(res.statusCode).toEqual(200);
+        expect(res.body).toHaveProperty('message');
+        expect(res.body.message).toEqual('Due date extended successfully');
+        expect(res.body).toHaveProperty('data');
+        expect(res.body.data).toHaveProperty('dueDate');
+        done();
+      });
+    });
+
+    it('Should not extend the due date if invalid date is provided', async done => {
+      server()
+      .patch(`${url}/extend/5`)
+      .set('Authorization', `Bearer ${lenderToken}`)
+      .send({ date: '231/01/2020'})
+      .end((_err, res) => {
+        expect(res.statusCode).toEqual(400);
+        expect(res.body).toHaveProperty('error');
+        expect(res.body.error[0]).toEqual('Please provide a valid date. Format: (MM/DD/YY)');
+        done();
+      });
+    });
+
+    it('Should not extend the due date if no date is provided', async done => {
+      server()
+      .patch(`${url}/extend/5`)
+      .set('Authorization', `Bearer ${lenderToken}`)
+      .send({ date: ''})
+      .end((_err, res) => {
+        expect(res.statusCode).toEqual(400);
+        expect(res.body).toHaveProperty('error');
+        expect(res.body.error[0]).toEqual('Date cannot be empty');
+        done();
+      });
+    });
+
+    it('Should not extend the due date for a book not borrowed by logged in patron', async done => {
+      server()
+      .patch(`${url}/extend/1`)
+      .set('Authorization', `Bearer ${lenderToken}`)
+      .send({ date: '01/01/2020'})
+      .end((_err, res) => {
+        expect(res.statusCode).toEqual(400);
+        expect(res.body).toHaveProperty('error');
+        expect(res.body.error).toEqual('You do not have any book with id: 1 in your possession');
+        done();
+      });
+    });
+
+    it('Should not extend the due date for a book that is due for return', async done => {
+      server()
+      .patch(`${url}/extend/4`)
+      .set('Authorization', `Bearer ${lenderToken}`)
+      .send({ date: '01/01/2020'})
+      .end((_err, res) => {
+        expect(res.statusCode).toEqual(400);
+        expect(res.body).toHaveProperty('error');
+        expect(res.body.error).toEqual('You cannot extend the borrowing period when the book is overdue. Kindly return the book to the library');
+        done();
+      });
+    });
+
+    it('Should ensure new date is after and not before the previous due date', async done => {
+      server()
+      .patch(`${url}/extend/5`)
+      .set('Authorization', `Bearer ${lenderToken}`)
+      .send({ date: '09/09/2019'})
+      .end((_err, res) => {
+        expect(res.statusCode).toEqual(400);
+        expect(res.body).toHaveProperty('error');
+        expect(res.body.error).toEqual('The new date must be a date later than the previous due date');
         done();
       });
     });

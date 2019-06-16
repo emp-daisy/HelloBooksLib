@@ -55,7 +55,21 @@ export function up(queryInterface, Sequelize) {
         socialId: null,
         profilePic: null,
 
-      }
+      },
+      {
+        firstName: 'Date',
+        lastName: 'Extender',
+        email: 'extender@test.com',
+        password,
+        signupMethod: 'local',
+        role: 'user',
+        socialId: null,
+        profilePic: null,
+        bio: null,
+        favoriteQuote: null,
+        favoriteBooks: [null]
+
+      },
     ],
     {}
   );
