@@ -642,14 +642,15 @@ describe('Books tests', () => {
     });
 
     it('Should not extend the due date for a book not borrowed by logged in patron', async done => {
+      const id = 3;
       server()
-      .patch(`${url}/extend/1`)
+      .patch(`${url}/extend/${id}`)
       .set('Authorization', `Bearer ${lenderToken}`)
       .send({ date: '01/01/2020'})
       .end((_err, res) => {
         expect(res.statusCode).toEqual(400);
         expect(res.body).toHaveProperty('error');
-        expect(res.body.error).toEqual('You do not have any book with id: 1 in your possession');
+        expect(res.body.error).toEqual(`You do not have any book with id: ${id} in your possession`);
         done();
       });
     });
