@@ -1,6 +1,9 @@
 /* eslint-disable require-jsdoc */
+import sequelize from 'sequelize';
 import models from '../db/models';
 import Utils from '../helpers/utilities';
+
+const { Op } = sequelize;
 
 class BookController {
   static async addBook(req, res) {
@@ -144,6 +147,58 @@ class BookController {
     return Utils.successStatus(res, 200, 'Due date extended successfully',{
       dueDate: newDate,
     });
+  }
+
+  static async returnBook(req, res){
+    const { isbn, patronId, damaged } = req.body;
+
+    let fineCost = 0;
+    let returnMessage = null;
+    const borrowedBook = await models.BorrowedBooks.findOne({
+      where: {
+        [Op.and]: [{ isbn }, { patronId }]
+      }
+    });
+    if(!borrowedBook){
+      return Utils.errorStatus(res, 404, 'Book was not found');
+    }
+    const date = new Date()
+    if(borrowedBook.dueDate < date) {
+      const mulitpier = Math.round((date - borrowedBook.dueDate)/86400000);
+      fineCost = 200 * mulitpier;
+      await models.BorrowedBooks.update(
+        { fineAmount: fineCost ,fineStatus: 'unpaid' },
+        {
+          where: {
+            [Op.and]: [{ isbn }, { patronId }]
+          }
+        }
+      )
+      returnMessage = `Your due date is past you have Incured a fine of ${fineCost}`;
+    }
+    if(damaged === 'true') {
+      fineCost += 100;
+      await models.BorrowedBooks.update(
+        { fineAmount: fineCost ,fineStatus: 'unpaid' },
+        {
+          where: {
+            [Op.and]: [{ isbn }, { patronId }]
+          }
+        }
+      )
+      if(!returnMessage) {
+        returnMessage = `You made damages to our book incuring a cost of ${fineCost}`;
+      } else {
+        returnMessage += ` and you also made damages to our book incuring a total cost of ${fineCost}`;
+      }
+    }
+    if(returnMessage) {
+      return Utils.errorStatus(res, 400, returnMessage)
+    }
+
+    await models.Books.update({ status: 'Available' }, { where: { isbn } });
+    await models.BorrowedBooks.update({ returned: true }, { where: { isbn } });
+    return Utils.successStatus(res, 200, 'Book successfully returned');
   }
 }
 

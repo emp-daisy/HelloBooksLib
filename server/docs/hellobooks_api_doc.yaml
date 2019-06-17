@@ -436,6 +436,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/errorResponse"
+
   /books/request:
     post:
       tags:
@@ -476,6 +477,47 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/errorResponse"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        500:
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+
+  /books/recieve:
+    post:
+      tags:
+        - Books
+      security:
+        - bearerAuth: []
+      summary: Recieves a book from a patron
+      description: User should be able to return a book
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                isbn:
+                  type: number
+                damaged:
+                  type: string
+                patronID:
+                  type: integer
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Book"
         400:
           description: Bad request
           content:
