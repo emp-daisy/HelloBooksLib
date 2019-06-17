@@ -7,6 +7,7 @@ const server = () => supertest(app);
 const url = '/api/v1/books';
 
 let token ;
+let adminToken;
 
 
 describe('Books tests', () => {
@@ -199,7 +200,7 @@ describe('Books tests', () => {
   describe('Delete specific book', () => {
     it('Should delete a specific book successfully', async (done) => {
       server()
-        .delete(`${url}/1`)
+        .delete(`${url}/2`)
         .end((_err, res) => {
           expect(res.statusCode).toEqual(200);
           expect(res.body.message).toEqual('Book deleted successfully');
@@ -313,8 +314,6 @@ describe('Books tests', () => {
   });
 
   describe('Borrow a book', () => {
-    let adminToken;
-  
     beforeAll((done) => {
       server()
       .post(`/api/v1/auth/signin`)
@@ -334,7 +333,7 @@ describe('Books tests', () => {
       .set('Authorization', `Bearer ${adminToken}`)
       .send({
         isbn: '1234354678',
-        patronId: 3,
+        patronId: 4,
       })
       .end((_err, res) => {
         expect(res.statusCode).toEqual(201);
@@ -388,7 +387,38 @@ describe('Books tests', () => {
         expect(res.statusCode).toEqual(400);
         expect(res.body).toHaveProperty('error');
         expect(res.body.error[0]).toEqual('ISBN is not valid integer: Please input a valid ISBN');
-       
+        done();
+      });
+    });
+
+    it('Should return an error is the book is not in the db', async done => {
+      server()
+      .post(`${url}/borrow`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({
+        isbn: '11111111',
+        patronId: 5
+      })
+      .end((_err, res) => {
+        expect(res.statusCode).toEqual(400);
+        expect(res.body).toHaveProperty('error');
+        expect(res.body.error[0]).toEqual('No Book with the specified isbn was found');
+        done();
+      });
+    });
+
+    it('Should return error if the user is not in the db', async done => {
+      server()
+      .post(`${url}/borrow`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({
+        isbn: '1034574',
+        patronId: 2000
+      })
+      .end((_err, res) => {
+        expect(res.statusCode).toEqual(400);
+        expect(res.body).toHaveProperty('error');
+        expect(res.body.error[0]).toEqual('No User with the specified patronID was found');
         done();
       });
     });
@@ -402,10 +432,154 @@ describe('Books tests', () => {
         patronId: 30
       })
       .end((_err, res) => {
-        expect(res.statusCode).toEqual(401);
+        expect(res.statusCode).toEqual(403);
         expect(res.body).toHaveProperty('error');
-        expect(res.body.error).toEqual('Unauthorized');
+        expect(res.body.error).toEqual('Forbidden, You Are not allowed to perform this action');
         done();
+      });
+    });
+  });
+
+  describe('Recieve a book from a patron', () => {
+    it('Should recieve a book from a patron', async done => {
+      server()
+      .post(`${url}/recieve`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({
+        isbn: '1234354678',
+        patronId: 4,
+        damaged: 'false'
+      })
+      .end((_err, res) => {
+        expect(res.statusCode).toEqual(200);
+        expect(res.body).toHaveProperty('message');
+        expect(res.body.message).toEqual('Book successfully returned');
+        done();
+        expect(res.body).toMatchSnapshot();
+      });
+    });
+
+    it('Should not recieve a book if the book has been damaged', async done => {
+      server()
+      .post(`${url}/recieve`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({
+        isbn: '1234354678',
+        patronId: 4,
+        damaged: 'true'
+      })
+      .end((_err, res) => {
+        expect(res.statusCode).toEqual(400);
+        expect(res.body).toHaveProperty('error');
+        expect(res.body.error).toEqual('You made damages to our book incuring a cost of 100');
+        done();
+        expect(res.body).toMatchSnapshot();
+      });
+    });
+
+    it('Should not recieve a book if the due date is passed and assign a fine', async done => {
+      server()
+      .post(`${url}/recieve`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({
+        isbn: '1034564',
+        patronId: 3,
+        damaged: 'false'
+      })
+      .end((_err, res) => {
+        expect(res.statusCode).toEqual(400);
+        expect(res.body).toHaveProperty('error');
+        done();
+        expect(res.body).toMatchSnapshot();
+      });
+    });
+
+    it('Should not recieve a book if the due date is passed and is also damaged while assiging a fine', async done => {
+      server()
+      .post(`${url}/recieve`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({
+        isbn: '1034564',
+        patronId: 3,
+        damaged: 'true'
+      })
+      .end((_err, res) => {
+        expect(res.statusCode).toEqual(400);
+        expect(res.body).toHaveProperty('error');
+        done();
+        expect(res.body).toMatchSnapshot();
+      });
+    });
+
+    it('Should return an error for an entry not in the table', async done => {
+      server()
+      .post(`${url}/recieve`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({
+        isbn: '1234354678',
+        patronId: 3,
+        damaged: 'true'
+      })
+      .end((_err, res) => {
+        expect(res.statusCode).toEqual(404);
+        expect(res.body).toHaveProperty('error');
+        expect(res.body.error).toEqual('Book was not found');
+        done();
+        expect(res.body).toMatchSnapshot();
+      });
+    });
+
+    it('Should return an error a user not in the db', async done => {
+      server()
+      .post(`${url}/recieve`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({
+        isbn: '1234354678',
+        patronId: 2000,
+        damaged: 'true'
+      })
+      .end((_err, res) => {
+        expect(res.statusCode).toEqual(400);
+        expect(res.body).toHaveProperty('error');
+        expect(res.body.error[0]).toEqual('No User with the specified patronID was found');
+        done();
+        expect(res.body).toMatchSnapshot();
+      });
+    });
+
+    it('Should return an error an isbn not in the db', async done => {
+      server()
+      .post(`${url}/recieve`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({
+        isbn: '11111111',
+        patronId: 5,
+        damaged: 'true'
+      })
+      .end((_err, res) => {
+        expect(res.statusCode).toEqual(400);
+        expect(res.body).toHaveProperty('error');
+        expect(res.body.error[0]).toEqual('No Book with the specified isbn was found');
+        done();
+        expect(res.body).toMatchSnapshot();
+      });
+    });
+
+    it('Should return an error an invalid param', async done => {
+      server()
+      .post(`${url}/recieve`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({
+        isbn: '1234354678',
+        patronId: 2,
+        damaged: 'truez'
+      })
+      .end((_err, res) => {
+        expect(res.statusCode).toEqual(400);
+        expect(res.body).toHaveProperty('error');
+        expect(res.body.error[0]).toEqual('Should be true or false');
+        done();
+        expect(res.body).toMatchSnapshot();
       });
     });
   });

@@ -25,7 +25,15 @@ export default (sequelize, DataTypes) => {
       allowNull: false,
       type: DataTypes.BOOLEAN,
       defaultValue: false
-    },  
+    },
+    fineAmount: {
+      allowNull: true,
+      type: DataTypes.INTEGER
+    },
+    fineStatus:{
+      allowNull: true,
+      type: DataTypes.STRING
+    }
   }, {timestamps: false});
 
   return BorrowedBooks;
