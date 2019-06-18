@@ -8,7 +8,6 @@ const { Op } = sequelize;
 class BookController {
   static async addBook(req, res) {
     const { title, description, tags, amount, authorID, status, year, categoryID, isbn } = req.body;
-    try {
       const book = await models.Books.create({
         title,
         description,
@@ -21,10 +20,7 @@ class BookController {
         isbn
       });
       return Utils.successStatus(res, 201, 'Book added successfully', book);
-    } catch (error) {
-      Utils.errorStatus(res, 500, error.message);
     }
-  }
 
   static async getAllBooks(req, res) {
     if (req.query) {
