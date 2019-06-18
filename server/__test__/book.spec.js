@@ -123,8 +123,8 @@ describe('Books tests', () => {
       server()
         .get(`${url}?page=${page}&limit=${limit}`)
         .end((_err, res) => {
-          const { data } = res.body;
-          const response = data[0];
+          const { searchResult } = res.body;
+          const response = searchResult[0];
           expect(res.statusCode).toEqual(200);
           expect(res.body).toHaveProperty('pages');
           expect(response).toHaveProperty('year');
@@ -142,8 +142,8 @@ describe('Books tests', () => {
       server()
         .get(`${url}?page=${page}&limit=${limit}`)
         .end((_err, res) => {
-          const { data } = res.body;
-          const response = data[0];
+          const { searchResult } = res.body;
+          const response = searchResult[0];
           expect(res.statusCode).toEqual(200);
           expect(res.body).toHaveProperty('pages');
           expect(response).toHaveProperty('year');
@@ -161,13 +161,13 @@ describe('Books tests', () => {
         .get(`${url}?searchBook=${searchBook}`)
         .end((_err, res) => {
           expect(res.statusCode).toEqual(200);
-          expect(res.body.data[0]).toHaveProperty('year');
-          expect(res.body.data[0]).toHaveProperty('tags');
-          expect(res.body.data[0]).toHaveProperty('title');
-          expect(res.body.data[0]).toHaveProperty('amount');
-          expect(res.body.data[0]).toHaveProperty('status');
-          expect(res.body.data[0]).toHaveProperty('description');
-          expect(res.body.data[0]).toHaveProperty('Author');
+          expect(res.body.searchResult[0]).toHaveProperty('year');
+          expect(res.body.searchResult[0]).toHaveProperty('tags');
+          expect(res.body.searchResult[0]).toHaveProperty('title');
+          expect(res.body.searchResult[0]).toHaveProperty('amount');
+          expect(res.body.searchResult[0]).toHaveProperty('status');
+          expect(res.body.searchResult[0]).toHaveProperty('description');
+          expect(res.body.searchResult[0]).toHaveProperty('Author');
           done();
         });
     });

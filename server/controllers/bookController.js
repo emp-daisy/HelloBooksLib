@@ -92,7 +92,6 @@ class BookController {
 
   static async requestBook(req, res) {
     const { title, description, tags, author, year, categoryID, userID} = req.body;
-    try {
       const requestedBook = await models.RequestedBooks.create({
         title,
         description,
@@ -103,9 +102,6 @@ class BookController {
         userID
       });
       return Utils.successStatus(res, 201, 'Book requested successfully', requestedBook);
-    } catch (error) {
-      Utils.errorStatus(res, 500, error.message);
-    }
   }
 
   static async lendBook(req, res) {
