@@ -1,3 +1,4 @@
+/* eslint-disable prefer-const */
 /* eslint-disable require-jsdoc */
 import sequelize from 'sequelize';
 import models from '../db/models';
@@ -22,61 +23,54 @@ class BookController {
       return Utils.successStatus(res, 201, 'Book added successfully', book);
     }
 
-  static async getAllBooks(req, res) {
-    if (req.query) {
-      let { page, limit } = req.query;
-      page = parseInt(page, 10);
-      page = page > 0 ? page : 1;
-      limit = parseInt(limit, 10);
-      limit = limit > 0 ? limit : 50;
-      const offset = (page - 1) * limit;
-
-      if (req.query.searchBook) {         
-        const searchResult = await models.Books.findAll({
-          limit,
-          offset,
-          $sort: { id: 1 },
+    static async getAllBooks(req, res) {
+      if (Object.keys(req.query).length !== 0) {        
+        let { page, limit, searchBook } = req.query;
+        page = parseInt(page, 10);
+        page = page > 0 ? page : 1;
+        limit = parseInt(limit, 10);
+        limit = limit > 0 ? limit : 50;
+        const offset = (page - 1) * limit;
+        const searchQuery = searchBook ? {
           include: [{
-              model: models.Authors,
-              as: 'Author',
-              where: { 
-                [Op.or]: [
-                  {firstName: {[Op.like]: `%${req.query.searchBook}%`}},
-                  {middleName: {[Op.like]: `%${req.query.searchBook}%`}},
-                  {lastName: {[Op.like]: `%${req.query.searchBook}%`}},
-                  {'$Books.title$': {[Op.like]: `%${req.query.searchBook}%`}},
-                  {'$Books.description$': {[Op.like]: `%${req.query.searchBook}%`}},
-                  {'$Books.tags$': {[Op.like]: `%${req.query.searchBook}%`}},
-                ]
-               }
-          }]
-      });
-        if (!searchResult[0]) {
-        return Utils.errorStatus(res, 404, 'No record found')  
-      }
-          return Utils.successStatus(res, 200, 'Books fetched successfully', searchResult) 
+            model: models.Authors,
+            as: 'Author',
+            where: {
+              [Op.or]: [
+                {firstName: {[Op.like]: `%${req.query.searchBook}%`}},
+                {middleName: {[Op.like]: `%${req.query.searchBook}%`}},
+                {lastName: {[Op.like]: `%${req.query.searchBook}%`}},
+                {'$Books.title$': {[Op.like]: `%${req.query.searchBook}%`}},
+                {'$Books.description$': {[Op.like]: `%${req.query.searchBook}%`}},
+                {'$Books.tags$': {[Op.like]: `%${req.query.searchBook}%`}},
+              ]
+             }
+        }]
+        } : {};
+  
+  
+          const searchResult = await models.Books.findAndCountAll({
+            limit,
+            offset,
+            $sort: { id: 1 },
+            ...searchQuery
+        });
+        
+          if (searchResult.count === 0) {
+          return Utils.errorStatus(res, 404, 'No record found')
         }
-
-        if (req.query.page) {
-        const books = await models.Books.findAndCountAll({
-          limit,
-          offset,
-          $sort: { id: 1 }
-        });
-        const pages = Math.ceil(books.count / limit);
-        const data = books.rows;
-        return res.status(200).json({
-          status: res.status,
-          message: 'success',
-          pages,
-          data
-        });
-      }
-    } 
-   
-      return Utils.successStatus(res, 200, 'Books fetched successfully', await models.Books.findAll());
-    
-  }
+            return res.status(200).json({
+                status: res.status,
+                message: 'Books fetched successfully',
+                page,
+                pages: Math.ceil(searchResult.count / limit),
+                searchResult: searchResult.rows
+              });
+          }
+      
+  
+        return Utils.successStatus(res, 200, 'Books fetched successfully', await models.Books.findAll());
+    }
 
   static async getSpecificBook(req, res) {
     const book = await models.Books.findByPk(req.params.id);
