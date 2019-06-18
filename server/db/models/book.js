@@ -11,6 +11,10 @@ export default (sequelize, DataTypes) => {
       allowNull: false,
       type: DataTypes.TEXT
     },
+    tags: {
+      allowNull: false,
+      type: DataTypes.TEXT
+    },
     amount: {
       allowNull: false,
       type: DataTypes.NUMERIC

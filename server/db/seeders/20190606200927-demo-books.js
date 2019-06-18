@@ -9,6 +9,7 @@ const bookSeeds = [
   {
     title: faker.random.words(),
     description: faker.lorem.sentence(),
+    tags: faker.random.words(),
     amount: 2000,
     authorID: 1,
     status: 'Borrowed',
@@ -21,6 +22,7 @@ const bookSeeds = [
   {
     title: faker.random.words(),
     description: faker.lorem.sentence(),
+    tags: faker.random.words(),
     amount: 2000,
     authorID: 1,
     status: 'Borrowed',
@@ -33,6 +35,7 @@ const bookSeeds = [
   {
     title: faker.random.words(),
     description: faker.lorem.sentence(),
+    tags: faker.random.words(),
     amount: 2000,
     authorID: 1,
     status: 'Available',
@@ -47,6 +50,7 @@ for (i = 0; i < seeds; i += 1) {
   bookSeeds.push({
     title: faker.random.words(),
     description: faker.lorem.sentence(),
+    tags: faker.random.words(),
     amount: faker.commerce.price(),
     authorID: 1,
     status: status[Math.floor(Math.random() * status.length)],

@@ -123,8 +123,8 @@ describe('Books tests', () => {
       server()
         .get(`${url}?page=${page}&limit=${limit}`)
         .end((_err, res) => {
-          const { data } = res.body;
-          const response = data[0];
+          const { searchResult } = res.body;
+          const response = searchResult[0];
           expect(res.statusCode).toEqual(200);
           expect(res.body).toHaveProperty('pages');
           expect(response).toHaveProperty('year');
@@ -142,8 +142,8 @@ describe('Books tests', () => {
       server()
         .get(`${url}?page=${page}&limit=${limit}`)
         .end((_err, res) => {
-          const { data } = res.body;
-          const response = data[0];
+          const { searchResult } = res.body;
+          const response = searchResult[0];
           expect(res.statusCode).toEqual(200);
           expect(res.body).toHaveProperty('pages');
           expect(response).toHaveProperty('year');
@@ -151,6 +151,35 @@ describe('Books tests', () => {
           expect(response).toHaveProperty('amount');
           expect(response).toHaveProperty('status');
           expect(response).toHaveProperty('description');
+          done();
+        });
+    });
+
+    it('should list available books if search parameter matches any title, description, tags and/or author', done => {
+      const searchBook = 'Practical';
+      server()
+        .get(`${url}?searchBook=${searchBook}`)
+        .end((_err, res) => {
+          expect(res.statusCode).toEqual(200);
+          expect(res.body.searchResult[0]).toHaveProperty('year');
+          expect(res.body.searchResult[0]).toHaveProperty('tags');
+          expect(res.body.searchResult[0]).toHaveProperty('title');
+          expect(res.body.searchResult[0]).toHaveProperty('amount');
+          expect(res.body.searchResult[0]).toHaveProperty('status');
+          expect(res.body.searchResult[0]).toHaveProperty('description');
+          expect(res.body.searchResult[0]).toHaveProperty('Author');
+          done();
+        });
+    });
+
+    it('should give error if search parameter does not matches any title, description and/or tag', done => {
+      const searchBook = 'something';
+      server()
+        .get(`${url}?searchBook=${searchBook}`)
+        .end((_err, res) => {
+          expect(res.statusCode).toEqual(404);
+          expect(res.body).toHaveProperty('error');
+          expect(res.body.error).toEqual('No record found');
           done();
         });
     });
