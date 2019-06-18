@@ -5,6 +5,7 @@ import bodyParser from 'body-parser';
 import debug from 'debug';
 import morgan from 'morgan';
 import routes from './routes/index';
+import ErrorHandler from './middleware/errorHandler';
 
 config();
 
@@ -29,6 +30,8 @@ app.all('*', (req, res) =>
     error: 'Sorry, the requested endpoint does not exist on our server'
   })
 );
+
+app.use(ErrorHandler.sendError);
 
 if (process.env.NODE_ENV !== 'test') {
   app.listen(port, () => log(`Server is running on PORT ${port}`));

@@ -449,6 +449,26 @@ const validate = {
     }
   ],
 
+  date : [
+    check('date')
+      .not()
+      .isEmpty()
+      .withMessage('Date cannot be empty')
+      .matches(/^(0?\d|1[012])\/([012]?\d|3[01])\/\d{4}$/)
+      .withMessage('Please provide a valid date. Format: (MM/DD/YYYY)'),
+  (req, res, next) => {
+      const errors = validationResult(req);
+      const errMessages = [];
+      if (!errors.isEmpty()) {
+        errors.array({ onlyFirstError: true }).forEach((err) => {
+          errMessages.push(err.msg);
+        });
+        return util.errorStatus(res, 400, errMessages);
+      }
+      return next();
+    }
+  ],
+
   recieveBook : [
     check('isbn')
       .not()
@@ -494,7 +514,7 @@ const validate = {
       }
       return next();
     }
-  ],
+  ]
 };
 
 export default validate;

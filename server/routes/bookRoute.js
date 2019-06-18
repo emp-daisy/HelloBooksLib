@@ -15,6 +15,7 @@ bookRoute.post(
   Validate.requestBook,
   BookController.requestBook
 );
+
 bookRoute.post(
   '/recieve',
   Authenticate.isLoggedIn,
@@ -23,7 +24,18 @@ bookRoute.post(
   BookController.returnBook
 );
 
-bookRoute.post('/borrow', Authenticate.isLoggedIn, Authenticate.isAdmin, Validate.lendBook, BookController.lendBook);
+bookRoute.post('/borrow',
+  Authenticate.isLoggedIn,
+  Authenticate.isAdmin,
+  Validate.lendBook,
+  BookController.lendBook
+);
 
+bookRoute.patch('/extend/:id',
+  Authenticate.isLoggedIn,
+  Validate.id,
+  Validate.date,
+  BookController.extendDueDate
+);
 
 export default bookRoute;

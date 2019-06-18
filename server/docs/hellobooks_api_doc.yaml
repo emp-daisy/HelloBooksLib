@@ -24,6 +24,7 @@ securityDefinitions:
     - type: apiKey
     - name: Authorization
     - in: header
+
 tags:
 - name: Users
   description: Operations available for user endpoints
@@ -275,7 +276,7 @@ paths:
           required: false
           description: To select a single user by ID
           schema:
-            type : Integer
+            type : integer
       responses:
         200:
           description: Ok
@@ -630,6 +631,43 @@ paths:
               schema:
                 $ref: "#/components/schemas/errorResponse"
 
+  /books/extend/{id}:
+    patch:
+      tags:
+        - Books
+      summary: Extend book return date
+      description: Extends the date a book is supposed to be returned
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Numeric ID of the book that was borrowed
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                date:
+                  type: string
+                  example: 'MM/DD/YYYY'
+      responses:
+        200:
+          description: Due date extended successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/dueDate"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+
   /authors:
     post:
       tags:
@@ -922,7 +960,8 @@ paths:
                 favoriteQuote:
                   type: string
                 favoriteBooks:
-                  type: array(string)  
+                  type: array
+                  items: {}
       responses:
         200:
           description: OK
@@ -1031,7 +1070,13 @@ components:
           updatedAt:
             type: string
             format: date
-          
+    dueDate:
+      type: object
+      properties:
+        dueDate:
+          type: string
+          format: date-time
+
     errorResponse:
       type: object
       properties:

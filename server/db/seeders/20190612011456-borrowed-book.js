@@ -36,6 +36,13 @@ export function up(queryInterface) {
         dueDate: '2019-06-10 04:41:25.258+02'
       },
       {
+        isbn: 34234,
+        title: 'Book du Lorem ipsum',
+        patronId: 5,
+        dateBorrowed,
+        dueDate: '2019-12-12 00:00:00.000+02'
+      },
+      {
         isbn: 1034564,
         title: 'Table Small Plastic Tuna',
         patronId: 3,
