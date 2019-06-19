@@ -1030,6 +1030,90 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/errorResponse"
+
+  /books/reserve:
+    post:
+      tags:
+        - Books
+      security:
+        - bearerAuth: []
+      summary: reserve a book
+      description: User can reserve / borrow a book without admin authorization
+      parameters:
+        - in: query
+          name: isbn
+          schema:
+            type: integer
+          required: true
+      responses:
+        200:
+          description: Request successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Book"
+        405:
+          description: Not allowed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        500:
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+  /books/reserved_books:
+    post:
+      tags:
+        - Books
+      security:
+        - bearerAuth: []
+      summary: verify if book is reserved
+      description: Admin can verify if a user reserved a book
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                patronId:
+                  type: integer
+                isbn:
+                  type: integer  
+      responses:
+        201:
+          description: Request successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Book"
+        405:
+          description: Not allowed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        500:
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
 components:
   securitySchemes:
     bearerAuth:
