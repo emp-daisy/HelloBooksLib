@@ -53,4 +53,11 @@ userRoute.put('/profile',
 	UserController.editProfile,
 );
 
+userRoute.patch('/author/favourite/:id', 
+	Authenticate.isLoggedIn,
+	Validate.id,
+	Authenticate.isOwnProfile,
+	UserController.favouriteAnAuthor,
+);
+
 export default userRoute;

@@ -844,3 +844,41 @@ describe('Test update user profile', () => {
       });
   });
 });
+
+describe('Test Allow user to favourite an Author', () => {
+  it('Should pass and return status 200 if the author has been added too favourites', async done => {
+    server()
+      .patch(`${url}/auth/author/favourite/1`)
+      .set('authorization', `Bearer ${userToken}`)
+      .send(mockUser.updateUserProfile)
+      .end((err, res) => {
+        expect(res.statusCode).toEqual(200);
+        expect(res.body).toHaveProperty('message');
+        done()
+      })
+  });
+
+  it('Should pass and return status 200 if the author had already been added too favourites', async done => {
+    server()
+      .patch(`${url}/auth/author/favourite/1`)
+      .set('authorization', `Bearer ${userToken}`)
+      .send(mockUser.updateUserProfile)
+      .end((err, res) => {
+        expect(res.statusCode).toEqual(200);
+        expect(res.body).toHaveProperty('message');
+        done()
+      })
+  });
+
+  it('Should fail and return status 400 if the Author dosen\'t exist', async done => {
+    server()
+      .patch(`${url}/auth/author/favourite/2`)
+      .set('authorization', `Bearer ${userToken}`)
+      .end((err, res) => {
+        expect(res.statusCode).toEqual(400);
+        expect(res.body).toHaveProperty('error');
+        done()
+      })
+  });
+
+});
