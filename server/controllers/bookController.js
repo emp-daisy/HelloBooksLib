@@ -261,9 +261,6 @@ class BookController {
 
   static async checkBookReservation(req, res) {
 
-    const { loggedinUser } = req;
-
-
     const { patronId, isbn } = req.body;
 
     const user = await models.reservedBooks.findOne({ where: {
