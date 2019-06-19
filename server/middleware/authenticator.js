@@ -45,7 +45,9 @@ class Authenticate {
     try {
       const verify = Auth.verifyToken(token);
       const { id } = verify;
+
       const theuser = await models.Users.findByPk(id);
+
       if (!theuser) {
         return util.errorStatus(res, 401, 'Unauthorized user');
       }
@@ -111,6 +113,25 @@ class Authenticate {
     }
 
     next();
+  }
+
+  static async isReserved(req, res, next) {
+    const { isbn } = req.query.isbn ? req.query : req.body;
+  
+    const book = await models.reservedBooks.findOne({ where: { isbn } });
+
+    if(!book) return next();
+
+    const checkExpiryDate = (date) => {
+
+        const today = new Date();
+
+        if(today > date) return next();
+
+        return util.errorStatus(res, 400, `${book.title} is Reserved, Expires on ${date.toDateString()}`);
+      }
+
+      return checkExpiryDate(book.timeToExpire);
   }
 }
 

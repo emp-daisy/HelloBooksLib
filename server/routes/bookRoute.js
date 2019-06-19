@@ -28,6 +28,7 @@ bookRoute.post('/borrow',
   Authenticate.isLoggedIn,
   Authenticate.isAdmin,
   Validate.lendBook,
+  Authenticate.isReserved,
   BookController.lendBook
 );
 
@@ -36,6 +37,20 @@ bookRoute.patch('/extend/:id',
   Validate.id,
   Validate.date,
   BookController.extendDueDate
+);
+
+bookRoute.post('/reserve',
+  Authenticate.isLoggedIn,
+  Validate.isbn,
+  Authenticate.isReserved,
+  BookController.reserveBook
+);
+
+bookRoute.post('/reserved_books',
+  Authenticate.isLoggedIn,
+  Authenticate.isAdmin,
+  Validate.lendBook,
+  BookController.checkBookReservation
 );
 
 export default bookRoute;

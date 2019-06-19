@@ -227,6 +227,57 @@ class BookController {
     await models.BorrowedBooks.update({ returned: true }, { where: { isbn } });
     return Utils.successStatus(res, 200, 'Book successfully returned');
   }
+
+  static async reserveBook(req, res) {
+
+    const { loggedinUser } = req;
+
+    const { isbn } = req.query;
+
+    const { title } = await models.Books.findOne({ where: { isbn }});
+
+    let expiryDate = new Date();
+
+    expiryDate.setDate(expiryDate.getDate() + 3);
+
+    const reservedBook = await models.reservedBooks.create(
+      {
+        title, 
+        isbn, 
+        patronId: loggedinUser.id, 
+        collected: false,
+        timeToExpire: expiryDate
+      });
+
+    return Utils.successStatus(res, 200, 'Book reserved successfully', {
+      id: reservedBook.id,
+      title,
+      isbn,
+      patronId: reservedBook.patronId,
+      collected: reservedBook.collected,
+      Expires: reservedBook.timeToExpire.toDateString(),
+    })
+  }
+
+  static async checkBookReservation(req, res) {
+
+    const { loggedinUser } = req;
+
+
+    const { patronId, isbn } = req.body;
+
+    const user = await models.reservedBooks.findOne({ where: {
+      [Op.and]: [{ isbn }, { patronId }]
+    }});
+
+    if( !user ) return Utils.errorStatus(res, 404, 'No Reservations were found for this user');
+
+    await models.reservedBooks.destroy({ where: {
+      [Op.and]: [{ isbn }, { patronId }]
+    }});
+
+    return BookController.lendBook(req, res);
+  }
 }
 
 export default BookController;

@@ -8,7 +8,7 @@ const url = '/api/v1/books';
 
 let token ;
 let adminToken;
-
+let id;
 
 describe('Books tests', () => {
   describe('test for add books', () => {
@@ -283,6 +283,7 @@ describe('Books tests', () => {
         expect(res.body.data).toHaveProperty('token')
        // eslint-disable-next-line prefer-destructuring
         token = res.body.data.token;
+        id = res.body.data.id;
         done();
         })
       })
@@ -710,4 +711,60 @@ describe('Books tests', () => {
       });
     });
   });
+
+  describe('Reserve book test', () => {
+    const ISBN = 1234354678;
+    it('Should pass and return status 200 if book was successfully reserved', async done => {
+      server()
+      .post(`${url}/reserve?isbn=${ISBN}`)
+      .set('authorization', `Bearer ${token}`)
+      .end((err, res) => {
+
+          expect(res.statusCode).toEqual(200);
+          done();
+      });
+    });
+    it('Should fail if no token is set', async done => {
+      server()
+      .post(`${url}/reserve?isbn=${ISBN}`)
+      .end((err, res) => {
+        expect(res.statusCode).toEqual(401);
+        done();
+      });
+    });
+    it('Should fail if no isbn is sent', async done => {
+      server()
+      .post(`${url}/reserve`)
+      .set('authorization', `Bearer ${token}`)
+      .end((err, res) => {
+        expect(res.statusCode).toEqual(400);
+        done();
+      })
+    })
+  });
+
+  describe('Check book reservation test', () => {
+    it('Should fail and return status 404 if no reservation was found for a user', async done => {
+      server()
+      .post(`${url}/reserved_books`)
+      .set('authorization', `Bearer ${adminToken}`)
+      .send({patronId: 2, isbn: 1234354678})
+      .end((err, res) => {
+        expect(res.statusCode).toEqual(404);
+        done();
+      })
+    });
+
+    it('Should pass, return status 201 and allow borrowing if reservations were found', async done => {
+      server()
+      .post(`${url}/reserved_books`)
+      .set('authorization', `Bearer ${adminToken}`)
+      .send({patronId: id, isbn: 1234354678})
+      .end((err, res) => {
+        expect(res.statusCode).toEqual(201);
+        done();
+      })
+    })
+  });
 });
+

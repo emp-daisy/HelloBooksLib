@@ -386,11 +386,12 @@ const validate = {
     }
   ],
 
-  userId: [
-    query('userId')
-      .optional()
+  isbn: [
+    query('isbn')
+      .not()
+      .isEmpty({ ignore_whitespace: true })
       .isInt()
-      .withMessage('ID must be a number greater than 1'),
+      .withMessage('Please enter a valid Book Number'),
 
       (req, res, next) => {
         const errors = validationResult(req);
@@ -447,6 +448,25 @@ const validate = {
       }
       return next();
     }
+  ],
+
+  userId: [
+    query('userId')
+      .optional()
+      .isInt()
+      .withMessage('ID must be a number greater than 1'),
+
+      (req, res, next) => {
+        const errors = validationResult(req);
+        const errMessages = [];
+        if (!errors.isEmpty()) {
+          errors.array({ onlyFirstError: true }).forEach(err => {
+            errMessages.push(err.msg);
+          });
+          return util.errorStatus(res, 400, errMessages);
+        }
+        return next();
+      }
   ],
 
   date : [
