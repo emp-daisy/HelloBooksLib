@@ -19,6 +19,7 @@ bookRoute.post(
 bookRoute.post(
   '/recieve',
   Authenticate.isLoggedIn,
+  Authenticate.deleteReservedIfExpired,
   Authenticate.isAdmin,
   Validate.recieveBook,
   BookController.returnBook
@@ -26,6 +27,7 @@ bookRoute.post(
 
 bookRoute.post('/borrow',
   Authenticate.isLoggedIn,
+  Authenticate.deleteReservedIfExpired,
   Authenticate.isAdmin,
   Validate.lendBook,
   Authenticate.isReserved,
@@ -41,6 +43,7 @@ bookRoute.patch('/extend/:id',
 
 bookRoute.post('/reserve',
   Authenticate.isLoggedIn,
+  Authenticate.deleteReservedIfExpired,
   Validate.isbn,
   Authenticate.isReserved,
   BookController.reserveBook
@@ -48,6 +51,7 @@ bookRoute.post('/reserve',
 
 bookRoute.post('/reserved_books',
   Authenticate.isLoggedIn,
+  Authenticate.deleteReservedIfExpired,
   Authenticate.isAdmin,
   Validate.lendBook,
   BookController.checkBookReservation

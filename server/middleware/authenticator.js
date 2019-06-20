@@ -1,7 +1,7 @@
 /* eslint-disable require-jsdoc */
+import sequelize from 'sequelize';
 import passport from 'passport';
 import util from '../helpers/utilities';
-import sequelize from 'sequelize';
 // eslint-disable-next-line no-unused-vars
 import passportconfig from '../helpers/passport';
 import Auth from '../helpers/auth';
@@ -157,7 +157,7 @@ class Authenticate {
   }
 
 
-  static async deleteReservedIfExpired(next) {
+  static async deleteReservedIfExpired(req, res, next) {
     const date = new Date();
 
     await models.reservedBooks.destroy({
@@ -166,9 +166,9 @@ class Authenticate {
           [Op.lt]: date
         }
       }
-    })
+    });
 
-    return next()
+    return next();
   }
 }
 
