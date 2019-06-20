@@ -334,6 +334,51 @@ class UserController {
       favoriteBooks: updatedUser.favoriteBooks
     })
   }
+
+  static async favouriteAnAuthor(req, res) {
+    const { id } = req.params;
+    const { loggedinUser } = req;
+
+    const requestedAuthor = await models.Authors.findByPk(id, {
+      attributes: ['firstName', 'lastName']
+    });
+
+    if (!requestedAuthor) {
+      return util.errorStatus(res, 400, 'The requested Author is not available');
+    }
+
+    const { firstName, lastName } = requestedAuthor;
+
+    if (loggedinUser.favouriteAuthors) {
+      const alreadyfavourite = loggedinUser.favouriteAuthors.find(
+        author => author === Number(id)
+      );
+      if (alreadyfavourite) {
+        return util.successStatus(
+          res,
+          200,
+          `Author ${firstName} ${lastName}, has already been added to favourite Authors`
+        );
+      }
+    }
+
+    await models.Users.update(
+      {
+        favouriteAuthors: sequelize.fn(
+          'array_append',
+          sequelize.col('favouriteAuthors'),
+          Number(id)
+        )
+      },
+      { where: { id: loggedinUser.id } }
+    );
+
+    return util.successStatus(
+      res,
+      200,
+      `Author ${firstName} ${lastName}, has been added to favourite Authors`
+    );
+  }
 }
 
 export default UserController;

@@ -291,6 +291,34 @@ paths:
               schema:
                 $ref: "#/components/schemas/errorResponse"
 
+  /author/favourite/{id}:
+    get:
+      tags:
+        - Users
+      summary: Allows a user to favourite an Author
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: The Authors id
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/successResponse"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+
   /auth/verifyemail:
     get:
       tags:

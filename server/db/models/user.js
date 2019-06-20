@@ -28,7 +28,7 @@ export default (sequelize, DataTypes) => {
       },
       email_confirm_code: {
         type: DataTypes.STRING,
-        allowNull: true 
+        allowNull: true
       },
       profilePic: {
         type: DataTypes.STRING,
@@ -48,6 +48,10 @@ export default (sequelize, DataTypes) => {
       },
       favoriteQuote: {
         type: DataTypes.STRING,
+        allowNull: true
+      },
+      favouriteAuthors: {
+        type: DataTypes.ARRAY(DataTypes.INTEGER),
         allowNull: true
       }
     },
