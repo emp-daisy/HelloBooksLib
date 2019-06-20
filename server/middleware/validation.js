@@ -419,7 +419,8 @@ const validate = {
           throw new Error('No Book with the specified isbn was found')
         }
         if (Book.dataValues.status === 'borrowed') {
-          throw new Error('This book has been borrowed out already')
+          const borrowedBook = await models.BorrowedBooks.findOne({ where: { isbn } });
+          throw new Error(`This book has been borrowed out already. It is estimated to be available anytime from ${borrowedBook.dueDate}`)
         }
         return true;
       }),
@@ -443,7 +444,7 @@ const validate = {
       if (!errors.isEmpty()) {
         errors.array({ onlyFirstError: true }).forEach((err) => {
           errMessages.push(err.msg);
-        });
+        });        
         return util.errorStatus(res, 400, errMessages);
       }
       return next();
@@ -534,7 +535,39 @@ const validate = {
       }
       return next();
     }
-  ]
+  ],
+
+  borrowBook : [
+    check('isbn')
+      .not()
+      .isEmpty({ ignore_whitespace: true })
+      .withMessage('ISBN can not be left empty: Please input ISBN')
+      .isInt()
+      .withMessage('ISBN is not valid: Please input a valid ISBN')
+      .custom( async (isbn) => {
+        const Book = await models.Books.findOne({ where: { isbn } });
+        if (!Book) {
+          throw new Error('No Book with the specified isbn was found')
+        }
+        if (Book.dataValues.status === 'borrowed') {
+          const borrowedBook = await models.BorrowedBooks.findOne({ where: { isbn } });
+          throw new Error(`This book has been borrowed out already. It is estimated to be available anytime from ${borrowedBook.dueDate}`)
+        }
+        return true;
+      }),
+
+    (req, res, next) => {
+      const errors = validationResult(req);
+      const errMessages = [];
+      if (!errors.isEmpty()) {
+        errors.array({ onlyFirstError: true }).forEach((err) => {
+          errMessages.push(err.msg);
+        });
+        return util.errorStatus(res, 400, errMessages);
+      }
+      return next();
+    }
+  ],
 };
 
 export default validate;

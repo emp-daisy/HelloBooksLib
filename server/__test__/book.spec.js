@@ -724,6 +724,18 @@ describe('Books tests', () => {
           done();
       });
     });
+
+    it('Should not reserve a book if it has been borrowed', async done => {
+      server()
+      .post(`${url}/reserve?isbn=${ISBN}`)
+      .set('Authorization', `Bearer ${token}`)
+      .end((_err, res) => {
+        expect(res.statusCode).toEqual(400);
+        expect(res.body).toHaveProperty('error');
+        done();
+      });
+    });
+
     it('Should fail if no token is set', async done => {
       server()
       .post(`${url}/reserve?isbn=${ISBN}`)
@@ -740,7 +752,7 @@ describe('Books tests', () => {
         expect(res.statusCode).toEqual(400);
         done();
       })
-    })
+    });
   });
 
   describe('Check book reservation test', () => {
