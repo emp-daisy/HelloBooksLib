@@ -255,7 +255,7 @@ class BookController {
       isbn,
       patronId: reservedBook.patronId,
       collected: reservedBook.collected,
-      Expires: reservedBook.timeToExpire.toDateString(),
+      expires: reservedBook.timeToExpire.toDateString(),
     })
   }
 
@@ -263,9 +263,15 @@ class BookController {
 
     const { patronId, isbn } = req.body;
 
-    const user = await models.reservedBooks.findOne({ where: {
-      [Op.and]: [{ isbn }, { patronId }]
-    }});
+    const date = new Date();
+
+    const user = await models.reservedBooks.findOne({
+      where: {
+        [Op.and]:[{ isbn }, { patronId }, { timeToExpire: {
+          [Op.gt]: date
+        }}]
+      }
+    })
 
     if( !user ) return Utils.errorStatus(res, 404, 'No Reservations were found for this user');
 

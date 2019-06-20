@@ -6,6 +6,7 @@ import debug from 'debug';
 import morgan from 'morgan';
 import routes from './routes/index';
 import ErrorHandler from './middleware/errorHandler';
+import Authenticator from './middleware/authenticator';
 
 config();
 
@@ -32,6 +33,7 @@ app.all('*', (req, res) =>
 );
 
 app.use(ErrorHandler.sendError);
+app.use(Authenticator.deleteReservedIfExpired);
 
 if (process.env.NODE_ENV !== 'test') {
   app.listen(port, () => log(`Server is running on PORT ${port}`));
