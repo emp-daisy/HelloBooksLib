@@ -45,6 +45,7 @@ bookRoute.post('/reserve',
   Authenticate.isLoggedIn,
   Authenticate.deleteReservedIfExpired,
   Validate.isbn,
+  Validate.borrowBook,
   Authenticate.isReserved,
   BookController.reserveBook
 );
