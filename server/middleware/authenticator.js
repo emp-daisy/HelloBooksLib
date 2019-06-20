@@ -1,10 +1,13 @@
 /* eslint-disable require-jsdoc */
+import sequelize from 'sequelize';
 import passport from 'passport';
 import util from '../helpers/utilities';
 // eslint-disable-next-line no-unused-vars
 import passportconfig from '../helpers/passport';
 import Auth from '../helpers/auth';
 import models from '../db/models';
+
+const { Op } = sequelize;
 
 class Authenticate {
   static googleLogin(req, res, next) {
@@ -45,7 +48,9 @@ class Authenticate {
     try {
       const verify = Auth.verifyToken(token);
       const { id } = verify;
+
       const theuser = await models.Users.findByPk(id);
+
       if (!theuser) {
         return util.errorStatus(res, 401, 'Unauthorized user');
       }
@@ -99,6 +104,15 @@ class Authenticate {
 
     return next();
   }
+
+  /**
+   * @static
+   * @description Checks that user is on their own profile
+   * @param {object} req - Request object
+   * @param {object} res - Response object
+   * @param {Object} next - Next function call
+   * @returns {object} Json
+   */
   
   static async isOwnProfile(req, res, next) {
     const { loggedinUser } = req;
@@ -111,6 +125,50 @@ class Authenticate {
     }
 
     next();
+  }
+
+   /**
+   * @static
+   * @description Checks that a book  is reserved or not
+   * @param {object} req - Request object
+   * @param {object} res - Response object
+   * @param {Object} next - Next function call
+   * @returns {object} Json
+   */
+
+  static async isReserved(req, res, next) {
+
+    const { isbn } = req.query.isbn ? req.query : req.body;
+  
+    const book = await models.reservedBooks.findOne({ where: { isbn } });
+
+    if(!book) return next();
+
+    const checkExpiryDate = (date) => {
+
+        const today = new Date();
+
+        if(today > date) return next();
+
+        return util.errorStatus(res, 400, `${book.title} is Reserved, Expires on ${date.toDateString()}`);
+      }
+
+      return checkExpiryDate(book.timeToExpire);
+  }
+
+
+  static async deleteReservedIfExpired(req, res, next) {
+    const date = new Date();
+
+    await models.reservedBooks.destroy({
+      where: {
+        timeToExpire: {
+          [Op.lt]: date
+        }
+      }
+    });
+
+    return next();
   }
 }
 
