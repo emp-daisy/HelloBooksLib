@@ -116,13 +116,11 @@ class Authenticate {
   
   static async isOwnProfile(req, res, next) {
     const { loggedinUser } = req;
-    const { id } = req.query;
-    
-    if(Number(id) !== loggedinUser.id) {
-      req.isOwnProfile = false
-    } else {
+    const { userId } = req.query;
+
+    if (!userId || loggedinUser.id === Number(userId)) {
       req.isOwnProfile = true;
-    }
+    } else req.isOwnProfile = false;
 
     next();
   }

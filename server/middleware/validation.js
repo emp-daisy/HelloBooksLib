@@ -336,21 +336,6 @@ const validate = {
       .not()
       .isEmpty({ ignore_whitespace: true })
       .withMessage('Author can not be left empty: Please input author'),
-    check('categoryID')
-      .not()
-      .isEmpty({ ignore_whitespace: true })
-      .withMessage('CategoryID can not be left empty: Please input categoryID')
-      .isInt()
-      .withMessage(
-        'categoryID is not valid integer: Please input a valid categoryID'
-      )
-      .custom(async id => {
-        const isExist = await util.exits(id, 'Categories');
-        if (!isExist) {
-          throw new Error('No Category with the specified ID was found');
-        }
-        return true;
-      }),
     check('year')
       .not()
       .isEmpty({ ignore_whitespace: true })
@@ -359,19 +344,6 @@ const validate = {
       .withMessage('Year is not valid year: Please input a valid year')
       .isLength({ min: 4, max: 4 })
       .withMessage('Year is not valid year: Please input a valid year'),
-    check('userID')
-      .not()
-      .isEmpty({ ignore_whitespace: true })
-      .withMessage('UserID can not be left empty: Please input userID')
-      .isInt()
-      .withMessage('UserID is not valid integer: Please input a valid userID')
-      .custom(async id => {
-        const isExist = await util.exits(id, 'Users');
-        if (!isExist) {
-          throw new Error('No User with the specified ID was found');
-        }
-        return true;
-      }),
 
     (req, res, next) => {
       const errors = validationResult(req);
@@ -393,34 +365,40 @@ const validate = {
       .isInt()
       .withMessage('Please enter a valid Book Number'),
 
-      (req, res, next) => {
-        const errors = validationResult(req);
-        const errMessages = [];
-        if (!errors.isEmpty()) {
-          errors.array({ onlyFirstError: true }).forEach(err => {
-            errMessages.push(err.msg);
-          });
-          return util.errorStatus(res, 400, errMessages);
-        }
-        return next();
+    (req, res, next) => {
+      const errors = validationResult(req);
+      const errMessages = [];
+      if (!errors.isEmpty()) {
+        errors.array({ onlyFirstError: true }).forEach(err => {
+          errMessages.push(err.msg);
+        });
+        return util.errorStatus(res, 400, errMessages);
       }
+      return next();
+    }
   ],
 
-  lendBook : [
+  lendBook: [
     check('isbn')
       .not()
       .isEmpty({ ignore_whitespace: true })
       .withMessage('ISBN can not be left empty: Please input ISBN')
       .isInt()
       .withMessage('ISBN is not valid integer: Please input a valid ISBN')
-      .custom( async (isbn) => {
+      .custom(async isbn => {
         const Book = await models.Books.findOne({ where: { isbn } });
         if (!Book) {
-          throw new Error('No Book with the specified isbn was found')
+          throw new Error('No Book with the specified isbn was found');
         }
         if (Book.dataValues.status === 'borrowed') {
-          const borrowedBook = await models.BorrowedBooks.findOne({ where: { isbn } });
-          throw new Error(`This book has been borrowed out already. It is estimated to be available anytime from ${borrowedBook.dueDate}`)
+          const borrowedBook = await models.BorrowedBooks.findOne({
+            where: { isbn }
+          });
+          throw new Error(
+            `This book has been borrowed out already. It is estimated to be available anytime from ${
+              borrowedBook.dueDate
+            }`
+          );
         }
         return true;
       }),
@@ -429,11 +407,13 @@ const validate = {
       .isEmpty({ ignore_whitespace: true })
       .withMessage('patronId can not be left empty: Please input patronId')
       .isInt()
-      .withMessage('patronId is not valid integer: Please input a valid patronId')
-      .custom( async (id) => {
+      .withMessage(
+        'patronId is not valid integer: Please input a valid patronId'
+      )
+      .custom(async id => {
         const isExist = await models.Users.findOne({ where: { id } });
         if (!isExist) {
-          throw new Error('No User with the specified patronID was found')
+          throw new Error('No User with the specified patronID was found');
         }
         return true;
       }),
@@ -442,9 +422,9 @@ const validate = {
       const errors = validationResult(req);
       const errMessages = [];
       if (!errors.isEmpty()) {
-        errors.array({ onlyFirstError: true }).forEach((err) => {
+        errors.array({ onlyFirstError: true }).forEach(err => {
           errMessages.push(err.msg);
-        });        
+        });
         return util.errorStatus(res, 400, errMessages);
       }
       return next();
@@ -457,31 +437,11 @@ const validate = {
       .isInt()
       .withMessage('ID must be a number greater than 1'),
 
-      (req, res, next) => {
-        const errors = validationResult(req);
-        const errMessages = [];
-        if (!errors.isEmpty()) {
-          errors.array({ onlyFirstError: true }).forEach(err => {
-            errMessages.push(err.msg);
-          });
-          return util.errorStatus(res, 400, errMessages);
-        }
-        return next();
-      }
-  ],
-
-  date : [
-    check('date')
-      .not()
-      .isEmpty()
-      .withMessage('Date cannot be empty')
-      .matches(/^(0?\d|1[012])\/([012]?\d|3[01])\/\d{4}$/)
-      .withMessage('Please provide a valid date. Format: (MM/DD/YYYY)'),
-  (req, res, next) => {
+    (req, res, next) => {
       const errors = validationResult(req);
       const errMessages = [];
       if (!errors.isEmpty()) {
-        errors.array({ onlyFirstError: true }).forEach((err) => {
+        errors.array({ onlyFirstError: true }).forEach(err => {
           errMessages.push(err.msg);
         });
         return util.errorStatus(res, 400, errMessages);
@@ -490,17 +450,37 @@ const validate = {
     }
   ],
 
-  recieveBook : [
+  date: [
+    check('date')
+      .not()
+      .isEmpty()
+      .withMessage('Date cannot be empty')
+      .matches(/^(0?\d|1[012])\/([012]?\d|3[01])\/\d{4}$/)
+      .withMessage('Please provide a valid date. Format: (MM/DD/YYYY)'),
+    (req, res, next) => {
+      const errors = validationResult(req);
+      const errMessages = [];
+      if (!errors.isEmpty()) {
+        errors.array({ onlyFirstError: true }).forEach(err => {
+          errMessages.push(err.msg);
+        });
+        return util.errorStatus(res, 400, errMessages);
+      }
+      return next();
+    }
+  ],
+
+  recieveBook: [
     check('isbn')
       .not()
       .isEmpty({ ignore_whitespace: true })
       .withMessage('ISBN can not be left empty: Please input ISBN')
       .isInt()
       .withMessage('ISBN is not valid integer: Please input a valid ISBN')
-      .custom( async (isbn) => {
+      .custom(async isbn => {
         const Book = await models.Books.findOne({ where: { isbn } });
         if (!Book) {
-          throw new Error('No Book with the specified isbn was found')
+          throw new Error('No Book with the specified isbn was found');
         }
         return true;
       }),
@@ -509,11 +489,13 @@ const validate = {
       .isEmpty({ ignore_whitespace: true })
       .withMessage('patronId can not be left empty: Please input patronId')
       .isInt()
-      .withMessage('patronId is not valid integer: Please input a valid patronId')
-      .custom( async (id) => {
+      .withMessage(
+        'patronId is not valid integer: Please input a valid patronId'
+      )
+      .custom(async id => {
         const isExist = await models.Users.findOne({ where: { id } });
         if (!isExist) {
-          throw new Error('No User with the specified patronID was found')
+          throw new Error('No User with the specified patronID was found');
         }
         return true;
       }),
@@ -528,7 +510,7 @@ const validate = {
       const errors = validationResult(req);
       const errMessages = [];
       if (!errors.isEmpty()) {
-        errors.array({ onlyFirstError: true }).forEach((err) => {
+        errors.array({ onlyFirstError: true }).forEach(err => {
           errMessages.push(err.msg);
         });
         return util.errorStatus(res, 400, errMessages);
@@ -537,21 +519,27 @@ const validate = {
     }
   ],
 
-  borrowBook : [
+  borrowBook: [
     check('isbn')
       .not()
       .isEmpty({ ignore_whitespace: true })
       .withMessage('ISBN can not be left empty: Please input ISBN')
       .isInt()
       .withMessage('ISBN is not valid: Please input a valid ISBN')
-      .custom( async (isbn) => {
+      .custom(async isbn => {
         const Book = await models.Books.findOne({ where: { isbn } });
         if (!Book) {
-          throw new Error('No Book with the specified isbn was found')
+          throw new Error('No Book with the specified isbn was found');
         }
         if (Book.dataValues.status === 'borrowed') {
-          const borrowedBook = await models.BorrowedBooks.findOne({ where: { isbn } });
-          throw new Error(`This book has been borrowed out already. It is estimated to be available anytime from ${borrowedBook.dueDate}`)
+          const borrowedBook = await models.BorrowedBooks.findOne({
+            where: { isbn }
+          });
+          throw new Error(
+            `This book has been borrowed out already. It is estimated to be available anytime from ${
+              borrowedBook.dueDate
+            }`
+          );
         }
         return true;
       }),
@@ -560,14 +548,14 @@ const validate = {
       const errors = validationResult(req);
       const errMessages = [];
       if (!errors.isEmpty()) {
-        errors.array({ onlyFirstError: true }).forEach((err) => {
+        errors.array({ onlyFirstError: true }).forEach(err => {
           errMessages.push(err.msg);
         });
         return util.errorStatus(res, 400, errMessages);
       }
       return next();
     }
-  ],
+  ]
 };
 
 export default validate;

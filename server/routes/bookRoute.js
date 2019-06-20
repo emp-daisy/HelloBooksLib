@@ -5,10 +5,10 @@ import Authenticate from '../middleware/authenticator';
 
 const bookRoute = express.Router();
 
-bookRoute.post('/', Validate.addBook, BookController.addBook);
+bookRoute.post('/', Authenticate.isLoggedIn, Authenticate.isAdmin, Validate.addBook, BookController.addBook);
 bookRoute.get('/', BookController.getAllBooks);
 bookRoute.get('/:id', Validate.id, BookController.getSpecificBook);
-bookRoute.delete('/:id', Validate.id, BookController.deleteBook);
+bookRoute.delete('/:id', Authenticate.isLoggedIn, Authenticate.isAdmin, Validate.id, BookController.deleteBook);
 bookRoute.post(
   '/request',
   Authenticate.isLoggedIn,

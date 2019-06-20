@@ -91,17 +91,17 @@ class BookController {
   }
 
   static async requestBook(req, res) {
-    const { title, description, tags, author, year, categoryID, userID} = req.body;
-      const requestedBook = await models.RequestedBooks.create({
-        title,
-        description,
-        tags,
-        author,
-        year,
-        categoryID,
-        userID
-      });
-      return Utils.successStatus(res, 201, 'Book requested successfully', requestedBook);
+    const { title, description, tags, author, year} = req.body;
+    const { loggedinUser } = req;
+    const requestedBook = await models.RequestedBooks.create({
+      title,
+      description,
+      tags,
+      author,
+      year,
+      userID: loggedinUser.id
+    });
+    return Utils.successStatus(res, 201, 'Book requested successfully', requestedBook);
   }
 
   static async lendBook(req, res) {
@@ -220,7 +220,7 @@ class BookController {
       }
     }
     if(returnMessage) {
-      return Utils.errorStatus(res, 400, returnMessage)
+      return Utils.successStatus(res, 200, returnMessage)
     }
 
     await models.Books.update({ status: 'Available' }, { where: { isbn } });

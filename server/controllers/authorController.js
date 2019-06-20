@@ -1,7 +1,8 @@
 /* eslint-disable require-jsdoc */
+import sequelize from 'sequelize';
 import models from '../db/models';
 import util from '../helpers/utilities';
-import Author from '../models/authorModel'
+import Author from '../models/authorModel';
 
 class AuthorController {
   static async addAuthor(req, res) {
@@ -60,6 +61,51 @@ class AuthorController {
     }
     
     return util.successStatus(res, 200, 'Author deleted successfully');
+  }
+
+  static async favouriteAnAuthor(req, res) {
+    const { id } = req.params;
+    const { loggedinUser } = req;
+
+    const requestedAuthor = await models.Authors.findByPk(id, {
+      attributes: ['firstName', 'lastName']
+    });
+
+    if (!requestedAuthor) {
+      return util.errorStatus(res, 400, 'The requested Author is not available');
+    }
+
+    const { firstName, lastName } = requestedAuthor;
+
+    if (loggedinUser.favouriteAuthors) {
+      const alreadyfavourite = loggedinUser.favouriteAuthors.find(
+        author => author === Number(id)
+      );
+      if (alreadyfavourite) {
+        return util.successStatus(
+          res,
+          200,
+          `Author ${firstName} ${lastName}, has already been added to favourite Authors`
+        );
+      }
+    }
+
+    await models.Users.update(
+      {
+        favouriteAuthors: sequelize.fn(
+          'array_append',
+          sequelize.col('favouriteAuthors'),
+          Number(id)
+        )
+      },
+      { where: { id: loggedinUser.id } }
+    );
+
+    return util.successStatus(
+      res,
+      200,
+      `Author ${firstName} ${lastName}, has been added to favourite Authors`
+    );
   }
 }
 
