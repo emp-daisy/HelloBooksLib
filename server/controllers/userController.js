@@ -2,6 +2,7 @@
 import sequelize from 'sequelize';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import paystack from 'paystack';
 import models from '../db/models';
 import auth from '../helpers/auth';
 import util from '../helpers/utilities';
@@ -10,6 +11,7 @@ import mailer from '../helpers/mailer';
 
 const { Op } = sequelize;
 const url = process.env.APP_URL;
+const Paystack = paystack(process.env.PAYSTACK_SECRET_KEY);
 dotenv.config();
 
 class UserController {
@@ -140,6 +142,7 @@ class UserController {
         return util.errorStatus(res, 401, 'Invalid verification link');
     }
     await models.Users.update({ email_confirm_code: null },{ where: { email } });
+    Paystack.customer.create({ email });
     // this should redirect the user to a page. but for test sakes, I will return a response.
     return util.successStatus(res, 200, 'Email verified successfully');
   }
@@ -294,10 +297,11 @@ class UserController {
 
     const returnUserObj = (userID) => {
       return models.Users.findByPk(userID, {
-        attributes: ['profilePic', 'bio', 'favoriteQuote', 'favoriteBooks', 'firstName', 'lastName']
+        attributes: ['profilePic', 'bio', 'favoriteQuote', 'favoriteBooks', 'firstName', 'lastName', 'email']
       })
     }
     const user = await returnUserObj(id);
+    const payments = await Paystack.customer.get(user.email);
       return util.successStatus(res, 200, 'profile retrieved successfully', {
         isOwnProfile,
         firstName: user.firstName,
@@ -305,7 +309,8 @@ class UserController {
         bio: user.bio,
         profilePic: user.profilePic,
         favoriteQuote: user.favoriteQuote,
-        favoriteBooks: user.favoriteBooks
+        favoriteBooks: user.favoriteBooks,
+        subscriptions: isOwnProfile ? payments.data.subscriptions : undefined
       })
   }
 
