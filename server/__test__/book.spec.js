@@ -772,3 +772,44 @@ describe('Books tests', () => {
   });
 });
 
+describe('Get a list of books borrowed by a user', () => {
+  it('should list all the borrowed books', async done => {
+    server()
+    .get(`${url}/statistic`)
+    .set('authorization', `Bearer ${token}`)
+    .end((err, res) => {
+      expect(res.statusCode).toEqual(200);
+      done();
+    })
+  });
+
+  it('should list all the returned books', async done => {
+    server()
+    .get(`${url}/statistic?returned=true`)
+    .set('authorization', `Bearer ${token}`)
+    .end((err, res) => {
+      expect(res.statusCode).toEqual(200);
+      done();
+    })
+  });
+
+  it('should list all the returned books', async done => {
+    server()
+    .get(`${url}/statistic?returned=false`)
+    .set('authorization', `Bearer ${token}`)
+    .end((err, res) => {
+      expect(res.statusCode).toEqual(200);
+      done();
+    })
+  });
+
+  it('should list all the returned books', async done => {
+    server()
+    .get(`${url}/statistic?fined=true`)
+    .set('authorization', `Bearer ${token}`)
+    .end((err, res) => {
+      expect(res.statusCode).toEqual(200);
+      done();
+    })
+  });
+});
