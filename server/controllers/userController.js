@@ -292,39 +292,45 @@ class UserController {
   }
 
   static async getProfile(req, res) {
-    const { isOwnProfile } = req;
-    const { id } = req.query;
+    const { isOwnProfile, loggedinUser } = req;
+    const { userId } = req.query;
 
     const returnUserObj = (userID) => {
       return models.Users.findByPk(userID, {
         attributes: ['profilePic', 'bio', 'favoriteQuote', 'favoriteBooks', 'firstName', 'lastName', 'email']
       })
     }
-    const user = await returnUserObj(id);
+
+    let user;
+    if(userId){
+      user = await returnUserObj(userId);
+      if(!user) {
+        return util.errorStatus(res, 404, 'User profile not found');
+      }
+    }
+    else user = await returnUserObj(loggedinUser.id);
     const payments = await Paystack.customer.get(user.email);
-      return util.successStatus(res, 200, 'profile retrieved successfully', {
-        isOwnProfile,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        bio: user.bio,
-        profilePic: user.profilePic,
-        favoriteQuote: user.favoriteQuote,
-        favoriteBooks: user.favoriteBooks,
-        subscriptions: isOwnProfile ? payments.data.subscriptions : undefined
-      })
+    return util.successStatus(res, 200, 'profile retrieved successfully', {
+      isOwnProfile,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      bio: user.bio,
+      profilePic: user.profilePic,
+      favoriteQuote: user.favoriteQuote,
+      favoriteBooks: user.favoriteBooks,
+      subscriptions: isOwnProfile ? payments.data.subscriptions : undefined
+    })
   }
 
   static async editProfile(req, res) {
 
     const {...args} = req.body;
 
-    //this line actually is for testing with backend. Normally when a user tries to update from front-end,
-    //this length would be greater than zero
+    // this line actually is for testing with backend. Normally when a user tries to update from front-end,
+    // this length would be greater than zero
     if(Object.keys(args).length <= 0) return util.errorStatus(res, 400, 'You must set one or more profile attributes to update')
 
-    const { isOwnProfile, loggedinUser } = req;
-
-    if(!isOwnProfile) return util.errorStatus(res, 401, 'Unauthorized user');
+    const { loggedinUser } = req;
 
     await models.Users.update(args, {where: { id: loggedinUser.id }})
 
@@ -338,51 +344,6 @@ class UserController {
       favoriteQuote: updatedUser.favoriteQuote,
       favoriteBooks: updatedUser.favoriteBooks
     })
-  }
-
-  static async favouriteAnAuthor(req, res) {
-    const { id } = req.params;
-    const { loggedinUser } = req;
-
-    const requestedAuthor = await models.Authors.findByPk(id, {
-      attributes: ['firstName', 'lastName']
-    });
-
-    if (!requestedAuthor) {
-      return util.errorStatus(res, 400, 'The requested Author is not available');
-    }
-
-    const { firstName, lastName } = requestedAuthor;
-
-    if (loggedinUser.favouriteAuthors) {
-      const alreadyfavourite = loggedinUser.favouriteAuthors.find(
-        author => author === Number(id)
-      );
-      if (alreadyfavourite) {
-        return util.successStatus(
-          res,
-          200,
-          `Author ${firstName} ${lastName}, has already been added to favourite Authors`
-        );
-      }
-    }
-
-    await models.Users.update(
-      {
-        favouriteAuthors: sequelize.fn(
-          'array_append',
-          sequelize.col('favouriteAuthors'),
-          Number(id)
-        )
-      },
-      { where: { id: loggedinUser.id } }
-    );
-
-    return util.successStatus(
-      res,
-      200,
-      `Author ${firstName} ${lastName}, has been added to favourite Authors`
-    );
   }
 }
 

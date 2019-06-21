@@ -4,7 +4,7 @@ export function up(queryInterface, Sequelize) {
   return queryInterface.addColumn('Users', 'subscriptions', {
     type: Sequelize.ARRAY(Sequelize.STRING),
     allowNull: true
-  })
+  });
 }
 
 export async function down(queryInterface) {

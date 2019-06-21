@@ -738,7 +738,7 @@ describe('test super admin role assigning', () => {
 describe('Test get user profile', () => {
   it('Should pass and return status 200 if user own profile is successfully retrieved', async done => {
     server()
-      .get(`${url}/auth/profile?id=${userId}`)
+      .get(`${url}/auth/profile`)
       .set('authorization', `Bearer ${userToken}`)
       .end((err, res) => {
         expect(res.statusCode).toEqual(200)
@@ -749,9 +749,20 @@ describe('Test get user profile', () => {
       });
   });
 
+  it("Should not get user profile If the user profile dosen't exist", async done => {
+    server()
+      .get(`${url}/auth/profile?userId=10000`)
+      .set('authorization', `Bearer ${userToken}`)
+      .end((err, res) => {
+        expect(res.statusCode).toEqual(404)
+        expect(res.body).toHaveProperty('error');
+        done();
+      });
+  });
+
   it('Should pass, return status 200 and set req.is_own_profile to false if query id does not match user id', async done => {
     server()
-      .get(`${url}/auth/profile?id=${4}`)
+      .get(`${url}/auth/profile?userId=${4}`)
       .set('authorization', `Bearer ${userToken}`)
       .end((err, res) => {
         expect(res.body.data.isOwnProfile).toEqual(false)
@@ -786,7 +797,7 @@ describe('Test get user profile', () => {
 describe('Test update user profile', () => {
   it('Should pass and return status 200 if user profile is updated successfully', async done => {
     server()
-      .put(`${url}/auth/profile?id=${userId}`)
+      .put(`${url}/auth/profile`)
       .set('authorization', `Bearer ${userToken}`)
       .send(mockUser.updateUserProfile)
       .end((err, res) => {
@@ -799,7 +810,7 @@ describe('Test update user profile', () => {
 
   it('Should fail and return status 400 if no object was sent to update', async done => {
     server()
-      .put(`${url}/auth/profile?id=${userId}`)
+      .put(`${url}/auth/profile`)
       .set('authorization', `Bearer ${userToken}`)
       .end((err, res) => {
         expect(res.statusCode).toEqual(400);
@@ -808,22 +819,9 @@ describe('Test update user profile', () => {
       })
   });
 
-  it('Should fail and return status 401 if user tries to edit another users\' profile', async done => {
-    server()
-      .put(`${url}/auth/profile?id=${4}`)
-      .set('authorization', `Bearer ${userToken}`)
-      .send(mockUser.updateUserProfile)
-      .end((err, res) => {
-        expect(res.statusCode).toEqual(401);
-        expect(res.body).toHaveProperty('error');
-        expect(res.body.error).toEqual('Unauthorized user');
-        done();
-      }); 
-  });
-
   it('Should fail and return status 401 if no token is set', async done => {
     server()
-      .put(`${url}/auth/profile?id=${userId}`)
+      .put(`${url}/auth/profile`)
       .end((err, res) => {
         expect(res.statusCode).toEqual(401)
         expect(res.body).toHaveProperty('error');
@@ -834,7 +832,7 @@ describe('Test update user profile', () => {
 
   it('Should fail and return status 401 if token is not recognized', async done => {
     server()
-      .put(`${url}/auth/profile?id=${userId}`)
+      .put(`${url}/auth/profile`)
       .set('authorization', 'Bearer nds034kmmqi34kmakk')
       .end((err, res) => {
         expect(res.statusCode).toEqual(401);
@@ -843,42 +841,4 @@ describe('Test update user profile', () => {
         done();
       });
   });
-});
-
-describe('Test Allow user to favourite an Author', () => {
-  it('Should pass and return status 200 if the author has been added too favourites', async done => {
-    server()
-      .patch(`${url}/auth/author/favourite/1`)
-      .set('authorization', `Bearer ${userToken}`)
-      .send(mockUser.updateUserProfile)
-      .end((err, res) => {
-        expect(res.statusCode).toEqual(200);
-        expect(res.body).toHaveProperty('message');
-        done()
-      })
-  });
-
-  it('Should pass and return status 200 if the author had already been added too favourites', async done => {
-    server()
-      .patch(`${url}/auth/author/favourite/1`)
-      .set('authorization', `Bearer ${userToken}`)
-      .send(mockUser.updateUserProfile)
-      .end((err, res) => {
-        expect(res.statusCode).toEqual(200);
-        expect(res.body).toHaveProperty('message');
-        done()
-      })
-  });
-
-  it('Should fail and return status 400 if the Author dosen\'t exist', async done => {
-    server()
-      .patch(`${url}/auth/author/favourite/2`)
-      .set('authorization', `Bearer ${userToken}`)
-      .end((err, res) => {
-        expect(res.statusCode).toEqual(400);
-        expect(res.body).toHaveProperty('error');
-        done()
-      })
-  });
-
 });
