@@ -281,6 +281,22 @@ class BookController {
 
     return BookController.lendBook(req, res);
   }
+
+  static async listBorrowedBooks(req, res) {
+    const { loggedinUser } = req;
+
+    const { returned, fined } = req.query;
+
+    const returnedQuery = returned ? {returned}:{}
+    const finedQuery = fined ? {fineAmount: { [Op.ne]: null} } : {}
+    const  borrowedBooks = await models.BorrowedBooks.findAll({ where: {
+      patronId: loggedinUser.id,
+       ...returnedQuery,
+       ...finedQuery
+      }});
+
+    return Utils.successStatus(res, 200, 'Borrowed books retrieved successfully', borrowedBooks)
+  }
 }
 
 export default BookController;
