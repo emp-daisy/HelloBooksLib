@@ -287,33 +287,13 @@ class BookController {
 
     const { returned, fined } = req.query;
 
-    const borrowedBooks = await models.BorrowedBooks.findAll({ where: { patronId: loggedinUser.id } });
-
-    if (returned === 'true') {
-      const returnedBooks = await models.BorrowedBooks.findAll({ where: {
-        [Op.and]: [{ patronId: loggedinUser.id }, { returned: true }]
+    const returnedQuery = returned ? {returned}:{}
+    const finedQuery = fined ? {fineAmount: { [Op.ne]: null} } : {}
+    const  borrowedBooks = await models.BorrowedBooks.findAll({ where: {
+      patronId: loggedinUser.id,
+       ...returnedQuery,
+       ...finedQuery
       }});
-
-      return Utils.successStatus(res, 200, 'List of Books that has been returned', returnedBooks);
-    }
-
-    if (returned === 'false') {
-      const booksPendingReturn = await models.BorrowedBooks.findAll({ where: {
-        [Op.and]: [{ patronId: loggedinUser.id }, { returned: false }]
-      }});
-
-      return Utils.successStatus(res, 200, 'List of Books that are yet to be returned', booksPendingReturn);
-    }
-
-    if (fined === 'true') {
-      const finedBooks = await models.BorrowedBooks.findAll({ where: {
-        [Op.and]: [{ patronId: loggedinUser.id }, { fineAmount: {
-          [Op.ne]: null } 
-        }]
-      }});
-
-      return Utils.successStatus(res, 200, 'All fined Books fetched successfully', finedBooks);
-    }
 
     return Utils.successStatus(res, 200, 'Borrowed books retrieved successfully', borrowedBooks)
   }
