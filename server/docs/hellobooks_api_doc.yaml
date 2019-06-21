@@ -19,12 +19,6 @@ servers:
 - url: /api/v1
 - url: https://hello-books-lib-staging.herokuapp.com/api/v1/ # Heroku deployment (staging)
 
-securityDefinitions:
-  Bearer:
-    - type: apiKey
-    - name: Authorization
-    - in: header
-
 tags:
 - name: Users
   description: Operations available for user endpoints
@@ -1121,8 +1115,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/errorResponse"
-                
+                $ref: "#/components/schemas/errorResponse"        
   /books/statistic:
     get:
       tags:
@@ -1157,16 +1150,45 @@ paths:
                 $ref: "#/components/schemas/errorResponse"
         500:
           description: Server error
+  /payments/subscribe:
+    get:
+      tags:
+        - Payments
+      security:
+        - bearerAuth: []
+      summary: Subscribe for one of our plans
+      description: An authenticated user should be able to subscribe for one of our plans
+      responses:
+        200:
+          description: Subscription page loaded successfully
+        401:
+          description: Authorization error
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/errorResponse"
+    post:
+      tags:
+        - Payments
+      summary: Verify subscription payment
+      description: An endpoint to verify a payment reference number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reference:
+                  type: string
+      responses:
+        200:
+          description: Payment Successful
 components:
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
-
   schemas:
     User:
       type: object

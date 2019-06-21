@@ -1,0 +1,171 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+    <script src="https://js.paystack.co/v1/inline.js"></script>
+    <style>
+      @import url('https://fonts.googleapis.com/css?family=Josefin+Sans&display=swap');
+      *,
+      *::before,
+      *::after{
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body{
+        text-align: center;
+        padding-top: 20px;
+      }
+
+      h2{
+        font-family: 'Josefin Sans', sans-serif;
+        margin: 10px 0 10px 0;
+        color:#5d45e37e; 
+      }
+
+      .plan-container {
+        display: flex;
+        justify-content: space-around;
+        width: 70vw;
+        margin-left: 180px;
+      }
+
+      .plan {
+        width: auto;
+        border: 1px solid rgba(0, 0, 0, 0.129);
+        box-shadow: 5px 5px 15px -5px rgba(0, 0, 0, 0.3);
+        border-radius: 10px;
+        padding: 20px 20px 20px 0;
+        transition: all .2s ease-in-out;
+      }
+
+      .plan:hover {
+        transform: scale(1.1);
+      }
+
+      i {
+        margin-right: 10px;
+      }
+
+      .fa-check {
+        color: green;
+      }
+
+      .fa-times{
+        color: red;
+      }
+
+      .plan-item {
+        display: flex;
+        padding: 10px;
+        margin-left: 30px;
+      }
+
+      .x {
+        text-decoration: line-through;
+      }
+
+      .btn-plan {
+        width: 85%;
+        display:inline-block;
+        padding:5px 10px; 
+        border:1px solid #5d45e3; 
+        text-decoration: none; 
+        text-transform: uppercase; 
+        font-size: medium; 
+        color: white; 
+        background: #5d45e3; 
+        border-radius: 3px;
+        height: 50px;
+        margin-top: 10px;
+      }
+
+      input[type=submit] {
+        display:inline-block;
+        padding:5px 10px; 
+        border:1px solid #5d45e3; 
+        text-decoration: none; 
+        text-transform: uppercase; 
+        font-size: medium; 
+        color: white; 
+        background: #5d45e3; 
+        border-radius: 3px;
+        height: 50px;
+      }
+
+      input[type=password] {
+        display:inline-block;
+        padding:5px 10px; 
+        border:1px solid #5d45e3; 
+        font-size: medium; 
+        border-radius: 3px;
+        height: 50px;
+      }
+
+      input[type=submit]:disabled {
+       background-color: #5d45e389;
+       border:1px solid #5d45e389; 
+      }
+    </style>
+  </head>
+  <body>
+    <h1 style='color: #5d45e3; margin-bottom: 25px;'>Choose Your Plan</h1>
+    <div id="main" class="plan-container">
+      <div class="plan">
+        <h2>Hello Books Monthly</h2>
+        <span class="plan-item"><i class="fas fa-check"></i><p>3 books per month</p></span>
+        <span class="plan-item"><i class="fas fa-check"></i><p>1 week borrowing period extension once per month</p></span>
+        <span class="plan-item"><i class="fas fa-times"></i><p class="x">20% discount</p></span>
+        <span class="plan-item"><i class="fas fa-times"></i><p class="x">Access to light refreshment at library cafeteria</p></span>
+        <form>
+          <button class="btn-plan" type="button" onclick="payWithPaystack('PLN_kqn3rfx1gc4rf3b')">Pay NGN 2,499</button>
+        </form>
+      </div>
+      <div class="plan">
+        <h2>Hello Books 365</h2>
+        <span class="plan-item"><i class="fas fa-check"></i><p>5 books per month</p></span>
+        <span class="plan-item"><i class="fas fa-check"></i><p>1 week borrowing extension thrice per month</p></span>
+        <span class="plan-item"><i class="fas fa-check"></i><p>20% discount</p></span>
+        <span class="plan-item"><i class="fas fa-check"></i><p>Access to light refreshment at library cafeteria</p></span>
+        <form>
+          <button class="btn-plan" type="button" onclick="payWithPaystack('PLN_b1r457hprx399fi')">Pay NGN 23,999</button>
+        </form>
+      </div>
+    </div>
+    <script>
+      function payWithPaystack(planCode){
+        var handler = PaystackPop.setup({
+          key: 'pk_test_d3b7c36e797a1a73b83dfab4cadfa3bdfd83eb4d',
+          email: '{{email}}',
+          plan: planCode,
+          currency: "NGN",
+          ref: ''+Math.floor((Math.random() * 1000000000) + 1), // generates a pseudo-unique reference. Please replace with a reference you generated. Or remove the line entirely so our API will generate one for you
+          metadata: {
+            custom_fields: [
+              {
+                display_name: "Mobile Number",
+                variable_name: "mobile_number",
+                value: "+2348012345678"
+              }
+            ]
+          },
+          callback: function(response){
+            console.log('posting...');
+            fetch("/api/v1/payments/subscribe", {
+              method: "POST",
+              headers: {"Content-Type": "application/json"},
+              body: JSON.stringify({"reference": response.reference})
+            })
+            .then(res => res.json())
+            .then(data => {
+              document.getElementById('main').innerHTML = `<h2>Payment Successful: ref. no: ${response.reference}</h2>`
+            })
+          },
+          onClose: function(){}
+        });
+        handler.openIframe();
+      }
+    </script>
+  </body>
+</html>
+      
