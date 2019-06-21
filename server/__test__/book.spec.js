@@ -11,10 +11,24 @@ let adminToken;
 let id;
 
 describe('Books tests', () => {
+  beforeAll((done) => {
+    server()
+    .post(`/api/v1/auth/signin`)
+    .send({
+      email: 'admin@test.com',
+      password: 'PassWord123..'
+    })
+    .end((err, res) => {
+      adminToken  = res.body.data.token;
+      done();
+    })
+  })
+
   describe('test for add books', () => {
     it('Should add a new book when all required input is supplied', async done => {
       server()
         .post(`${url}`)
+        .set('Authorization', `Bearer ${adminToken}`)
         .send(mockBook.completeBookData)
         .end((_err, res) => {
           expect(res.statusCode).toEqual(201);
@@ -32,6 +46,7 @@ describe('Books tests', () => {
     it('Should throw an error when inputs are not supplied', async done => {
       server()
         .post(`${url}`)
+        .set('Authorization', `Bearer ${adminToken}`)
         .send(mockBook.emptyBookData)
         .end((_err, res) => {
           expect(res.statusCode).toEqual(400);
@@ -63,6 +78,7 @@ describe('Books tests', () => {
     it('Should throw an error when inputs are not supported', async done => {
       server()
         .post(`${url}`)
+        .set('Authorization', `Bearer ${adminToken}`)
         .send(mockBook.unsupportedBookData)
         .end((_err, res) => {
           expect(res.statusCode).toEqual(400);
@@ -78,6 +94,7 @@ describe('Books tests', () => {
     it('Should throw an error when authorID does not exist in the database', async (done) => {
       server()
         .post(`${url}`)
+        .set('Authorization', `Bearer ${adminToken}`)
         .send(mockBook.wrongAuthorIDBookData)
         .end((_err, res) => {
           expect(res.statusCode).toEqual(400);
@@ -89,6 +106,7 @@ describe('Books tests', () => {
     it('Should throw an error when categoryID does not exist in the database', async (done) => {
       server()
         .post(`${url}`)
+        .set('Authorization', `Bearer ${adminToken}`)
         .send(mockBook.wrongCategoryIDBookData)
         .end((_err, res) => {
           expect(res.statusCode).toEqual(400);
@@ -230,6 +248,7 @@ describe('Books tests', () => {
     it('Should delete a specific book successfully', async (done) => {
       server()
         .delete(`${url}/2`)
+        .set('Authorization', `Bearer ${adminToken}`)
         .end((_err, res) => {
           expect(res.statusCode).toEqual(200);
           expect(res.body.message).toEqual('Book deleted successfully');
@@ -241,6 +260,7 @@ describe('Books tests', () => {
     it('Should return an error message when a non existing book ID is specified', async (done) => {
       server()
         .delete(`${url}/510`)
+        .set('Authorization', `Bearer ${adminToken}`)
         .end((_err, res) => {
           expect(res.statusCode).toEqual(404);
           expect(res.body.error).toEqual('Book with the specified ID not found');
@@ -252,6 +272,7 @@ describe('Books tests', () => {
     it('Should return an error message when a non integer book ID is specified', async (done) => {
       server()
         .delete(`${url}/q`)
+        .set('Authorization', `Bearer ${adminToken}`)
         .end((_err, res) => {
           expect(res.statusCode).toEqual(400);
           expect(res.body.error[0]).toEqual('ID must be a number greater than 1');
@@ -301,22 +322,9 @@ describe('Books tests', () => {
           expect(res.body.data).toHaveProperty('description');
           expect(res.body.data).toHaveProperty('author');
           expect(res.body.data).toHaveProperty('year');
-          expect(res.body.data).toHaveProperty('categoryID');
           done();
         })
     })
-    it('Should throw an error when Category does not exist in database', (done) => {
-      server()
-        .post(`${url}/request`)
-        .set('Authorization', `Bearer ${token}`)
-        .send(mockReqBook.wrongCategoryIDBookData)
-        .end((_err, res) => {
-          expect(res.statusCode).toEqual(400);
-          expect(res.body.error[0]).toEqual('No Category with the specified ID was found');
-          expect(res.body.status).toEqual(400);
-          done();
-        })
-    });
     it('Should throw an error when inputs are not supplied', (done) => {
       server()
         .post(`${url}/request`)
@@ -333,9 +341,6 @@ describe('Books tests', () => {
             'Author can not be left empty: Please input author'
           );
           expect(res.body.error[3]).toEqual(
-            'CategoryID can not be left empty: Please input categoryID'
-          );
-          expect(res.body.error[4]).toEqual(
             'Year can not be left empty: Please input amount'
           );
           done();
@@ -344,19 +349,6 @@ describe('Books tests', () => {
   });
 
   describe('Borrow a book', () => {
-    beforeAll((done) => {
-      server()
-      .post(`/api/v1/auth/signin`)
-      .send({
-        email: 'admin@test.com',
-        password: 'PassWord123..'
-      })
-      .end((err, res) => {
-        adminToken  = res.body.data.token;
-        done();
-      })
-    })
-
     it('Should lend a book', async done => {
       server()
       .post(`${url}/borrow`)
@@ -489,7 +481,7 @@ describe('Books tests', () => {
       });
     });
 
-    it('Should not recieve a book if the book has been damaged', async done => {
+    it('Should recieve a book if the book has been damaged but assign a fine', async done => {
       server()
       .post(`${url}/recieve`)
       .set('Authorization', `Bearer ${adminToken}`)
@@ -499,15 +491,15 @@ describe('Books tests', () => {
         damaged: 'true'
       })
       .end((_err, res) => {
-        expect(res.statusCode).toEqual(400);
-        expect(res.body).toHaveProperty('error');
-        expect(res.body.error).toEqual('You made damages to our book incuring a cost of 100');
+        expect(res.statusCode).toEqual(200);
+        expect(res.body).toHaveProperty('message');
+        expect(res.body.message).toEqual('You made damages to our book incuring a cost of 100');
         done();
         expect(res.body).toMatchSnapshot();
       });
     });
 
-    it('Should not recieve a book if the due date is passed and assign a fine', async done => {
+    it('Should recieve a book if the due date is passed and assign a fine', async done => {
       server()
       .post(`${url}/recieve`)
       .set('Authorization', `Bearer ${adminToken}`)
@@ -517,14 +509,14 @@ describe('Books tests', () => {
         damaged: 'false'
       })
       .end((_err, res) => {
-        expect(res.statusCode).toEqual(400);
-        expect(res.body).toHaveProperty('error');
+        expect(res.statusCode).toEqual(200);
+        expect(res.body).toHaveProperty('message');
         done();
         expect(res.body).toMatchSnapshot();
       });
     });
 
-    it('Should not recieve a book if the due date is passed and is also damaged while assiging a fine', async done => {
+    it('Should recieve a book if the due date is passed and is also damaged while assiging a fine', async done => {
       server()
       .post(`${url}/recieve`)
       .set('Authorization', `Bearer ${adminToken}`)
@@ -534,8 +526,8 @@ describe('Books tests', () => {
         damaged: 'true'
       })
       .end((_err, res) => {
-        expect(res.statusCode).toEqual(400);
-        expect(res.body).toHaveProperty('error');
+        expect(res.statusCode).toEqual(200);
+        expect(res.body).toHaveProperty('message');
         done();
         expect(res.body).toMatchSnapshot();
       });

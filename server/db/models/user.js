@@ -53,6 +53,10 @@ export default (sequelize, DataTypes) => {
       favouriteAuthors: {
         type: DataTypes.ARRAY(DataTypes.INTEGER),
         allowNull: true
+      },
+      subscriptions: {
+        type: DataTypes.ARRAY(DataTypes.STRING),
+        allowNull: true
       }
     },
     {}

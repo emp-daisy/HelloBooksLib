@@ -207,8 +207,6 @@ paths:
                   type: string
                 email:
                   type: string
-                password:
-                  type: string
       responses:
         201:
           description: Created
@@ -267,11 +265,11 @@ paths:
     get:
       tags:
         - Users
-      summary: Delete a user from the database
+      summary: Get all users, also get a single user by id via the query parameters
       security:
         - bearerAuth: []
       parameters:
-        - name: id
+        - name: userId
           in: query
           required: false
           description: To select a single user by ID
@@ -291,34 +289,6 @@ paths:
               schema:
                 $ref: "#/components/schemas/errorResponse"
 
-  /author/favourite/{id}:
-    get:
-      tags:
-        - Users
-      summary: Allows a user to favourite an Author
-      security:
-        - bearerAuth: []
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          required: true
-          description: The Authors id
-      responses:
-        200:
-          description: Ok
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/successResponse"
-        400:
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/errorResponse"
-
   /auth/verifyemail:
     get:
       tags:
@@ -330,6 +300,11 @@ paths:
           name: token
           schema:
               type: string
+          required: true
+        - in: query
+          name: id
+          schema:
+              type: number
           required: true
       responses:
         200:
@@ -386,6 +361,8 @@ paths:
         - Books
       summary: User add book
       description: Add a new book
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -409,6 +386,8 @@ paths:
                   type: integer
                 year:
                   type: integer
+                tags:
+                  type: string
       responses:
         201:
           description: Added
@@ -499,13 +478,9 @@ paths:
                   type: string
                 description:
                   type: string
-                userID:
-                  type: integer
                 author:
                   type: integer
                 year:
-                  type: integer
-                categoryID:
                   type: integer
       responses:
         201:
@@ -533,102 +508,6 @@ paths:
               schema:
                 $ref: "#/components/schemas/errorResponse"
 
-  /books/recieve:
-    post:
-      tags:
-        - Books
-      security:
-        - bearerAuth: []
-      summary: Recieves a book from a patron
-      description: User should be able to return a book
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                isbn:
-                  type: number
-                damaged:
-                  type: string
-                patronID:
-                  type: integer
-      responses:
-        200:
-          description: Ok
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Book"
-        400:
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/errorResponse"
-        500:
-          description: Server error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/errorResponse"
-
-  /books/{id}:
-    get:
-      tags:
-        - Books
-      summary: User fetch book
-      description: Get a single book
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          required: true
-          description: Numeric ID of the book to get
-      responses:
-        200:
-          description: Book fetched successfully
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Book"
-        400:
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/errorResponse"
-
-    delete:
-      tags:
-        - Books
-      summary: User delete book
-      description: Delete a specific book
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          required: true
-          description: Numeric ID of the book to delete
-      responses:
-        200:
-          description: Book deleted successfully
-          
-        400:
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/errorResponse"
-        500:
-          description: Server error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/errorResponse"
   /books/borrow:
     post:
       tags:
@@ -674,11 +553,106 @@ paths:
               schema:
                 $ref: "#/components/schemas/errorResponse"
 
+  /books/recieve:
+    post:
+      tags:
+        - Books
+      security:
+        - bearerAuth: []
+      summary: Recieves a book from a patron
+      description: User should be able to return a book
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                isbn:
+                  type: number
+                damaged:
+                  type: string
+                patronId:
+                  type: integer
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/successResponse"
+        500:
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+
+  /books/{id}:
+    get:
+      tags:
+        - Books
+      summary: User fetch book
+      description: Get a single book
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Numeric ID of the book to get
+      responses:
+        200:
+          description: Book fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Book"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+
+    delete:
+      tags:
+        - Books
+      summary: User delete book
+      description: Delete a specific book
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Numeric ID of the book to delete
+      responses:
+        200:
+          description: Book deleted successfully
+          
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        500:
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+
   /books/extend/{id}:
     patch:
       tags:
         - Books
       summary: Extend book return date
+      security:
+        - bearerAuth: []
       description: Extends the date a book is supposed to be returned
       parameters:
         - in: path
@@ -717,6 +691,8 @@ paths:
         - Authors
       summary: Add an author
       description: Add a new author to the authors table
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -781,12 +757,44 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/errorResponse"
+
+  /authors/favourite/{id}:
+    patch:
+      tags:
+        - Authors
+      summary: Allows a user to favourite an Author
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: The Authors id
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/successResponse"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+
+
   /authors/{id}:
     get:
       tags:
         - Authors
       summary: Get an author using ID
       description: Get a single author
+      security:
+        - bearerAuth: []
       parameters:
         - in: path
           name: id
@@ -818,6 +826,8 @@ paths:
       tags:
         - Authors
       summary: Update an author's details
+      security:
+        - bearerAuth: []
       description: Modify an author's details
       parameters:
         - in: path
@@ -869,6 +879,8 @@ paths:
       tags:
         - Authors
       summary: Delete an author using ID
+      security:
+        - bearerAuth: []
       description: Delete a specific author
       parameters:
         - in: path
@@ -946,11 +958,12 @@ paths:
       summary: Get user profile
       description: User can get other user profiles including theirs
       parameters:
-        - in: query
-          name: id
+        - name: userId
+          in: query
+          required: false
+          description: To select a single user by ID
           schema:
-            type: integer
-          required: true 
+            type : integer
       responses:
         200:
           description: OK
